@@ -1,7 +1,43 @@
+@import "./reset.css";
+html {
+  background-image: url("../assets/backgroundImg.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  font-family: "Ubuntu", sans-serif;
+}
+
 header {
   color: black;
-  padding: 1em;
+  margin-top: 7%;
+  margin-left: 25%;
   text-align: left;
+}
+
+#main_link {
+  font-size: 250%;
+}
+
+nav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  float: right;
+  margin-top: 20%;
+  margin-right: 10%;
+}
+
+.nav__link {
+  font-size: 150%;
+  padding: 10px 20px;
+  text-decoration: none;
+  color: white;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.nav__link:hover {
+  color: black;
 }
 
 a {
