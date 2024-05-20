@@ -7,13 +7,16 @@ export default class extends AbstractView {
 
   async getHtml() {
     return `
+      <header>
+        <h1>Ping? Pong!</h1>
+      </header>
 			<nav>
 			<a href="/" id="main_link" class="nav__link" data-link>Ping? Pong!</a>
 			<a id="start_button" class="nav__link">Start</a>
 			</nav>
-			<div class="play_modal">
+			<section class="play_modal">
 				Play Game
-			</div>
+			</section>
 			`;
   }
   deleteModal() {
