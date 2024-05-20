@@ -8,10 +8,9 @@ export default class extends AbstractView {
   async getHtml() {
     return `
       <header>
-        <h1>Ping? Pong!</h1>
+        <a href="/" id="main_link" class="nav__link" data-link>Ping? Pong!</a>
       </header>
 			<nav>
-			<a href="/" id="main_link" class="nav__link" data-link>Ping? Pong!</a>
 			<a id="start_button" class="nav__link">Start</a>
 			</nav>
 			<section class="play_modal">
