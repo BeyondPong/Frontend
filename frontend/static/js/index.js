@@ -1,14 +1,15 @@
-import router from "./Router/Router.js";
-import { navigateTo } from "./Router/Router.js";
+import { Router } from "./router/Router.js";
 
-window.addEventListener("popstate", router);
+const router = new Router();
+window.addEventListener("popstate", () => router.route());
 
 document.addEventListener("DOMContentLoaded", () => {
-  router();
+  router.route();
   document.body.addEventListener("click", (e) => {
     if (e.target.matches("[data-link]")) {
       e.preventDefault();
-      navigateTo(e.target.href);
+      router.navigateTo(e.target.href);
+      router.route();
     }
   });
 });
