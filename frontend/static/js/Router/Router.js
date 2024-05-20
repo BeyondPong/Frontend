@@ -1,9 +1,11 @@
 import Main from "../view/Main.js";
 import Play from "../view/Play.js";
 import Login from "../view/Login.js";
+import Profile from "../view/Profile.js";
 import registry from "../state/Registry.js";
 import pathToRegex from "../utility/pathToRegex.js";
 import getParams from "../utility/getParams.js";
+
 export class Router {
   constructor() {
     this.routes = [
@@ -21,9 +23,7 @@ export class Router {
       },
       {
         path: "/profile",
-        view: () => {
-          console.log("Profile!!");
-        },
+        view: Profile,
       },
       {
         path: "/notlogin",
