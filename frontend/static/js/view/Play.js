@@ -13,8 +13,10 @@ export default class extends AbstractView {
 			<nav>
 			<a id="start_button" class="nav__link">Start</a>
 			</nav>
-			<section class="play_modal">
-				Play Game
+			<section class="modal_container">
+        <div class="modal_content play_modal">
+          Play Game
+        </div>
 			</section>
 			`;
   }

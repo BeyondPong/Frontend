@@ -15,8 +15,10 @@ export default class extends AbstractView {
               <a href="/play" id="play_link" class="nav__link" data-link>Play</a>
               <a href="/profile" id="profile_link" class="nav__link" data-link style="pointer-events: none; color: grey; text-decoration: none;">Profile</a>
               </nav>
-              <section class="profile_modal">
-              Profile Modal
+              <section class="modal_container">
+                <div class="modal_content profile_modal">
+                    Profile Modal
+                </div>
               </section>
               `;
   }
