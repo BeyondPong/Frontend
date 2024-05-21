@@ -11,30 +11,12 @@ import getParams from "../utility/getParams.js";
 export class Router {
   constructor() {
     this.routes = [
-      {
-        path: "/",
-        view: Main,
-      },
-      {
-        path: "/login",
-        view: Login,
-      },
-      {
-        path: "/play",
-        view: Play,
-      },
-      {
-        path: "/profile",
-        view: Profile,
-      },
-      {
-        path: "/notlogin",
-        view: NotLogin,
-      },
-      {
-        path: "/notfound",
-        view: NotFound,
-      },
+      { path: "/", view: Main },
+      { path: "/login", view: Login },
+      { path: "/play", view: Play },
+      { path: "/profile", view: Profile },
+      { path: "/notlogin", view: NotLogin },
+      { path: "/notfound", view: NotFound },
     ];
   }
 
@@ -43,66 +25,92 @@ export class Router {
   }
 
   async route() {
-    const potentialMatches = this.routes.map((route) => {
-      return {
-        route: route,
-        result: location.pathname.match(pathToRegex(route.path)),
-      };
-    });
-
-    let match = potentialMatches.find(
-      (potentialMatch) => potentialMatch.result !== null
-    );
+    let match = this.findMatch();
     if (!match || location.pathname === "/notfound") {
-      match = {
-        route: this.routes[5],
-        result: [location.pathname],
-      };
-      document.body.classList.add("error-background");
-      document.body.classList.remove("normal-background");
-      this.navigateTo("/notfound");
+      match = this.handleNotFound();
     }
-    const viewInstance = new match.route.view(getParams(match));
-    if (match.route.path === "/login") {
-      if (registry[0].islogin) {
-        match = {
-          route: this.routes[0],
-          result: ["/"],
-        };
-        this.navigateTo("/");
-        document.body.classList.add("normal-background");
-        document.body.classList.remove("error-background");
-      }
-    } else if (match.route.path === "/profile") {
-      if (!registry[0].islogin) {
-        match = {
-          route: this.routes[4],
-          result: ["/notlogin"],
-        };
-        this.navigateTo("/notlogin");
-        document.body.classList.add("error-background");
-        document.body.classList.remove("normal-background");
-      } else {
-        document.body.classList.add("normal-background");
-        document.body.classList.remove("error-background");
-      }
-    } else if (match.route.path === "/play") {
+    await this.handleRouteChange(match);
+  }
+
+  findMatch() {
+    return this.routes
+      .map((route) => ({
+        route,
+        result: location.pathname.match(pathToRegex(route.path)),
+      }))
+      .find((potentialMatch) => potentialMatch.result !== null);
+  }
+
+  handleNotFound() {
+    this.navigateTo("/notfound");
+    this.updateBackground("error");
+    return {
+      route: this.routes.find((r) => r.path === "/notfound"),
+      result: [location.pathname],
+    };
+  }
+
+  async handleRouteChange(match) {
+    switch (match.route.path) {
+      case "/login":
+        await this.handleLoginRoute(match);
+        break;
+      case "/profile":
+        await this.handleProfileRoute(match);
+        break;
+      case "/play":
+        await this.handlePlayRoute(match);
+        break;
+      case "/":
+        await this.handleMainRoute(match);
+        break;
+      default:
+        this.updateBackground("error");
+        await this.render(match);
+        break;
+    }
+  }
+
+  async handleMainRoute(match) {
+    await this.render(match);
+    this.updateBackground("normal");
+  }
+
+  async handleLoginRoute(match) {
+    if (registry[0].islogin) {
+      this.navigateTo("/");
+      this.updateBackground("normal");
+    } else {
       await this.render(match);
-      const startButton = document.querySelector("#start_button");
-      startButton.addEventListener("click", viewInstance.deleteModal);
-      document.body.classList.add("normal-background");
-      document.body.classList.remove("error-background");
-      return;
-    } else if (match.route.path == "/") {
-      document.body.classList.add("normal-background");
-      document.body.classList.remove("error-background");
     }
-    this.render(match);
+  }
+
+  async handleProfileRoute(match) {
+    if (!registry[0].islogin) {
+      this.navigateTo("/notlogin");
+      this.updateBackground("error");
+    } else {
+      this.updateBackground("normal");
+      await this.render(match);
+    }
+  }
+
+  async handlePlayRoute(match) {
+    await this.render(match);
+    const viewInstance = new match.route.view(getParams(match));
+    document
+      .querySelector("#start_button")
+      .addEventListener("click", viewInstance.deleteModal);
+    this.updateBackground("normal");
   }
 
   async render(match) {
     const viewInstance = new match.route.view(getParams(match));
-    const selectApp = document.querySelector("#app");
-    selectApp.innerHTML = await viewInstance.getHtml();
+    document.querySelector("#app").innerHTML = await viewInstance.getHtml();
+  }
+
+  updateBackground(type) {
+    document.body.classList.remove("normal-background", "error-background");
+    document.body.classList.add(`${type}-background`);
   }
 }
