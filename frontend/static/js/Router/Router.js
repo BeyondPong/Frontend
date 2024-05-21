@@ -50,6 +50,15 @@ export class Router {
     };
   }
 
+  handleNotLogin() {
+    this.navigateTo("/notlogin");
+    this.updateBackground("error");
+    return {
+      route: this.routes.find((r) => r.path === "/notlogin"),
+      result: [location.pathname],
+    };
+  }
+
   async handleRouteChange(match) {
     switch (match.route.path) {
       case "/login":
@@ -87,12 +96,11 @@ export class Router {
 
   async handleProfileRoute(match) {
     if (!registry[0].islogin) {
-      this.navigateTo("/notlogin");
-      this.updateBackground("error");
+      match = this.handleNotLogin();
     } else {
       this.updateBackground("normal");
-      await this.render(match);
     }
+    await this.render(match);
   }
 
   async handlePlayRoute(match) {
@@ -110,7 +118,15 @@ export class Router {
   }
 
   updateBackground(type) {
-    document.body.classList.remove("normal-background", "error-background");
-    document.body.classList.add(`${type}-background`);
+    const hasNormal = document.body.classList.contains("normal-background");
+    const hasError = document.body.classList.contains("error-background");
+
+    if (type === "normal" && hasError) {
+      document.body.classList.replace("error-background", "normal-background");
+    } else if (type === "error" && hasNormal) {
+      document.body.classList.replace("normal-background", "error-background");
+    } else if (!hasNormal && !hasError) {
+      document.body.classList.add(`${type}-background`);
+    }
   }
 }

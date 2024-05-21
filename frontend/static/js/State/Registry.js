@@ -1,3 +1,3 @@
-const registry = [{ islogin: true }, { lang: "en" }];
+const registry = [{ islogin: false }, { lang: "en" }];
 
 export default registry;

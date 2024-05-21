@@ -12,8 +12,6 @@ export default class extends AbstractView {
 		</header>
 		<nav>
 		<a href="/login" id="login_link" class="nav__link" data-link>Login</a>
-		<a href="/play" id="play_link" class="nav__link" data-link>Play</a>
-		<a href="/profile" id="profile_link" class="nav__link" data-link>Profile</a>
 		</nav>
 		`;
   }
