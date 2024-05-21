@@ -44,6 +44,7 @@ header {
 section {
   grid-area: content;
   padding: 20px;
+  margin-left: 18.5%;
 }
 
 .modal_content {
