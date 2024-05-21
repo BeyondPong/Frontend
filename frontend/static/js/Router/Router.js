@@ -2,6 +2,8 @@ import Main from "../view/Main.js";
 import Play from "../view/Play.js";
 import Login from "../view/Login.js";
 import Profile from "../view/Profile.js";
+import NotFound from "../view/NotFound.js";
+import NotLogin from "../view/NotLogin.js";
 import registry from "../state/Registry.js";
 import pathToRegex from "../utility/pathToRegex.js";
 import getParams from "../utility/getParams.js";
@@ -27,15 +29,11 @@ export class Router {
       },
       {
         path: "/notlogin",
-        view: () => {
-          console.log("Not Login!!");
-        },
+        view: NotLogin,
       },
       {
         path: "/notfound",
-        view: () => {
-          console.log("Not found!!");
-        },
+        view: NotFound,
       },
     ];
   }
@@ -55,15 +53,17 @@ export class Router {
     let match = potentialMatches.find(
       (potentialMatch) => potentialMatch.result !== null
     );
-
-    const viewInstance = new match.route.view(getParams(match));
-    if (!match) {
+    if (!match || location.pathname === "/notfound") {
       match = {
         route: this.routes[5],
         result: [location.pathname],
       };
       this.navigateTo("/notfound");
-    } else if (match.route.path === "/login") {
+      document.documentElement.style.backgroundImage =
+        "url('/static/assets/errorbackgroundImg.png')";
+    }
+    const viewInstance = new match.route.view(getParams(match));
+    if (match.route.path === "/login") {
       if (registry[0].islogin) {
         match = {
           route: this.routes[0],
@@ -78,12 +78,17 @@ export class Router {
           result: ["/notlogin"],
         };
         this.navigateTo("/notlogin");
+        document.body.style.backgroundImage =
+          "url('/static/assets/errorbackgroundImg.png')";
       }
     } else if (match.route.path === "/play") {
       await this.render(match);
       const startButton = document.querySelector("#start_button");
       startButton.addEventListener("click", viewInstance.deleteModal);
       return;
+    } else if (match.route.path == "/") {
+      document.body.style.backgroundImage =
+        "url('/static/assets/backgroundImg.png')";
     }
     this.render(match);
   }

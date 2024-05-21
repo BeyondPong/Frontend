@@ -1,6 +1,8 @@
 @import "./reset.css";
 
-html, body, #app {
+html,
+body,
+#app {
   margin: 0;
   padding: 0;
   width: 100%;
@@ -8,9 +10,8 @@ html, body, #app {
   box-sizing: border-box;
 }
 
-html {
-  background-image: url("../assets/backgroundImg.png");
-  background-size: cover;
+body {
+  background-size: auto;
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
@@ -21,7 +22,7 @@ html {
   display: grid;
   grid-template-rows: 20% 40% 30% 10%;
   grid-template-columns: 1fr 3fr 1fr;
-  grid-template-areas: 
+  grid-template-areas:
     "header header header"
     "content content nav"
     "content content nav"
@@ -55,7 +56,7 @@ section {
 
 nav {
   grid-area: nav;
-  display: flex; 
+  display: flex;
   flex-direction: column;
   justify-content: flex-end;
   gap: 10px;

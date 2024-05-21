@@ -17,5 +17,4 @@ export default class extends AbstractView {
 			</nav>
 			`;
   }
-  async getModal() {}
 }
