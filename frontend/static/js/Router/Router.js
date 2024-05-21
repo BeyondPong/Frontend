@@ -58,9 +58,9 @@ export class Router {
         route: this.routes[5],
         result: [location.pathname],
       };
+      document.body.classList.add("error-background");
+      document.body.classList.remove("normal-background");
       this.navigateTo("/notfound");
-      document.documentElement.style.backgroundImage =
-        "url('/static/assets/errorbackgroundImg.png')";
     }
     const viewInstance = new match.route.view(getParams(match));
     if (match.route.path === "/login") {
@@ -70,6 +70,8 @@ export class Router {
           result: ["/"],
         };
         this.navigateTo("/");
+        document.body.classList.add("normal-background");
+        document.body.classList.remove("error-background");
       }
     } else if (match.route.path === "/profile") {
       if (!registry[0].islogin) {
@@ -78,17 +80,22 @@ export class Router {
           result: ["/notlogin"],
         };
         this.navigateTo("/notlogin");
-        document.body.style.backgroundImage =
-          "url('/static/assets/errorbackgroundImg.png')";
+        document.body.classList.add("error-background");
+        document.body.classList.remove("normal-background");
+      } else {
+        document.body.classList.add("normal-background");
+        document.body.classList.remove("error-background");
       }
     } else if (match.route.path === "/play") {
       await this.render(match);
       const startButton = document.querySelector("#start_button");
       startButton.addEventListener("click", viewInstance.deleteModal);
+      document.body.classList.add("normal-background");
+      document.body.classList.remove("error-background");
       return;
     } else if (match.route.path == "/") {
-      document.body.style.backgroundImage =
-        "url('/static/assets/backgroundImg.png')";
+      document.body.classList.add("normal-background");
+      document.body.classList.remove("error-background");
     }
     this.render(match);
   }

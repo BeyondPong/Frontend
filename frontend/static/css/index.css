@@ -11,7 +11,7 @@ body,
 }
 
 body {
-  background-size: auto;
+  background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
@@ -79,4 +79,12 @@ nav {
 
 a {
   text-decoration: none;
+}
+
+body.error-background {
+  background-image: url("/static/assets/errorBackgroundImg.png");
+}
+
+body.normal-background {
+  background-image: url("/static/assets/normalBackgroundImg.png");
 }
