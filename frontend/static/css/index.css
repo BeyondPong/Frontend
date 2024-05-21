@@ -1,5 +1,3 @@
-@import "./reset.css";
-
 html,
 body,
 #app {
@@ -101,4 +99,15 @@ body.normal-background {
 
 .errorPage_a {
   white-space: nowrap;
+}
+
+#start_button {
+  text-decoration: none;
+  outline: none;
+}
+
+#start_button:focus {
+  outline: 2px dashed #000;
+  background-color: yellow;
+  color: black;
 }
