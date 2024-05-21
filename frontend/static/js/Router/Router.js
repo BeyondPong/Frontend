@@ -97,10 +97,22 @@ export class Router {
   async handleProfileRoute(match) {
     if (!registry[0].islogin) {
       match = this.handleNotLogin();
+      await this.render(match);
     } else {
+      await this.render(match);
+      const viewInstance = new match.route.view(getParams(match));
+      const navItems = Array.from(document.getElementsByClassName('profile_nav_item'));
+      navItems.forEach(item => {
+        item.addEventListener('click', e => {
+          e.preventDefault();
+          navItems.forEach(nav => nav.querySelector('a').classList.remove('active_tab'));
+          e.target.closest('a').classList.add('active_tab');
+          const tabText = e.target.closest('a').textContent.trim();
+          viewInstance.moveTabs(tabText);
+        });
+      });
       this.updateBackground("normal");
     }
-    await this.render(match);
   }
 
   async handlePlayRoute(match) {
