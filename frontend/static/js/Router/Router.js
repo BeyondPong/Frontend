@@ -122,6 +122,7 @@ export class Router {
     document
       .querySelector("#start_button")
       .addEventListener("click", viewInstance.deleteModal);
+    viewInstance.initEvents();
     this.updateBackground("normal");
   }
 

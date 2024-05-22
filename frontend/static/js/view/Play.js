@@ -28,5 +28,12 @@ export default class extends AbstractView {
     const modal = document.querySelector(".play_modal");
     modal.style.display = "none";
   }
-  async getModal() {}
+  initEvents() {
+    const startButton = document.getElementById("start_button");
+    startButton.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        this.deleteModal();
+      }
+    });
+  }
 }
