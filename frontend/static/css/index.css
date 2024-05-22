@@ -209,6 +209,45 @@ body.normal-background {
   font-size: calc(1vw + 1vh + 0.5vmin);
 }
 
+  .profile_content_elements {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem;
+  }
+
+.profile_img {
+  width: 15vw;
+  height: 15vw; 
+  background-size: cover;
+  background-position: center; 
+  position: relative;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  padding: 1rem;
+}
+
+.profile_name, .profile_status, .profile_count {
+  text-align: center;
+  width: 100%;
+  color: #F6FAF9;
+}
+
+.profile_name {
+  font-size: 1.2rem;
+}
+
+.profile_status {
+  font-size: 0.8rem;
+}
+
+.profile_count {
+  margin-top: 1rem;
+  font-size: calc(1vw + 2vh + 0.5vmin);
+}
+
 .errorPage_h2 {
   text-align: center;
   font-size: calc(1vw + 2vh + 0.5vmin);

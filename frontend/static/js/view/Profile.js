@@ -45,10 +45,39 @@ export default class extends AbstractView {
               </section>
               `;
   }
+  
+  async loadProfileData() {
+    try {
+      const response = await fetch('static/data/information.json');
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.log("Failed to load profile data: ", error);
+    }
+  }
 
-  moveTabs(tabText) {
+  async moveTabs(tabText) {
+    const profileContent = document.querySelector('.profile_content');
+    profileContent.innerHTML = '';
     if (tabText === words[registry[1].lang].information) {
-      document.querySelector(".profile_content").textContent = "information";
+      const data = await this.loadProfileData();
+      if (data) {
+        const container = document.createElement('div');
+        const profileHTML = `
+        <div class="profile_content_elements">
+            <div class="profile_img" style="background-image: url(${data.profile_img});"></div>
+            <span class="profile_name">${data.nickname}</span>
+            <span class="profile_status">${data.status_msg}</span>
+            <span class="profile_count">${data.win_count} Win ${data.lose_count} Lose</span>
+        </div>
+    `;
+        container.innerHTML = profileHTML;
+        profileContent.replaceChildren(container);
+      }
+
     } else if (tabText === words[registry[1].lang].history) {
       document.querySelector(".profile_content").textContent = "history";
     } else if (tabText === words[registry[1].lang].friends) {
@@ -57,6 +86,7 @@ export default class extends AbstractView {
       document.querySelector(".profile_content").textContent = "search";
     }
   }
+
   defaultTabs() {
     this.moveTabs(words[registry[1].lang].information);
     document.querySelector(".information").classList.add("active_tab");
