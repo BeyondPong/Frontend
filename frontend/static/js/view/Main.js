@@ -2,7 +2,6 @@ import AbstractView from "./AbstractView.js";
 import registry from "../state/Registry.js";
 import { words } from "../state/Registry.js";
 import navigateTo from "../utility/navigateTo.js";
-
 export default class extends AbstractView {
   constructor(params) {
     super(params);
@@ -19,15 +18,15 @@ export default class extends AbstractView {
             Language
           </button>
           <ul id="d_menu" class="dropdown-menu drmenu" aria-labelledby="dropdownMenuButton">
-            <li><a id="item1" class="dropdown-item drmenu" href="/" data-lang="ko" ${
-              currentLang === "ko" ? 'class="disabled"' : ""
-            }>ko</a></li>
-            <li><a id="item2" class="dropdown-item drmenu" href="/" data-lang="en" ${
-              currentLang === "en" ? 'class="disabled"' : ""
-            }>en</a></li>
-            <li><a id="item3" class="dropdown-item drmenu" href="/" data-lang="jp" ${
-              currentLang === "jp" ? 'class="disabled"' : ""
-            }>jp</a></li>
+            <li><a id="item1" class="dropdown-item drmenu ${
+              currentLang === "ko" ? "disabled" : ""
+            }" href="/" data-lang="ko">ko</a></li>
+            <li><a id="item2" class="dropdown-item drmenu ${
+              currentLang === "en" ? "disabled" : ""
+            }" href="/" data-lang="en">en</a></li>
+            <li><a id="item3" class="dropdown-item drmenu ${
+              currentLang === "jp" ? "disabled" : ""
+            }" href="/" data-lang="jp">jp</a></li>
           </ul>
         </div>
       </header>
@@ -55,9 +54,6 @@ export default class extends AbstractView {
     const dropdownItems = document.querySelectorAll(".dropdown-item");
     dropdownItems.forEach((item) => {
       item.addEventListener("click", function (event) {
-        if (event.target.innerHTML === registry[1].lang) {
-          event.target.classList.add("disabled");
-        }
         event.preventDefault();
         const selectedLang = item.getAttribute("data-lang");
         registry[1].lang = selectedLang;

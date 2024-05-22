@@ -80,7 +80,7 @@ export class Router {
   async handleMainRoute(match) {
     const viewInstance = new match.route.view(getParams(match));
     await this.render(match);
-    viewInstance.onMounted();
+    await viewInstance.onMounted();
     this.updateBackground("normal");
   }
 
