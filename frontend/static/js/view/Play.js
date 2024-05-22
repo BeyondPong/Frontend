@@ -1,4 +1,6 @@
 import AbstractView from "./AbstractView.js";
+import registry from "../state/Registry.js";
+import { words } from "../state/Registry.js";
 
 export default class extends AbstractView {
   constructor(params) {
@@ -11,11 +13,13 @@ export default class extends AbstractView {
         <a href="/" id="main_link" class="nav__link" data-link>Ping? Pong!</a>
       </header>
 			<nav>
-			<a id="start_button" class="nav__link">Start</a>
+        <a tabindex="0" id="start_button" class="nav__link">${
+          words[registry[1].lang].start
+        }</a>
 			</nav>
 			<section class="modal_container">
         <div class="modal_content play_modal">
-          Play Game
+            ${words[registry[1].lang].play}
         </div>
 			</section>
 			`;

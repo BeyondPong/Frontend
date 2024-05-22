@@ -7,6 +7,7 @@ import NotLogin from "../view/NotLogin.js";
 import registry from "../state/Registry.js";
 import pathToRegex from "../utility/pathToRegex.js";
 import getParams from "../utility/getParams.js";
+import navigateTo from "../utility/navigateTo.js";
 
 export class Router {
   constructor() {
@@ -18,10 +19,6 @@ export class Router {
       { path: "/notlogin", view: NotLogin },
       { path: "/notfound", view: NotFound },
     ];
-  }
-
-  navigateTo(url) {
-    history.pushState(null, null, url);
   }
 
   async route() {
@@ -42,7 +39,7 @@ export class Router {
   }
 
   handleNotFound() {
-    this.navigateTo("/notfound");
+    navigateTo("/notfound");
     this.updateBackground("error");
     return {
       route: this.routes.find((r) => r.path === "/notfound"),
@@ -51,7 +48,7 @@ export class Router {
   }
 
   handleNotLogin() {
-    this.navigateTo("/notlogin");
+    navigateTo("/notlogin");
     this.updateBackground("error");
     return {
       route: this.routes.find((r) => r.path === "/notlogin"),
@@ -87,7 +84,7 @@ export class Router {
 
   async handleLoginRoute(match) {
     if (registry[0].islogin) {
-      this.navigateTo("/");
+      navigateTo("/");
       this.updateBackground("normal");
     } else {
       await this.render(match);
@@ -101,13 +98,17 @@ export class Router {
     } else {
       await this.render(match);
       const viewInstance = new match.route.view(getParams(match));
-      const navItems = Array.from(document.getElementsByClassName('profile_nav_item'));
-      navItems.forEach(item => {
-        item.addEventListener('click', e => {
+      const navItems = Array.from(
+        document.getElementsByClassName("profile_nav_item")
+      );
+      navItems.forEach((item) => {
+        item.addEventListener("click", (e) => {
           e.preventDefault();
-          navItems.forEach(nav => nav.querySelector('a').classList.remove('active_tab'));
-          e.target.closest('a').classList.add('active_tab');
-          const tabText = e.target.closest('a').textContent.trim();
+          navItems.forEach((nav) =>
+            nav.querySelector("a").classList.remove("active_tab")
+          );
+          e.target.closest("a").classList.add("active_tab");
+          const tabText = e.target.closest("a").textContent.trim();
           viewInstance.moveTabs(tabText);
         });
       });
