@@ -78,7 +78,9 @@ export class Router {
   }
 
   async handleMainRoute(match) {
+    const viewInstance = new match.route.view(getParams(match));
     await this.render(match);
+    viewInstance.onMounted();
     this.updateBackground("normal");
   }
 
@@ -101,7 +103,7 @@ export class Router {
         document.getElementsByClassName("profile_nav_item")
       );
       viewInstance.defaultTabs();
-      navItems.forEach((item,index) => {
+      navItems.forEach((item, index) => {
         item.addEventListener("click", (e) => {
           e.preventDefault();
           navItems.forEach((nav) =>
