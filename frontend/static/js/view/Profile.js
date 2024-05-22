@@ -71,7 +71,7 @@ export default class extends AbstractView {
         <div class="profile_content_elements">
             <div class="profile_img_container">
               <div class="profile_img" style="background-image: url(${data.profile_img});">
-                <button class="profile_img_edit pencil-profil"><i class="fa-solid fa-pencil"></i></button>
+                <button class="profile_img_edit pencil-profile"><i class="fa-solid fa-pencil"></i></button>
               </div>
             </div>
             <span class="profile_name">${data.nickname}</span>

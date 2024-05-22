@@ -147,6 +147,16 @@ section {
   padding: 0.5rem;
 }
 
+.profile_content_elements {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 50%;
+  padding: 1.25rem;
+}
+
 nav {
   grid-area: nav;
   display: flex;
@@ -219,27 +229,6 @@ body.normal-background {
   font-size: calc(1vw + 1vh + 0.5vmin);
 }
 
-<<<<<<< Updated upstream
-.profile_content_elements {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1.25rem;
-}
-=======
-  .profile_content_elements {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    width: 50%;
-    padding: 1.25rem;
-  }
->>>>>>> Stashed changes
-
 .profile_img {
   width: 15vw;
   height: 15vw;
@@ -278,7 +267,7 @@ body.normal-background {
   position: relative;
 }
 
-.pencil-profil {
+.pencil-profile {
   width: 3vw;
   height: 3vw;
   background-color: #FFCD29;
