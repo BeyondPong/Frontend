@@ -138,6 +138,11 @@ section {
   color: #ffcd29;
 }
 
+.profile_container {
+  display: flex;
+  justify-content: center;
+}
+
 .profile_content {
   padding: 0.5rem;
 }
@@ -214,6 +219,7 @@ body.normal-background {
   font-size: calc(1vw + 1vh + 0.5vmin);
 }
 
+<<<<<<< Updated upstream
 .profile_content_elements {
   display: flex;
   flex-direction: column;
@@ -222,6 +228,17 @@ body.normal-background {
   gap: 1rem;
   padding: 1.25rem;
 }
+=======
+  .profile_content_elements {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 50%;
+    padding: 1.25rem;
+  }
+>>>>>>> Stashed changes
 
 .profile_img {
   width: 15vw;
@@ -248,11 +265,46 @@ body.normal-background {
 
 .profile_status {
   font-size: 0.8rem;
+  position: relative;
+  width: 80%;
 }
 
 .profile_count {
   margin-top: 1rem;
   font-size: calc(1vw + 2vh + 0.5vmin);
+}
+
+.profile_img_container {
+  position: relative;
+}
+
+.pencil-profil {
+  width: 3vw;
+  height: 3vw;
+  background-color: #FFCD29;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  cursor: pointer;
+  position: absolute;
+  right: 0;
+}
+
+.pencil-status {
+  width: 3vw;
+  height: 3vw;
+  background-color: #FFCD29;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  cursor: pointer;
+  position: absolute;
+  right: 0.1rem;
+  top: -0.5rem;
 }
 
 .errorPage_h2 {

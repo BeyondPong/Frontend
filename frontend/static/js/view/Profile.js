@@ -66,11 +66,19 @@ export default class extends AbstractView {
       const data = await this.loadProfileData();
       if (data) {
         const container = document.createElement('div');
+        container.classList.add('profile_container');
         const profileHTML = `
         <div class="profile_content_elements">
-            <div class="profile_img" style="background-image: url(${data.profile_img});"></div>
+            <div class="profile_img_container">
+              <div class="profile_img" style="background-image: url(${data.profile_img});">
+                <button class="profile_img_edit pencil-profil"><i class="fa-solid fa-pencil"></i></button>
+              </div>
+            </div>
             <span class="profile_name">${data.nickname}</span>
-            <span class="profile_status">${data.status_msg}</span>
+            <span class="profile_status">
+            ${data.status_msg}
+            <button class="profile_img_edit pencil-status"><i class="fa-solid fa-pencil"></i></button>
+            </span>
             <span class="profile_count">${data.win_count} Win ${data.lose_count} Lose</span>
         </div>
     `;
