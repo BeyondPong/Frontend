@@ -18,8 +18,20 @@ export default class extends AbstractView {
         }</a>
 			</nav>
 			<section class="modal_container">
-        <div class="modal_content play_modal">
+      <div class="modal_content play_modal">
+        <h2>
             ${words[registry[1].lang].play}
+        </h2>
+        <div class="play_modal_img_container">
+        </div>
+        <div class="play_modal_text">
+        <div class="play_move_left">
+          ${words[registry[1].lang].moveleft}
+        </div>
+        <div class="play_move_right">
+          ${words[registry[1].lang].moveright}
+        </div>
+        </div>
         </div>
 			</section>
 			`;

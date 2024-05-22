@@ -42,7 +42,6 @@ header {
 section {
   grid-area: content;
   padding: 0.5em;
-  /* margin-left: 18.5%; */
   margin-left: 11rem;
 }
 
@@ -60,20 +59,20 @@ section {
   justify-content: center;
   gap: 8vw;
   padding: 2rem 0.5rem;
-  font-size: 1.0em;
+  font-size: 1em;
 }
 
-.profile_nav_item a{
+.profile_nav_item a {
   text-decoration: none;
-  color: #F6FAF9;
+  color: #f6faf9;
 }
 
 .active_tab {
-  color: #FFCD29;
+  color: #ffcd29;
 }
 
 .profile_nav_item .active_tab {
-  color: #FFCD29; /* Ensuring this rule has higher specificity */
+  color: #ffcd29;
 }
 
 .profile_content {
@@ -113,6 +112,43 @@ body.error-background {
 
 body.normal-background {
   background-image: url("/static/assets/normalBackgroundImg.png");
+}
+
+.play_modal {
+  display: grid;
+  grid-template-rows: 0.5fr 1fr 0.5fr;
+  grid-template-columns: 0.5fr 2fr 0.5fr;
+  grid-template-areas:
+    ". title ."
+    ". image ."
+    ". move .";
+}
+
+.play_modal h2 {
+  color: white;
+  grid-area: title;
+  font-size: calc(1vw + 2vh + 0.5vmin);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.play_modal_img_container {
+  grid-area: image;
+  background-image: url("/static/assets/playModalImg.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.play_modal_text {
+  margin-top: 1em;
+  display: flex;
+  grid-area: move;
+  color: white;
+  text-align: center;
+  justify-content: space-around;
+  font-size: calc(1vw + 1vh + 0.5vmin);
 }
 
 .errorPage_h2 {
