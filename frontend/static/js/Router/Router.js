@@ -86,9 +86,8 @@ export class Router {
     if (registry[0].islogin) {
       navigateTo("/");
       this.updateBackground("normal");
-    } else {
-      await this.render(match);
-    }
+      console.log("hihi");
+    } else await this.render(match);
   }
 
   async handleProfileRoute(match) {

@@ -1,4 +1,4 @@
-const registry = [{ islogin: true }, { lang: "en" }];
+const registry = [{ islogin: true }, { lang: "jp" }];
 
 export const words = {
   en: {

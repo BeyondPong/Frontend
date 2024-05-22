@@ -47,12 +47,11 @@ export default class extends AbstractView {
   }
 
   moveTabs(tabText) {
-    // 여기서 뷰에 맞게 뿌려줄 예정
-    if (tabText === "Information") {
+    if (tabText === words[registry[1].lang].information) {
       document.querySelector(".profile_content").textContent = "information";
-    } else if (tabText === "History") {
+    } else if (tabText === words[registry[1].lang].history) {
       document.querySelector(".profile_content").textContent = "history";
-    } else if (tabText === "Friends") {
+    } else if (tabText === words[registry[1].lang].friends) {
       document.querySelector(".profile_content").textContent = "friends";
     } else {
       document.querySelector(".profile_content").textContent = "search";
