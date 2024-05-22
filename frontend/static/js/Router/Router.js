@@ -100,7 +100,8 @@ export class Router {
       const navItems = Array.from(
         document.getElementsByClassName("profile_nav_item")
       );
-      navItems.forEach((item) => {
+      viewInstance.defaultTabs();
+      navItems.forEach((item,index) => {
         item.addEventListener("click", (e) => {
           e.preventDefault();
           navItems.forEach((nav) =>

@@ -57,6 +57,10 @@ export default class extends AbstractView {
       document.querySelector(".profile_content").textContent = "search";
     }
   }
+  defaultTabs() {
+    this.moveTabs(words[registry[1].lang].information);
+    document.querySelector(".information").classList.add("active_tab");
+  }
 
   async getModal() {}
 }
