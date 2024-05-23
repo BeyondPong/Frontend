@@ -34,3 +34,19 @@
   justify-content: space-around;
   font-size: calc(1vw + 1vh + 0.5vmin);
 }
+
+@keyframes slideInFromRight {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.play_nav {
+  animation: slideInFromRight 0.8s ease-in-out;
+  transition: background-color 0.3s ease-in-out;
+}

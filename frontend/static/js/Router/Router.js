@@ -121,10 +121,33 @@ export class Router {
   async handlePlayRoute(match) {
     await this.render(match);
     const viewInstance = new match.route.view(getParams(match));
-    document
-      .querySelector("#start_button")
-      .addEventListener("click", viewInstance.deleteModal);
-    viewInstance.initEvents();
+    const localLink = document.getElementById("local_link");
+    const remoteLink = document.getElementById("remote_link");
+    const tournamentLink = document.getElementById("tournament_link");
+    localLink.addEventListener("click", () => {
+      viewInstance.localModal();
+    });
+    localLink.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        viewInstance.localModal();
+      }
+    });
+    remoteLink.addEventListener("click", () => {
+      viewInstance.remoteModal();
+    });
+    remoteLink.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        viewInstance.remoteModal();
+      }
+    });
+    tournamentLink.addEventListener("click", () => {
+      viewInstance.tournamentModal();
+    });
+    tournamentLink.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        viewInstance.tournamentModal();
+      }
+    });
     updateBackground("normal");
   }
 
