@@ -1,4 +1,4 @@
-updateBackground = (type) => {
+const updateBackground = (type) => {
   const hasNormal = document.body.classList.contains("normal-background");
   const hasError = document.body.classList.contains("error-background");
 
