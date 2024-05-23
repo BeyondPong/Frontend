@@ -8,8 +8,8 @@
   }
   
 .profile_nav_item a {
-text-decoration: none;
-color: var(--profile-color);
+  text-decoration: none;
+  color: var(--profile-color);
 }
 
 .profile_nav_item .active_tab {
@@ -32,7 +32,6 @@ color: var(--profile-color);
     justify-content: space-between;
     gap: 1rem;
     width: 50%;
-    padding: 1.25rem;
   }
 
 .profile_img {
