@@ -1,3 +1,11 @@
+:root {
+  --disabled-background-color: #3130a1;
+  --item-color: white;
+  --profile-color: #f6faf9;
+  --profile-background: #ffcd29;
+  --black-color: black;
+}
+
 html,
 body,
 #app {
@@ -29,7 +37,7 @@ body {
 
 header {
   grid-area: header;
-  color: black;
+  color: var(--black-color);
   margin-top: 7%;
   margin-left: 15%;
   text-align: left;
@@ -65,23 +73,23 @@ header {
 }
 
 #d_menu .disabled {
-  background-color: #3130a1;
+  background-color: var(--disabled-background-color);
 }
 
 #item1 {
-  color: white;
+  color: var(--item-color);
   border-radius: 3%;
 }
 
 #item2 {
   margin-top: 0.2em;
-  color: white;
+  color: var(--item-color);
   border-radius: 3%;
 }
 
 #item3 {
   margin-top: 0.2em;
-  color: white;
+  color: var(--item-color);
   border-radius: 3%;
 }
 
@@ -111,7 +119,6 @@ section {
 .modal_content {
   width: 100%;
   height: 100%;
-  background-color: #121212;
   background-color: rgba(18, 18, 18, 0.5);
   border-radius: 30px;
 }
@@ -127,15 +134,15 @@ section {
 
 .profile_nav_item a {
   text-decoration: none;
-  color: #f6faf9;
+  color: var(--profile-color);
 }
 
 .active_tab {
-  color: #ffcd29;
+  color: var(--profile-background);
 }
 
 .profile_nav_item .active_tab {
-  color: #ffcd29;
+  color: var(--profile-background);
 }
 
 .profile_container {
@@ -171,13 +178,13 @@ nav {
   font-size: calc(1vw + 2vh + 0.5vmin);
   padding: 0.3em 0.5em;
   text-decoration: none;
-  color: white;
+  color: var(--item-color);
   transition: background-color 0.3s ease-in-out;
   cursor: pointer;
 }
 
 .nav__link:hover {
-  color: black;
+  color: var(--black-color);
 }
 
 a {
@@ -203,7 +210,7 @@ body.normal-background {
 }
 
 .play_modal h2 {
-  color: white;
+  color: var(--item-color);
   grid-area: title;
   font-size: calc(1vw + 2vh + 0.5vmin);
   display: flex;
@@ -223,7 +230,7 @@ body.normal-background {
   margin-top: 1em;
   display: flex;
   grid-area: move;
-  color: white;
+  color: var(--item-color);
   text-align: center;
   justify-content: space-around;
   font-size: calc(1vw + 1vh + 0.5vmin);
@@ -245,7 +252,7 @@ body.normal-background {
 .profile_count {
   text-align: center;
   width: 100%;
-  color: #f6faf9;
+  color: var(--profile-color);
 }
 
 .profile_name {
@@ -270,12 +277,12 @@ body.normal-background {
 .pencil-profile {
   width: 3vw;
   height: 3vw;
-  background-color: #FFCD29;
+  background-color: var(--profile-background);
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   position: absolute;
   right: 0;
@@ -284,12 +291,12 @@ body.normal-background {
 .pencil-status {
   width: 3vw;
   height: 3vw;
-  background-color: #FFCD29;
+  background-color: var(--profile-background);
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   position: absolute;
   right: 0.1rem;
@@ -301,7 +308,7 @@ body.normal-background {
   font-size: calc(1vw + 2vh + 0.5vmin);
   text-decoration: none;
   white-space: nowrap;
-  color: white;
+  color: var(--item-color);
   transition: background-color 0.3s ease-in-out;
 }
 
