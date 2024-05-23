@@ -130,7 +130,4 @@
   .table_container td {
     font-size: 0.8em;
     height: 2.0rem;
-    overflow: hidden;
-    white-space: nowrap;
   }
-
