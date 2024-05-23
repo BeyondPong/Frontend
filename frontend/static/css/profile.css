@@ -102,3 +102,36 @@ color: var(--profile-color);
     top: -0.5rem;
   }
   
+  /* history */
+  .table_container {
+    table-layout: fixed;
+    width: 100%;
+    text-align: center;
+    background-color: rgba(44, 43, 43, 0.5);  
+    color: var(--profile-color);
+  }
+
+  .table_container thead {
+    background-color: rgba(7, 4, 4, 0.5);  
+    font-size: 0.9em;
+    font-weight: bold;
+  }
+
+  .table_container th {
+    padding: 0.5em 0.7em;
+    margin-bottom: 0.1em;
+  }
+
+  .table_container td {
+    padding: 0.5em 0.7em;
+    border-top: 1px solid rgba(255, 255, 255, 0.4);
+    word-break: break-all;
+  }
+
+  .table_container td {
+    font-size: 0.8em;
+    height: 2.0rem;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+

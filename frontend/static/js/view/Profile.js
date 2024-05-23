@@ -9,7 +9,7 @@ export default class extends AbstractView {
 
   async getHtml() {
     return `
-              <header>
+              <header class="main_header">
                 <a href="/" id="main_link" class="nav__link" data-link>Ping? Pong!</a>
               </header>
               <nav>
@@ -87,7 +87,86 @@ export default class extends AbstractView {
       }
 
     } else if (tabText === words[registry[1].lang].history) {
-      document.querySelector(".profile_content").textContent = "history";
+      const container = document.createElement('div');
+      container.classList.add('history_container');
+      const historyHTML = `
+        <div class="table_box">
+          <table class="table_container">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Opponent</th>
+                <th>Match Score</th>
+                <th>Result</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>2024-02-11</td>
+                <td>seoson</td>
+                <td>11:1</td>
+                <td>Win</td>
+              </tr>
+              <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td> 
+              </tr>
+              <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      `;
+      container.innerHTML = historyHTML;
+      profileContent.replaceChildren(container);
     } else if (tabText === words[registry[1].lang].friends) {
       document.querySelector(".profile_content").textContent = "friends";
     } else {
