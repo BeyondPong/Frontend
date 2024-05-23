@@ -73,8 +73,8 @@
   }
   
   .pencil-profile {
-    width: 3vw;
-    height: 3vw;
+    width: 2rem;
+    height: 2rem;
     background-color: var(--profile-background);
     border-radius: 50%;
     display: flex;
@@ -87,8 +87,8 @@
   }
   
   .pencil-status {
-    width: 3vw;
-    height: 3vw;
+    width: 2rem;
+    height: 2rem;
     background-color: var(--profile-background);
     border-radius: 50%;
     display: flex;
