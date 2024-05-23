@@ -17,9 +17,17 @@
   justify-content: center;
 }
 
-.play_modal_img_container {
+.local_play_modal_img_container {
   grid-area: image;
-  background-image: url("/static/assets/playModalImg.png");
+  background-image: url("/static/assets/localPlayModalImg.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.remote_play_modal_img_container {
+  grid-area: image;
+  background-image: url("/static/assets/remotePlayModalImg.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

@@ -31,7 +31,7 @@ export default class extends AbstractView {
         <h2>
             ${words[registry[1].lang].play}
         </h2>
-        <div class="play_modal_img_container">
+        <div class="local_play_modal_img_container">
         </div>
         <div class="play_modal_text">
           <div class="play_move_left">
@@ -51,7 +51,7 @@ export default class extends AbstractView {
         <h2>
             ${words[registry[1].lang].play}
         </h2>
-        <div class="play_modal_img_container">
+        <div class="remote_play_modal_img_container">
         </div>
         <div class="play_modal_text">
           <div class="play_move_left">
@@ -70,7 +70,7 @@ export default class extends AbstractView {
         <h2>
             ${words[registry[1].lang].play}
         </h2>
-        <div class="play_modal_img_container">
+        <div class="remote_play_modal_img_container">
         </div>
         <div class="play_modal_text">
           <div class="play_move_left">
