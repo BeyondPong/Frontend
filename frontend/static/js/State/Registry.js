@@ -2,16 +2,19 @@ const registry = [{ islogin: true }, { lang: "jp" }];
 
 export const words = {
   en: {
-    play: "play",
-    profile: "profile",
-    login: "login",
+    play: "Play",
+    profile: "Profile",
+    login: "Login",
     moveleft: "moveleft",
     moveright: "moveright",
-    start: "start",
+    start: "Start",
     information: "information",
     history: "history",
     friends: "friends",
     search: "search",
+    local: "Local",
+    remote: "Remote",
+    tournament: "Tournament",
   },
   ko: {
     play: "플레이",
@@ -24,6 +27,9 @@ export const words = {
     history: "기록",
     friends: "친구",
     search: "검색",
+    local: "로컬 플레이",
+    remote: "원격 플레이",
+    tournament: "토너먼트",
   },
   jp: {
     play: "プレー",
@@ -36,6 +42,9 @@ export const words = {
     history: "履歴",
     friends: "友達",
     search: "検索",
+    local: "ローカルプレイ",
+    remote: "リモートプレイ",
+    tournament: "トーナメント",
   },
 };
 
