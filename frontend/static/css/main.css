@@ -53,6 +53,10 @@
   --bs-dropdown-link-hover-bg: rgba(18, 18, 18, 0.3);
 }
 
+.dropdown-item:focus {
+  --bs-dropdown-link-hover-bg: rgba(18, 18, 18, 0.3);
+}
+
 .dropdown-item {
   font-size: 1rem;
   height: auto;
