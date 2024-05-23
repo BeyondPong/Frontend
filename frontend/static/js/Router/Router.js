@@ -8,7 +8,6 @@ import registry from "../state/Registry.js";
 import pathToRegex from "../utility/pathToRegex.js";
 import getParams from "../utility/getParams.js";
 import navigateTo from "../utility/navigateTo.js";
-import updateBackground from "../utility/updateBackground.js";
 
 export class Router {
   constructor() {
@@ -41,7 +40,7 @@ export class Router {
 
   handleNotFound() {
     navigateTo("/notfound");
-    updateBackground("error");
+    this.updateBackground("error");
     return {
       route: this.routes.find((r) => r.path === "/notfound"),
       result: [location.pathname],
@@ -50,7 +49,7 @@ export class Router {
 
   handleNotLogin() {
     navigateTo("/notlogin");
-    updateBackground("error");
+    this.updateBackground("error");
     return {
       route: this.routes.find((r) => r.path === "/notlogin"),
       result: [location.pathname],
@@ -72,7 +71,7 @@ export class Router {
         await this.handleMainRoute(match);
         break;
       default:
-        updateBackground("error");
+        this.updateBackground("error");
         await this.render(match);
         break;
     }
@@ -82,13 +81,14 @@ export class Router {
     const viewInstance = new match.route.view(getParams(match));
     await this.render(match);
     await viewInstance.onMounted();
-    updateBackground("normal");
+    this.updateBackground("normal");
   }
 
   async handleLoginRoute(match) {
     if (registry[0].islogin) {
       navigateTo("/");
-      updateBackground("normal");
+      this.updateBackground("normal");
+      console.log("hihi");
     } else await this.render(match);
   }
 
@@ -114,7 +114,7 @@ export class Router {
           viewInstance.moveTabs(tabText);
         });
       });
-      updateBackground("normal");
+      this.updateBackground("normal");
     }
   }
 
@@ -125,11 +125,24 @@ export class Router {
       .querySelector("#start_button")
       .addEventListener("click", viewInstance.deleteModal);
     viewInstance.initEvents();
-    updateBackground("normal");
+    this.updateBackground("normal");
   }
 
   async render(match) {
     const viewInstance = new match.route.view(getParams(match));
     document.querySelector("#app").innerHTML = await viewInstance.getHtml();
+  }
+
+  updateBackground(type) {
+    const hasNormal = document.body.classList.contains("normal-background");
+    const hasError = document.body.classList.contains("error-background");
+
+    if (type === "normal" && hasError) {
+      document.body.classList.replace("error-background", "normal-background");
+    } else if (type === "error" && hasNormal) {
+      document.body.classList.replace("normal-background", "error-background");
+    } else if (!hasNormal && !hasError) {
+      document.body.classList.add(`${type}-background`);
+    }
   }
 }
