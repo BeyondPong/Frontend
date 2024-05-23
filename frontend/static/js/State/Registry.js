@@ -1,4 +1,17 @@
-const registry = [{ islogin: true }, { lang: "jp" }];
+export const getStoredLang = () => {
+  return localStorage.getItem("lang") || "en";
+};
+
+export const setStoredLang = (lang) => {
+  localStorage.setItem("lang", lang);
+};
+
+export const changeLanguage = (lang) => {
+  registry[1].lang = lang;
+  setStoredLang(lang);
+};
+
+const registry = [{ islogin: true }, { lang: getStoredLang() }];
 
 export const words = {
   en: {

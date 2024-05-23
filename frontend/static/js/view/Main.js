@@ -1,7 +1,6 @@
 import AbstractView from "./AbstractView.js";
 import registry from "../state/Registry.js";
-import { words } from "../state/Registry.js";
-import navigateTo from "../utility/navigateTo.js";
+import { words, changeLanguage } from "../state/Registry.js";
 export default class extends AbstractView {
   constructor(params) {
     super(params);
@@ -59,6 +58,8 @@ export default class extends AbstractView {
         registry[1].lang = selectedLang;
         dropdownMenu.classList.remove("show");
         window.dispatchEvent(new Event("popstate"));
+        const newLang = event.target.dataset.lang;
+        changeLanguage(newLang);
       });
     });
   }
