@@ -2,6 +2,7 @@
 @import url(./reset.css);
 @import url(./main.css);
 @import url(./error.css);
+@import url(./profile.css);
 
 :root {
   --disabled-background-color: #3130a1;
@@ -61,45 +62,8 @@ section {
   border-radius: 30px;
 }
 
-.profile_nav {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  gap: 8vw;
-  padding: 2rem 0.5rem;
-  font-size: 1em;
-}
-
-.profile_nav_item a {
-  text-decoration: none;
-  color: var(--profile-color);
-}
-
 .active_tab {
   color: var(--profile-background);
-}
-
-.profile_nav_item .active_tab {
-  color: var(--profile-background);
-}
-
-.profile_container {
-  display: flex;
-  justify-content: center;
-}
-
-.profile_content {
-  padding: 0.5rem;
-}
-
-.profile_content_elements {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  width: 50%;
-  padding: 1.25rem;
 }
 
 nav {
@@ -129,71 +93,49 @@ a {
   text-decoration: none;
 }
 
-.profile_img {
-  width: 15vw;
-  height: 15vw;
+body.error-background {
+  background-image: url("/static/assets/errorBackgroundImg.png");
+}
+
+body.normal-background {
+  background-image: url("/static/assets/normalBackgroundImg.png");
+}
+
+.play_modal {
+  display: grid;
+  grid-template-rows: 0.5fr 1fr 0.5fr;
+  grid-template-columns: 0.5fr 2fr 0.5fr;
+  grid-template-areas:
+    ". title ."
+    ". image ."
+    ". move .";
+}
+
+.play_modal h2 {
+  color: var(--item-color);
+  grid-area: title;
+  font-size: calc(1vw + 2vh + 0.5vmin);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.play_modal_img_container {
+  grid-area: image;
+  background-image: url("/static/assets/playModalImg.png");
   background-size: cover;
   background-position: center;
-  position: relative;
-  border-radius: 50%;
-  border: 2px solid #fff;
-  padding: 1rem;
+  background-repeat: no-repeat;
 }
 
-.profile_name,
-.profile_status,
-.profile_count {
+.play_modal_text {
+  margin-top: 1em;
+  display: flex;
+  grid-area: move;
+  color: var(--item-color);
   text-align: center;
-  width: 100%;
-  color: var(--profile-color);
-}
-
-.profile_name {
-  font-size: 1.2rem;
-}
-
-.profile_status {
-  font-size: 0.8rem;
-  position: relative;
-  width: 80%;
-}
-
-.profile_count {
-  margin-top: 1rem;
-  font-size: calc(1vw + 2vh + 0.5vmin);
-}
-
-.profile_img_container {
-  position: relative;
-}
-
-.pencil-profile {
-  width: 3vw;
-  height: 3vw;
-  background-color: var(--profile-background);
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  position: absolute;
-  right: 0;
-}
-
-.pencil-status {
-  width: 3vw;
-  height: 3vw;
-  background-color: var(--profile-background);
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  position: absolute;
-  right: 0.1rem;
-  top: -0.5rem;
+  justify-content: space-around;
+  font-size: calc(1vw + 1vh + 0.5vmin);
 }
 
 body.normal-background {
