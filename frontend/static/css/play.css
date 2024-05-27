@@ -34,13 +34,14 @@
 }
 
 .play_modal_text {
-  margin-top: 1em;
+  margin-top: 0.8em;
   display: flex;
   grid-area: move;
   color: var(--item-color);
   text-align: center;
   justify-content: space-around;
-  font-size: calc(1vw + 1vh + 0.5vmin);
+  font-size: calc(0.7vw + 1vh + 0.5vmin);
+  white-space: nowrap;
 }
 
 @keyframes slideInFromRight {
@@ -57,4 +58,27 @@
 .play_nav {
   animation: slideInFromRight 0.8s ease-in-out;
   transition: background-color 0.3s ease-in-out;
+}
+
+.local_modal_heading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  grid-area: title;
+}
+
+.local_modal_heading2 {
+  margin-top: 1em;
+}
+
+.local_modal_heading3_container {
+  width: 100%;
+  margin-top: 1em;
+  color: var(--item-color);
+  display: flex;
+  justify-content: space-around;
+}
+
+.local_modal_heading3 {
+  display: inline;
 }

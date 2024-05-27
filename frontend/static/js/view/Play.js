@@ -28,12 +28,28 @@ export default class extends AbstractView {
   async localModal() {
     const modalHtml = `
       <div class="modal_content play_modal">
-        <h2>
-            ${words[registry[1].lang].play}
-        </h2>
+        <div class="local_modal_heading">
+          <h2 class="local_modal_heading2">
+              ${words[registry[1].lang].play}
+          </h2>
+          <div class="local_modal_heading3_container">
+          <h3 class="local_modal_heading3">
+            Player1
+          </h3>
+          <h3 class="local_modal_heading3">
+            Player2
+          </h3>
+          </div>
+        </div>
         <div class="local_play_modal_img_container">
         </div>
         <div class="play_modal_text">
+          <div class="play_move_left">
+            ${words[registry[1].lang].moveleft}
+          </div>
+          <div class="play_move_right">
+            ${words[registry[1].lang].moveright}
+          </div>
           <div class="play_move_left">
             ${words[registry[1].lang].moveleft}
           </div>
