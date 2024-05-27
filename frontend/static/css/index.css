@@ -83,6 +83,7 @@ nav {
   color: var(--item-color);
   transition: background-color 0.3s ease-in-out;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .nav__link:hover {
