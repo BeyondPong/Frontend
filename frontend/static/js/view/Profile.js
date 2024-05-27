@@ -13,31 +13,24 @@ export default class extends AbstractView {
                 <a href="/" id="main_link" class="nav__link" data-link>Ping? Pong!</a>
               </header>
               <nav>
-              <a href="/login" id="login_link" class="nav__link" data-link>${
-                words[registry[1].lang].login
-              }</a>
-              <a href="/play" id="play_link" class="nav__link" data-link>${
-                words[registry[1].lang].play
-              }</a>
-              <a href="/profile" id="profile_link" class="nav__link" data-link style="pointer-events: none; color: grey; text-decoration: none;">${
-                words[registry[1].lang].profile
-              }</a>
+              <a href="/login" id="login_link" class="nav__link" data-link>${words[registry[1].lang].login
+      }</a>
+              <a href="/play" id="play_link" class="nav__link" data-link>${words[registry[1].lang].play
+      }</a>
+              <a href="/profile" id="profile_link" class="nav__link" data-link style="pointer-events: none; color: grey; text-decoration: none;">${words[registry[1].lang].profile
+      }</a>
               </nav>
               <section class="modal_container">
                 <div class="modal_content profile_modal">
                   <ul class="profile_nav">
-                    <li class="profile_nav_item"><a href="#" class="information">${
-                      words[registry[1].lang].information
-                    }</a></li>
-                    <li class="profile_nav_item"><a href="#" class="history">${
-                      words[registry[1].lang].history
-                    }</a></li>
-                    <li class="profile_nav_item"><a href="#" class="friends">${
-                      words[registry[1].lang].friends
-                    }</a></li>
-                    <li class="profile_nav_item"><a href="#" class="search">${
-                      words[registry[1].lang].search
-                    }</a></li>
+                    <li class="profile_nav_item"><a href="#" class="information">${words[registry[1].lang].information
+      }</a></li>
+                    <li class="profile_nav_item"><a href="#" class="history">${words[registry[1].lang].history
+      }</a></li>
+                    <li class="profile_nav_item"><a href="#" class="friends">${words[registry[1].lang].friends
+      }</a></li>
+                    <li class="profile_nav_item"><a href="#" class="search">${words[registry[1].lang].search
+      }</a></li>
                   </ul>
                   <div class="profile_content">
                   </div>
@@ -45,7 +38,7 @@ export default class extends AbstractView {
               </section>
               `;
   }
-  
+
   async loadProfileData() {
     try {
       const response = await fetch('static/data/information.json');
@@ -56,6 +49,19 @@ export default class extends AbstractView {
       return data;
     } catch (error) {
       console.log("Failed to load profile data: ", error);
+    }
+  }
+
+  async loadHistoryData() {
+    try {
+      const response = await fetch('static/data/history.json');
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.log("Failed to load history data: ", error);
     }
   }
 
@@ -101,65 +107,65 @@ export default class extends AbstractView {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>2024-02-11</td>
-                <td>seoson</td>
-                <td>11:1</td>
-                <td>Win</td>
+              <tr class="table_content">
+                <td class="table_date">2024-02-11</td>
+                <td class="table_opponent">seoson</td>
+                <td class="table_match_score">11:1</td>
+                <td class="table_result">Win</td>
               </tr>
-              <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+              <tr class="table_content">
+                <td class="table_date"></td>
+                <td class="table_opponent"></td>
+                <td class="table_match_score"></td>
+                <td class="table_result"></td>
               </tr>
-              <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+              <tr class="table_content">
+                <td class="table_date"></td>
+                <td class="table_opponent"></td>
+                <td class="table_match_score"></td>
+                <td class="table_result"></td>
               </tr>
-              <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+              <tr class="table_content">
+                <td class="table_date"></td>
+                <td class="table_opponent"></td>
+                <td class="table_match_score"></td>
+                <td class="table_result"></td>
               </tr>
-              <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+              <tr class="table_content">
+                <td class="table_date"></td>
+                <td class="table_opponent"></td>
+                <td class="table_match_score"></td>
+                <td class="table_result"></td>
               </tr>
-              <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+              <tr class="table_content">
+                <td class="table_date"></td>
+                <td class="table_opponent"></td>
+                <td class="table_match_score"></td>
+                <td class="table_result"></td>
               </tr>
-              <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+              <tr class="table_content">
+                <td class="table_date"></td>
+                <td class="table_opponent"></td>
+                <td class="table_match_score"></td>
+                <td class="table_result"></td>
               </tr>
-              <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+              <tr class="table_content">
+                <td class="table_date"></td>
+                <td class="table_opponent"></td>
+                <td class="table_match_score"></td>
+                <td class="table_result"></td>
               </tr>
-              <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td> 
+              <tr class="table_content">
+                <td class="table_date"></td>
+                <td class="table_opponent"></td>
+                <td class="table_match_score"></td>
+                <td class="table_result"></td>
               </tr>
-              <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+              <tr class="table_content">
+                <td class="table_date"></td>
+                <td class="table_opponent"></td>
+                <td class="table_match_score"></td>
+                <td class="table_result"></td>
               </tr>
             </tbody>
           </table>
@@ -167,6 +173,18 @@ export default class extends AbstractView {
       `;
       container.innerHTML = historyHTML;
       profileContent.replaceChildren(container);
+
+      const tableList = document.getElementsByClassName('table_content');
+
+      const data = await this.loadHistoryData();
+      if (data) {
+        data.histories.forEach((item, index) => {
+          tableList[index].querySelector('.table_date').textContent = item.date;
+          tableList[index].querySelector('.table_opponent').textContent = item.opponent;
+          tableList[index].querySelector('.table_match_score').textContent = item.match_score;
+          tableList[index].querySelector('.table_result').textContent = item.result;
+        })
+      }
     } else if (tabText === words[registry[1].lang].friends) {
       document.querySelector(".profile_content").textContent = "friends";
     } else {
@@ -179,5 +197,5 @@ export default class extends AbstractView {
     document.querySelector(".information").classList.add("active_tab");
   }
 
-  async getModal() {}
+  async getModal() { }
 }
