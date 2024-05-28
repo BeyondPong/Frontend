@@ -80,11 +80,16 @@ export default class extends AbstractView {
                 <button class="profile_img_edit pencil-profile"><i class="fa-solid fa-pencil"></i></button>
               </div>
             </div>
-            <span class="profile_name">${data.nickname}</span>
-            <span class="profile_status">
-            ${data.status_msg}
-            <button class="profile_img_edit pencil-status"><i class="fa-solid fa-pencil"></i></button>
-            </span>
+            <div class="profile_name_container">
+              <span class="profile_name">${data.nickname}</span>
+              <div class="profile_lang_container"><span class="profile_lang">${data.language}</span></div>
+            </div>
+            <div class="profile_status_container">
+              <div class="profile_status">  
+                <span>${data.status_msg}</span>
+              </div>
+              <button class="profile_img_edit"><i class="fa-solid fa-pencil"></i></button>
+            </div>
             <span class="profile_count">${data.win_count} Win ${data.lose_count} Lose</span>
         </div>
     `;
