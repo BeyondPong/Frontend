@@ -169,3 +169,31 @@
   font-size: 0.8em;
   height: 2.0rem;
 }
+
+/* search */
+
+.form_box {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.search_button_container {
+  padding: 0.2rem 1.5rem;
+  background-color: var(--profile-background);
+  border-radius: 5px;
+  color: var(--profile-color);
+  cursor: pointer;
+}
+
+.form_container input {
+  width: 25rem;
+  border-radius: 5px;
+  border: solid 1.5px var(--profile-background);
+  text-align: left;
+  outline: none;
+  font-size: 0.9em;
+  padding-left: 0.9rem;
+}

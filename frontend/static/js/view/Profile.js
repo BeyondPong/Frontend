@@ -193,7 +193,22 @@ export default class extends AbstractView {
     } else if (tabText === words[registry[1].lang].friends) {
       document.querySelector(".profile_content").textContent = "friends";
     } else {
-      document.querySelector(".profile_content").textContent = "search";
+      const container = document.createElement('div');
+      container.classList.add('search_container');
+      const searchHTML = `
+        <div class="form_container">
+          <form action="#" class="form_box"> 
+            <div class="input_container">
+              <input type="search" placeholder="Search for a friend..." required>
+            </div>
+            <div class="search_button_container"><button type="button" class="search_button"><i class="fa-solid fa-magnifying-glass"></i></button></div>
+          </form>
+        </div>
+        <div class="search_result_container">
+        </div<
+      `;
+      container.innerHTML = searchHTML;
+      profileContent.replaceChildren(container);
     }
   }
 
