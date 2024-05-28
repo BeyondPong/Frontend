@@ -88,7 +88,7 @@ export default class extends AbstractView {
               <div class="profile_status">  
                 <span>${data.status_msg}</span>
               </div>
-              <button class="profile_img_edit pencil-status"><i class="fa-solid fa-pencil"></i></button>
+              <button class="profile_img_edit"><i class="fa-solid fa-pencil"></i></button>
             </div>
             <span class="profile_count">${data.win_count} Win ${data.lose_count} Lose</span>
         </div>
