@@ -188,8 +188,8 @@
   cursor: pointer;
 }
 
-.form_container input {
-  width: 25rem;
+.input_container input {
+  width: 20rem;
   border-radius: 5px;
   border: solid 1.5px var(--profile-background);
   text-align: left;

@@ -205,7 +205,7 @@ export default class extends AbstractView {
           </form>
         </div>
         <div class="search_result_container">
-        </div<
+        </div>
       `;
       container.innerHTML = searchHTML;
       profileContent.replaceChildren(container);

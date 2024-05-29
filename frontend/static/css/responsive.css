@@ -8,6 +8,7 @@
       "nav"
       ".";
   }
+
   section {
     margin-left: 0;
   }
@@ -38,16 +39,29 @@
     width: 100%;
   }
 
+  .input_container {
+    /* max-width: 100%; */
+    width: 100%;
+  }
+
+  .input_container input {
+    padding: 0.7rem;
+    width: 100%;
+    /* max-width: 100%; */
+  }
+
   header {
     margin-left: 0;
     margin-top: 10%;
     text-align: center;
   }
+
   nav {
     display: inline;
     margin: 0;
     text-align: center;
   }
+
   .btn.dropdown-toggle {
     font-size: 0.5rem;
     padding: 0.5rem 0.5rem;
