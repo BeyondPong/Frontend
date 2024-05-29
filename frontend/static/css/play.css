@@ -46,7 +46,7 @@
 
 @keyframes slideInFromRight {
   0% {
-    transform: translateX(100%);
+    transform: translateX(-50%);
     opacity: 0;
   }
   100% {
@@ -57,7 +57,7 @@
 
 .play_nav {
   animation: slideInFromRight 0.8s ease-in-out;
-  transition: background-color 0.3s ease-in-out;
+  will-change: transform, opacity;
 }
 
 .local_modal_heading {
