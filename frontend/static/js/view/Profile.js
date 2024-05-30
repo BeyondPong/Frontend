@@ -13,7 +13,7 @@ export default class extends AbstractView {
               <header class="main_header">
                 <a href="/" id="main_link" class="nav__link" data-link>Ping? Pong!</a>
               </header>
-              <nav>
+              <nav class="play_nav">
               <a href="/login" id="login_link" class="nav__link" data-link>${words[registry[1].lang].login}</a>
               <a href="/play" id="play_link" class="nav__link" data-link>${words[registry[1].lang].play}</a>
               <a href="/profile" id="profile_link" class="nav__link" data-link style="pointer-events: none; color: grey; text-decoration: none;">${
@@ -88,10 +88,10 @@ export default class extends AbstractView {
             </thead>
             <tbody>
               <tr class="table_content">
-                <td class="table_date">2024-02-11</td>
-                <td class="table_opponent">seoson</td>
-                <td class="table_match_score">11:1</td>
-                <td class="table_result">Win</td>
+                <td class="table_date"></td>
+                <td class="table_opponent"></td>
+                <td class="table_match_score"></td>
+                <td class="table_result"></td>
               </tr>
               <tr class="table_content">
                 <td class="table_date"></td>
