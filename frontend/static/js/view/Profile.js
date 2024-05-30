@@ -42,6 +42,7 @@ export default class extends AbstractView {
     profileContent.innerHTML = '';
     if (tabText === words[registry[1].lang].information) {
       const data = await getProfileData();
+      if (data.status_msg === null) data.status_msg = `안녕하세요 ${data.nickname}입니다.`;
       if (data) {
         const container = document.createElement('div');
         container.classList.add('profile_container');
@@ -69,9 +70,7 @@ export default class extends AbstractView {
     `;
         container.innerHTML = profileHTML;
         profileContent.replaceChildren(container);
-        document.getElementById('profile_img_edit').addEventListener('click', () => {
-          
-        });
+        document.getElementById('profile_img_edit').addEventListener('click', () => {});
       }
     } else if (tabText === words[registry[1].lang].history) {
       const container = document.createElement('div');
