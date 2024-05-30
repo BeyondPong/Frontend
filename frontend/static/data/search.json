@@ -1,0 +1,28 @@
+{
+    "users": [
+        {
+            "id": 4,
+            "nickname": "seoson",
+            "profile_img": "http://localhost:8000/media/profile_images/default_img.jpg",
+            "status_msg": "ss",
+            "language": "en",
+            "is_friend": false
+        },
+        {
+            "id": 5,
+            "nickname": "misu",
+            "profile_img": "http://localhost:8000/media/profile_images/default_img.jpg",
+            "status_msg": "misu",
+            "language": "en",
+            "is_friend": false
+        },
+        {
+            "id": 24,
+            "nickname": "tester",
+            "profile_img": "http://localhost:8000/media/profile_images/%E1%84%8F%E1%85%A9%E1%84%8F%E1%85%A9.jpeg",
+            "status_msg": "tester",
+            "language": "ko",
+            "is_friend": false
+        }
+    ]
+}

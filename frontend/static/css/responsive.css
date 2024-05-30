@@ -47,8 +47,55 @@
   .input_container input {
     padding: 0.7rem;
     width: 100%;
-    /* max-width: 100%; */
   }
+
+  /* search */
+  .search_result_container {
+    padding: 0.5rem;
+    max-height: 50vh;
+  }
+
+  .search_result_box {
+    padding: 1rem 2rem;
+    gap: 0.5rem;
+    overflow-x: auto;
+  }
+
+  .friend {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
+
+  .friend_image {
+    padding: 0.5rem;
+  }
+
+  .friend_name {
+    padding: 0.5rem;
+    font-size: 1rem;
+  }
+
+  .friend_message {
+    font-size: 0.8rem;
+    padding: 0.5rem;
+  }
+
+  .friend_button {
+    padding: 0, 5rem 1rem;
+    margin-left: 0;
+    text-align: center;
+  }
+
+  .friend_name,
+  .friend_message,
+  .friend_button {
+    width: 100%;
+    text-align: center;
+    padding: 0.5rem 0;
+  }
+
 
   header {
     margin-left: 0;
