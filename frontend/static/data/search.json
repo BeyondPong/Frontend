@@ -14,7 +14,7 @@
             "profile_img": "http://localhost:8000/media/profile_images/default_img.jpg",
             "status_msg": "misu",
             "language": "en",
-            "is_friend": false
+            "is_friend": true
         },
         {
             "id": 24,

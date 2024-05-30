@@ -92,17 +92,33 @@ export default class extends AbstractView {
         return;
       }
       const searchResultBox = document.querySelector('.search_result_box');
+      searchResultBox.innerHTML = '';
+
       matchFriends.users.forEach((user) => {
         const friendElement = document.createElement('div');
         friendElement.classList.add('friend');
         const resultHTML = `
           <div class="friend_image" style="background-image: url(${user.profile_img});"></div>
           <div class="friend_name">${user.nickname}</div>
-            <div class="friend_message">${user.status_msg}</div>
-            <div class="friend_button">ADD</div>
+          <div class="friend_message">${user.status_msg}</div>
+          <div class="friend_button"><button class="add_button" data-user-id="${user.id}">ADD</button></div>
         `;
         friendElement.innerHTML = resultHTML;
         searchResultBox.appendChild(friendElement);
+      })
+
+      const buttons = Array.from(document.getElementsByClassName('add_button'));
+      buttons.forEach(button => {
+        button.addEventListener('click', (e) => {
+          const userId = e.target.getAttribute('data-user-id');
+          const user = matchFriends.users.find(u => u.id === parseInt(userId));
+          if (user.is_friend) {
+            alert('Already friend!');
+          }
+          else {
+            alert('New friend added successfully!');
+          }
+        })
       })
     });
   }
