@@ -1,6 +1,7 @@
 import AbstractView from './AbstractView.js';
 import registry from '../state/Registry.js';
 import { words } from '../state/Registry.js';
+import { getProfileData, getHistoryData } from '../api/api.js';
 
 export default class extends AbstractView {
   constructor(params) {
@@ -36,37 +37,11 @@ export default class extends AbstractView {
               `;
   }
 
-  async loadProfileData() {
-    try {
-      const response = await fetch('static/data/information.json');
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.log('Failed to load profile data: ', error);
-    }
-  }
-
-  async loadHistoryData() {
-    try {
-      const response = await fetch('static/data/history.json');
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.log('Failed to load history data: ', error);
-    }
-  }
-
   async moveTabs(tabText) {
     const profileContent = document.querySelector('.profile_content');
     profileContent.innerHTML = '';
     if (tabText === words[registry[1].lang].information) {
-      const data = await this.loadProfileData();
+      const data = await getProfileData();
       if (data) {
         const container = document.createElement('div');
         container.classList.add('profile_container');
@@ -74,7 +49,7 @@ export default class extends AbstractView {
         <div class="profile_content_elements">
             <div class="profile_img_container">
               <div class="profile_img" style="background-image: url(${data.profile_img});">
-                <button class="profile_img_edit pencil-profile"><i class="fa-solid fa-pencil"></i></button>
+                <button class="profile_img_edit pencil-profile" id="profile_img_edit"><i class="fa-solid fa-pencil"></i></button>
               </div>
             </div>
             <div class="profile_name_container">
@@ -85,15 +60,18 @@ export default class extends AbstractView {
               <div class="profile_status">
                 <span>${data.status_msg}</span>
               </div>
-              <button class="profile_img_edit"><i class="fa-solid fa-pencil"></i></button>
+              <button class="profile_img_edit" id="status_edit"><i class="fa-solid fa-pencil"></i></button>
             </div>
-            <span class="profile_count">${data.win_count}${words[registry[1].lang].win} ${data.lose_count}${
+            <span class="profile_count">${data.win_cnt}${words[registry[1].lang].win} ${data.lose_cnt}${
           words[registry[1].lang].lose
         } </span>
         </div>
     `;
         container.innerHTML = profileHTML;
         profileContent.replaceChildren(container);
+        document.getElementById('profile_img_edit').addEventListener('click', () => {
+          
+        });
       }
     } else if (tabText === words[registry[1].lang].history) {
       const container = document.createElement('div');
@@ -179,7 +157,7 @@ export default class extends AbstractView {
 
       const tableList = document.getElementsByClassName('table_content');
 
-      const data = await this.loadHistoryData();
+      const data = await getHistoryData();
       if (data) {
         data.histories.forEach((item, index) => {
           tableList[index].querySelector('.table_date').textContent = item.date;
@@ -199,6 +177,4 @@ export default class extends AbstractView {
     this.moveTabs(words[registry[1].lang].information);
     document.querySelector('.information').classList.add('active_tab');
   }
-
-  async getModal() {}
 }
