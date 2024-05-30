@@ -37,6 +37,63 @@ export default class extends AbstractView {
               `;
   }
 
+  async loadSearchResultData(name) {
+    try {
+      // const response = await fetch('.../name');
+      const response = await fetch('static/data/search.json');
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.log("Failed to load search result data: ", error);
+    }
+  }
+
+  async showSearchResult() {
+    document.querySelector('.search_button_container').addEventListener('click', async (e) => {
+      const query = document.getElementById('search_input').value;
+      if (query === '') {
+        alert('Please enter a friend name.');
+        return;
+      }
+      const matchFriends = await this.loadSearchResultData(query);
+      if (!matchFriends) {
+        alert('No match friends');
+        return;
+      }
+      const searchResultBox = document.querySelector('.search_result_box');
+      searchResultBox.innerHTML = '';
+
+      matchFriends.users.forEach((user) => {
+        const friendElement = document.createElement('div');
+        friendElement.classList.add('friend');
+        const resultHTML = `
+          <div class="friend_image" style="background-image: url(${user.profile_img});"></div>
+          <div class="friend_name">${user.nickname}</div>
+          <div class="friend_message">${user.status_msg}</div>
+          <div class="friend_button"><button class="add_button" data-user-id="${user.id}">ADD</button></div>
+        `;
+        friendElement.innerHTML = resultHTML;
+        searchResultBox.appendChild(friendElement);
+      })
+
+      const buttons = Array.from(document.getElementsByClassName('add_button'));
+      buttons.forEach(button => {
+        button.addEventListener('click', (e) => {
+          const userId = e.target.getAttribute('data-user-id');
+          const user = matchFriends.users.find(u => u.id === parseInt(userId));
+          if (user.is_friend) {
+            alert('Already friend!');
+          }
+          else {
+            alert('New friend added successfully!');
+          }
+        })
+      })
+    });
+  }
   async moveTabs(tabText) {
     const profileContent = document.querySelector('.profile_content');
     profileContent.innerHTML = '';
@@ -168,6 +225,24 @@ export default class extends AbstractView {
     } else if (tabText === words[registry[1].lang].friends) {
       document.querySelector('.profile_content').textContent = 'friends';
     } else {
+      const container = document.createElement('div');
+      container.classList.add('search_container');
+      const searchHTML = `
+        <div class="form_container">
+          <form action="#" class="form_box"> 
+            <div class="input_container">
+              <input type="search" id="search_input" placeholder="Search for a friend..." required>
+            </div>
+            <div class="search_button_container"><button type="button" class="search_button"><i class="fa-solid fa-magnifying-glass"></i></button></div>
+          </form>
+        </div>
+        <div class="search_result_container">
+          <div class="search_result_box"></div>
+        </div>
+      `;
+      container.innerHTML = searchHTML;
+      profileContent.replaceChildren(container);
+      this.showSearchResult();
       document.querySelector('.profile_content').textContent = 'search';
     }
   }
