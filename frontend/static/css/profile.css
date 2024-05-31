@@ -1,133 +1,274 @@
 .profile_nav {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    gap: 8vw;
-    padding: 2rem 0.5rem;
-    font-size: 1em;
-  }
-  
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 8vw;
+  padding: 2rem 0.5rem;
+  font-size: 1em;
+}
+
 .profile_nav_item a {
   text-decoration: none;
   color: var(--profile-color);
 }
 
 .profile_nav_item .active_tab {
-    color: var(--profile-background);
-  }
-  
+  color: var(--profile-background);
+}
+
 .profile_container {
-    display: flex;
-    justify-content: center;
-  }
-  
-  .profile_content {
-    padding: 0.5rem;
-  }
-  
-  .profile_content_elements {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    width: 50%;
-  }
+  display: flex;
+  justify-content: center;
+}
+
+.profile_content {
+  padding: 0.5rem;
+}
+
+.profile_content_elements {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 50%;
+}
 
 .profile_img {
-    width: 15vw;
-    height: 15vw;
-    background-size: cover;
-    background-position: center;
-    position: relative;
-    border-radius: 50%;
-    border: 2px solid #fff;
-    padding: 1rem;
-  }
-  
-  .profile_name,
-  .profile_status,
-  .profile_count {
-    text-align: center;
-    width: 100%;
-    color: var(--profile-color);
-  }
-  
-  .profile_name {
-    font-size: 1.2rem;
-  }
-  
-  .profile_status {
-    font-size: 0.8rem;
-    position: relative;
-    width: 80%;
-  }
-  
-  .profile_count {
-    margin-top: 1rem;
-    font-size: calc(1vw + 2vh + 0.5vmin);
-  }
-  
-  .profile_img_container {
-    position: relative;
-  }
-  
-  .pencil-profile {
-    width: 2rem;
-    height: 2rem;
-    background-color: var(--profile-background);
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-    position: absolute;
-    right: 0;
-  }
-  
-  .pencil-status {
-    width: 2rem;
-    height: 2rem;
-    background-color: var(--profile-background);
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-    position: absolute;
-    right: 0.1rem;
-    top: -0.5rem;
-  }
-  
-  /* history */
-  .table_container {
-    table-layout: fixed;
-    width: 100%;
-    text-align: center;
-    background-color: rgba(44, 43, 43, 0.5);  
-    color: var(--profile-color);
-  }
+  width: 15vw;
+  height: 15vw;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  padding: 1rem;
+}
 
-  .table_container thead {
-    background-color: rgba(7, 4, 4, 0.5);  
-    font-size: 0.9em;
-    font-weight: bold;
-  }
+.profile_name,
+.profile_status,
+.profile_count,
+.profile_lang {
+  text-align: center;
+  width: 100%;
+  color: var(--profile-color);
+}
 
-  .table_container th {
-    padding: 0.5em 0.7em;
-    margin-bottom: 0.1em;
-  }
+.profile_name {
+  font-size: 1.2rem;
+}
 
-  .table_container td {
-    padding: 0.5em 0.7em;
-    border-top: 1px solid rgba(255, 255, 255, 0.4);
-    word-break: break-all;
-  }
+.profile_status_container {
+  font-size: 0.8rem;
+  width: 60%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-left: 2rem;
+  gap: 0.5rem;
+}
 
-  .table_container td {
-    font-size: 0.8em;
-    height: 2.0rem;
-  }
+.profile_status {
+  width: 80%;
+}
+
+.profile_count {
+  margin-top: 1rem;
+  font-size: calc(1vw + 2vh + 0.5vmin);
+}
+
+.profile_img_container {
+  position: relative;
+}
+
+.profile_name_container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-left: 4rem;
+}
+
+.profile_lang_container {
+  padding: 0.1rem 0.5rem;
+  background-color: var(--disabled-background-color);
+  font-weight: bold;
+  border-radius: 30%;
+}
+
+.pencil-profile {
+  width: 2rem;
+  height: 2rem;
+  background-color: var(--profile-background);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  position: absolute;
+  right: 0;
+}
+
+.profile_img_edit {
+  width: 2rem;
+  height: 2rem;
+  background-color: var(--profile-background);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.pencil-status {
+  width: 2rem;
+  height: 2rem;
+  background-color: var(--profile-background);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  position: absolute;
+  right: 0.1rem;
+  top: -0.5rem;
+}
+
+/* history */
+.table_container {
+  table-layout: fixed;
+  width: 100%;
+  text-align: center;
+  background-color: rgba(44, 43, 43, 0.5);
+  color: var(--profile-color);
+}
+
+.table_container thead {
+  background-color: rgba(7, 4, 4, 0.5);
+  font-size: 0.9em;
+  font-weight: bold;
+}
+
+.table_container th {
+  padding: 0.5em 0.7em;
+  margin-bottom: 0.1em;
+}
+
+.table_container td {
+  padding: 0.5em 0.7em;
+  border-top: 1px solid rgba(255, 255, 255, 0.4);
+  word-break: break-all;
+}
+
+.table_container td {
+  font-size: 0.8em;
+  height: 2.0rem;
+}
+
+/* search */
+
+.form_box {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.search_button_container {
+  padding: 0.2rem 1.5rem;
+  background-color: var(--profile-background);
+  border-radius: 5px;
+  color: var(--profile-color);
+  cursor: pointer;
+}
+
+.input_container {
+  padding: 1rem;
+}
+
+.input_container input {
+  width: 20rem;
+  border-radius: 5px;
+  border: solid 1.5px var(--profile-background);
+  text-align: left;
+  outline: none;
+  font-size: 0.9em;
+  padding-left: 0.9rem;
+}
+
+/* search result */
+
+.search_result_container {
+  padding: 0.5rem;
+  max-height: 22vw;
+  /* Adjust as needed */
+  overflow-y: auto;
+}
+
+.search_result_box {
+  padding: 2rem 6rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.friend {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.1rem;
+  background-color: var(--profile-color);
+  padding: 1rem;
+  border-radius: 20px;
+}
+
+/* .friend_status {
+  padding: 0.5rem;
+  margin-right: 0.5rem;
+  border-radius: 10px;
+  border: solid 1.5px #6e6969;
+  background-color: var(--profile-color);
+} */
+
+/* .friend_online {
+  background-color: green;
+} */
+
+.friend_image {
+  width: 5vw;
+  height: 5vw;
+  background-size: cover;
+  background-position: center;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  padding: 1rem;
+  /* background-image: url(https://cdn.intra.42.fr/users/22a150a2b718bb79bbe204dc8e4a4ae7/misukim.jpg); */
+}
+
+.friend_name {
+  font-weight: bold;
+  padding: 0.8rem;
+}
+
+.friend_message {
+  font-size: 0.9rem;
+  padding: 0.8rem;
+  flex-grow: 2;
+}
+
+.friend_button {
+  padding: 0.2rem 1rem;
+  background-color: var(--profile-background);
+  border-radius: 5px;
+  color: var(--black-color);
+  cursor: pointer;
+  font-weight: bold;
+}
