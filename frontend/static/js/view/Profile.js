@@ -226,28 +226,28 @@ export default class extends AbstractView {
         <div class="friends_result_container">
           <div class="friends_result_box">
             <div class="friend">
-              <div class="friend_status friend_online"></div>
+              <div class="friend_state friend_online"></div>
               <div class="friend_image" style="background-image: url(https://cdn.intra.42.fr/users/22a150a2b718bb79bbe204dc8e4a4ae7/misukim.jpg);"></div>
               <div class="friend_name">sgo</div>
               <div class="friend_message">안녕하세요 저는 상태메세지입니다. 방가</div>
               <div class="friend_button"><button class="add_button" data-user-id="#">DELETE</button></div>
             </div>
             <div class="friend">
-              <div class="friend_status friend_online"></div>
+              <div class="friend_state friend_online"></div>
               <div class="friend_image" style="background-image: url(https://cdn.intra.42.fr/users/22a150a2b718bb79bbe204dc8e4a4ae7/misukim.jpg);"></div>
               <div class="friend_name">seoson</div>
               <div class="friend_message">안녕하세요 방가</div>
               <div class="friend_button"><button class="add_button" data-user-id="#">DELETE</button></div>
             </div>
               <div class="friend">
-                <div class="friend_status"></div>
+                <div class="friend_state"></div>
                 <div class="friend_image" style="background-image: url(https://cdn.intra.42.fr/users/22a150a2b718bb79bbe204dc8e4a4ae7/misukim.jpg);"></div>
                 <div class="friend_name">jonim</div>
                 <div class="friend_message">안녕하세요 저는 상태메세지입니다. 방가</div>
                 <div class="friend_button"><button class="add_button" data-user-id="#">DELETE</button></div>
               </div>
               <div class="friend">
-                <div class="friend_status"></div>
+                <div class="friend_state"></div>
                 <div class="friend_image" style="background-image: url(https://cdn.intra.42.fr/users/22a150a2b718bb79bbe204dc8e4a4ae7/misukim.jpg);"></div>
                 <div class="friend_name">jusohn</div>
                 <div class="friend_message">hi</div>
