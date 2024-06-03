@@ -16,16 +16,14 @@ export default class extends AbstractView {
               <nav class="play_nav">
               <a href="/login" id="login_link" class="nav__link" data-link>${words[registry[1].lang].login}</a>
               <a href="/play" id="play_link" class="nav__link" data-link>${words[registry[1].lang].play}</a>
-              <a href="/profile" id="profile_link" class="nav__link" data-link style="pointer-events: none; color: grey; text-decoration: none;">${
-                words[registry[1].lang].profile
-              }</a>
+              <a href="/profile" id="profile_link" class="nav__link" data-link style="pointer-events: none; color: grey; text-decoration: none;">${words[registry[1].lang].profile
+      }</a>
               </nav>
               <section class="modal_container">
                 <div class="modal_content profile_modal">
                   <ul class="profile_nav">
-                    <li class="profile_nav_item"><a href="#" class="information">${
-                      words[registry[1].lang].information
-                    }</a></li>
+                    <li class="profile_nav_item"><a href="#" class="information">${words[registry[1].lang].information
+      }</a></li>
                     <li class="profile_nav_item"><a href="#" class="history">${words[registry[1].lang].history}</a></li>
                     <li class="profile_nav_item"><a href="#" class="friends">${words[registry[1].lang].friends}</a></li>
                     <li class="profile_nav_item"><a href="#" class="search">${words[registry[1].lang].search}</a></li>
@@ -120,14 +118,13 @@ export default class extends AbstractView {
               </div>
               <button class="profile_img_edit" id="status_edit"><i class="fa-solid fa-pencil"></i></button>
             </div>
-            <span class="profile_count">${data.win_cnt}${words[registry[1].lang].win} ${data.lose_cnt}${
-          words[registry[1].lang].lose
-        } </span>
+            <span class="profile_count">${data.win_cnt}${words[registry[1].lang].win} ${data.lose_cnt}${words[registry[1].lang].lose
+          } </span>
         </div>
     `;
         container.innerHTML = profileHTML;
         profileContent.replaceChildren(container);
-        document.getElementById('profile_img_edit').addEventListener('click', () => {});
+        document.getElementById('profile_img_edit').addEventListener('click', () => { });
       }
     } else if (tabText === words[registry[1].lang].history) {
       const container = document.createElement('div');
@@ -223,7 +220,45 @@ export default class extends AbstractView {
         });
       }
     } else if (tabText === words[registry[1].lang].friends) {
-      document.querySelector('.profile_content').textContent = 'friends';
+      const container = document.createElement('div');
+      container.classList.add('friends_container');
+      const friendsHTML = `
+        <div class="friends_result_container">
+          <div class="friends_result_box">
+            <div class="friend">
+              <div class="friend_state friend_online"></div>
+              <div class="friend_image" style="background-image: url(https://cdn.intra.42.fr/users/22a150a2b718bb79bbe204dc8e4a4ae7/misukim.jpg);"></div>
+              <div class="friend_name">sgo</div>
+              <div class="friend_message">안녕하세요 저는 상태메세지입니다. 방가</div>
+              <div class="friend_button"><button class="add_button" data-user-id="#">DELETE</button></div>
+            </div>
+            <div class="friend">
+              <div class="friend_state friend_online"></div>
+              <div class="friend_image" style="background-image: url(https://cdn.intra.42.fr/users/22a150a2b718bb79bbe204dc8e4a4ae7/misukim.jpg);"></div>
+              <div class="friend_name">seoson</div>
+              <div class="friend_message">안녕하세요 방가</div>
+              <div class="friend_button"><button class="add_button" data-user-id="#">DELETE</button></div>
+            </div>
+              <div class="friend">
+                <div class="friend_state"></div>
+                <div class="friend_image" style="background-image: url(https://cdn.intra.42.fr/users/22a150a2b718bb79bbe204dc8e4a4ae7/misukim.jpg);"></div>
+                <div class="friend_name">jonim</div>
+                <div class="friend_message">안녕하세요 저는 상태메세지입니다. 방가</div>
+                <div class="friend_button"><button class="add_button" data-user-id="#">DELETE</button></div>
+              </div>
+              <div class="friend">
+                <div class="friend_state"></div>
+                <div class="friend_image" style="background-image: url(https://cdn.intra.42.fr/users/22a150a2b718bb79bbe204dc8e4a4ae7/misukim.jpg);"></div>
+                <div class="friend_name">jusohn</div>
+                <div class="friend_message">hi</div>
+                <div class="friend_button"><button class="add_button" data-user-id="#">DELETE</button></div>
+              </div>
+          </div>
+        </div>
+      `;
+      container.innerHTML = friendsHTML;
+      profileContent.replaceChildren(container);
+
     } else {
       const container = document.createElement('div');
       container.classList.add('search_container');
@@ -243,7 +278,6 @@ export default class extends AbstractView {
       container.innerHTML = searchHTML;
       profileContent.replaceChildren(container);
       this.showSearchResult();
-      document.querySelector('.profile_content').textContent = 'search';
     }
   }
 

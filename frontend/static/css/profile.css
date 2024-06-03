@@ -22,7 +22,7 @@
 }
 
 .profile_content {
-  padding: 0.5rem;
+  padding: 0.5rem 1rem;
 }
 
 .profile_content_elements {
@@ -207,7 +207,6 @@
 .search_result_container {
   padding: 0.5rem;
   max-height: 22vw;
-  /* Adjust as needed */
   overflow-y: auto;
 }
 
@@ -229,18 +228,6 @@
   padding: 1rem;
   border-radius: 20px;
 }
-
-/* .friend_status {
-  padding: 0.5rem;
-  margin-right: 0.5rem;
-  border-radius: 10px;
-  border: solid 1.5px #6e6969;
-  background-color: var(--profile-color);
-} */
-
-/* .friend_online {
-  background-color: green;
-} */
 
 .friend_image {
   width: 5vw;
@@ -271,4 +258,32 @@
   color: var(--black-color);
   cursor: pointer;
   font-weight: bold;
+}
+
+/* friends */
+
+.friends_result_container {
+  padding: 0.5rem;
+  max-height: 27vw;
+  overflow-y: auto;
+}
+
+.friends_result_box {
+  padding: 2rem 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.friend_state {
+  padding: 0.5rem;
+  margin-right: 0.5rem;
+  border-radius: 10px;
+  border: solid 1.5px #6e6969;
+  background-color: var(--profile-color);
+}
+
+.friend_online {
+  background-color: #27DA7B;
 }
