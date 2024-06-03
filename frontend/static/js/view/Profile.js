@@ -16,16 +16,14 @@ export default class extends AbstractView {
               <nav class="play_nav">
               <a href="/login" id="login_link" class="nav__link" data-link>${words[registry[1].lang].login}</a>
               <a href="/play" id="play_link" class="nav__link" data-link>${words[registry[1].lang].play}</a>
-              <a href="/profile" id="profile_link" class="nav__link" data-link style="pointer-events: none; color: grey; text-decoration: none;">${
-                words[registry[1].lang].profile
-              }</a>
+              <a href="/profile" id="profile_link" class="nav__link" data-link style="pointer-events: none; color: grey; text-decoration: none;">${words[registry[1].lang].profile
+      }</a>
               </nav>
               <section class="modal_container">
                 <div class="modal_content profile_modal">
                   <ul class="profile_nav">
-                    <li class="profile_nav_item"><a href="#" class="information">${
-                      words[registry[1].lang].information
-                    }</a></li>
+                    <li class="profile_nav_item"><a href="#" class="information">${words[registry[1].lang].information
+      }</a></li>
                     <li class="profile_nav_item"><a href="#" class="history">${words[registry[1].lang].history}</a></li>
                     <li class="profile_nav_item"><a href="#" class="friends">${words[registry[1].lang].friends}</a></li>
                     <li class="profile_nav_item"><a href="#" class="search">${words[registry[1].lang].search}</a></li>
@@ -48,6 +46,27 @@ export default class extends AbstractView {
       return data;
     } catch (error) {
       console.log("Failed to load search result data: ", error);
+    }
+  }
+
+  async showHistoryResult() {
+    const tableBody = document.querySelector('.table_tbody');
+    tableBody.innerHTML = '';
+
+    const data = await getHistoryData();
+    if (data) {
+      data.histories.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.classList.add('table_content');
+        const historyHTML = `
+          <td class="table_date">${item.date}</td>
+          <td class="table_opponent">${item.opponent}</td>
+          <td class="table_match_score">${item.match_score}</td>
+          <td class="table_result">${item.result}</td>
+        `;
+        tr.innerHTML = historyHTML;
+        tableBody.appendChild(tr);
+      })
     }
   }
 
@@ -94,6 +113,7 @@ export default class extends AbstractView {
       })
     });
   }
+
   async moveTabs(tabText) {
     const profileContent = document.querySelector('.profile_content');
     profileContent.innerHTML = '';
@@ -120,14 +140,13 @@ export default class extends AbstractView {
               </div>
               <button class="profile_img_edit" id="status_edit"><i class="fa-solid fa-pencil"></i></button>
             </div>
-            <span class="profile_count">${data.win_cnt}${words[registry[1].lang].win} ${data.lose_cnt}${
-          words[registry[1].lang].lose
-        } </span>
+            <span class="profile_count">${data.win_cnt}${words[registry[1].lang].win} ${data.lose_cnt}${words[registry[1].lang].lose
+          } </span>
         </div>
     `;
         container.innerHTML = profileHTML;
         profileContent.replaceChildren(container);
-        document.getElementById('profile_img_edit').addEventListener('click', () => {});
+        document.getElementById('profile_img_edit').addEventListener('click', () => { });
       }
     } else if (tabText === words[registry[1].lang].history) {
       const container = document.createElement('div');
@@ -143,85 +162,15 @@ export default class extends AbstractView {
                 <th>Result</th>
               </tr>
             </thead>
-            <tbody>
-              <tr class="table_content">
-                <td class="table_date"></td>
-                <td class="table_opponent"></td>
-                <td class="table_match_score"></td>
-                <td class="table_result"></td>
-              </tr>
-              <tr class="table_content">
-                <td class="table_date"></td>
-                <td class="table_opponent"></td>
-                <td class="table_match_score"></td>
-                <td class="table_result"></td>
-              </tr>
-              <tr class="table_content">
-                <td class="table_date"></td>
-                <td class="table_opponent"></td>
-                <td class="table_match_score"></td>
-                <td class="table_result"></td>
-              </tr>
-              <tr class="table_content">
-                <td class="table_date"></td>
-                <td class="table_opponent"></td>
-                <td class="table_match_score"></td>
-                <td class="table_result"></td>
-              </tr>
-              <tr class="table_content">
-                <td class="table_date"></td>
-                <td class="table_opponent"></td>
-                <td class="table_match_score"></td>
-                <td class="table_result"></td>
-              </tr>
-              <tr class="table_content">
-                <td class="table_date"></td>
-                <td class="table_opponent"></td>
-                <td class="table_match_score"></td>
-                <td class="table_result"></td>
-              </tr>
-              <tr class="table_content">
-                <td class="table_date"></td>
-                <td class="table_opponent"></td>
-                <td class="table_match_score"></td>
-                <td class="table_result"></td>
-              </tr>
-              <tr class="table_content">
-                <td class="table_date"></td>
-                <td class="table_opponent"></td>
-                <td class="table_match_score"></td>
-                <td class="table_result"></td>
-              </tr>
-              <tr class="table_content">
-                <td class="table_date"></td>
-                <td class="table_opponent"></td>
-                <td class="table_match_score"></td>
-                <td class="table_result"></td>
-              </tr>
-              <tr class="table_content">
-                <td class="table_date"></td>
-                <td class="table_opponent"></td>
-                <td class="table_match_score"></td>
-                <td class="table_result"></td>
-              </tr>
-            </tbody>
+            <tbody class="table_tbody">
+\            </tbody>
           </table>
         </div>
       `;
       container.innerHTML = historyHTML;
       profileContent.replaceChildren(container);
+      this.showHistoryResult();
 
-      const tableList = document.getElementsByClassName('table_content');
-
-      const data = await getHistoryData();
-      if (data) {
-        data.histories.forEach((item, index) => {
-          tableList[index].querySelector('.table_date').textContent = item.date;
-          tableList[index].querySelector('.table_opponent').textContent = item.opponent;
-          tableList[index].querySelector('.table_match_score').textContent = item.match_score;
-          tableList[index].querySelector('.table_result').textContent = item.result;
-        });
-      }
     } else if (tabText === words[registry[1].lang].friends) {
       document.querySelector('.profile_content').textContent = 'friends';
     } else {
@@ -243,7 +192,6 @@ export default class extends AbstractView {
       container.innerHTML = searchHTML;
       profileContent.replaceChildren(container);
       this.showSearchResult();
-      document.querySelector('.profile_content').textContent = 'search';
     }
   }
 
