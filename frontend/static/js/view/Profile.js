@@ -49,6 +49,27 @@ export default class extends AbstractView {
     }
   }
 
+  async showHistoryResult() {
+    const tableBody = document.querySelector('.table_tbody');
+    tableBody.innerHTML = '';
+
+    const data = await getHistoryData();
+    if (data) {
+      data.histories.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.classList.add('table_content');
+        const historyHTML = `
+          <td class="table_date">${item.date}</td>
+          <td class="table_opponent">${item.opponent}</td>
+          <td class="table_match_score">${item.match_score}</td>
+          <td class="table_result">${item.result}</td>
+        `;
+        tr.innerHTML = historyHTML;
+        tableBody.appendChild(tr);
+      })
+    }
+  }
+
   async showSearchResult() {
     document.querySelector('.search_button_container').addEventListener('click', async (e) => {
       const query = document.getElementById('search_input').value;
@@ -92,6 +113,7 @@ export default class extends AbstractView {
       })
     });
   }
+
   async moveTabs(tabText) {
     const profileContent = document.querySelector('.profile_content');
     profileContent.innerHTML = '';
@@ -140,85 +162,15 @@ export default class extends AbstractView {
                 <th>Result</th>
               </tr>
             </thead>
-            <tbody>
-              <tr class="table_content">
-                <td class="table_date"></td>
-                <td class="table_opponent"></td>
-                <td class="table_match_score"></td>
-                <td class="table_result"></td>
-              </tr>
-              <tr class="table_content">
-                <td class="table_date"></td>
-                <td class="table_opponent"></td>
-                <td class="table_match_score"></td>
-                <td class="table_result"></td>
-              </tr>
-              <tr class="table_content">
-                <td class="table_date"></td>
-                <td class="table_opponent"></td>
-                <td class="table_match_score"></td>
-                <td class="table_result"></td>
-              </tr>
-              <tr class="table_content">
-                <td class="table_date"></td>
-                <td class="table_opponent"></td>
-                <td class="table_match_score"></td>
-                <td class="table_result"></td>
-              </tr>
-              <tr class="table_content">
-                <td class="table_date"></td>
-                <td class="table_opponent"></td>
-                <td class="table_match_score"></td>
-                <td class="table_result"></td>
-              </tr>
-              <tr class="table_content">
-                <td class="table_date"></td>
-                <td class="table_opponent"></td>
-                <td class="table_match_score"></td>
-                <td class="table_result"></td>
-              </tr>
-              <tr class="table_content">
-                <td class="table_date"></td>
-                <td class="table_opponent"></td>
-                <td class="table_match_score"></td>
-                <td class="table_result"></td>
-              </tr>
-              <tr class="table_content">
-                <td class="table_date"></td>
-                <td class="table_opponent"></td>
-                <td class="table_match_score"></td>
-                <td class="table_result"></td>
-              </tr>
-              <tr class="table_content">
-                <td class="table_date"></td>
-                <td class="table_opponent"></td>
-                <td class="table_match_score"></td>
-                <td class="table_result"></td>
-              </tr>
-              <tr class="table_content">
-                <td class="table_date"></td>
-                <td class="table_opponent"></td>
-                <td class="table_match_score"></td>
-                <td class="table_result"></td>
-              </tr>
-            </tbody>
+            <tbody class="table_tbody">
+\            </tbody>
           </table>
         </div>
       `;
       container.innerHTML = historyHTML;
       profileContent.replaceChildren(container);
+      this.showHistoryResult();
 
-      const tableList = document.getElementsByClassName('table_content');
-
-      const data = await getHistoryData();
-      if (data) {
-        data.histories.forEach((item, index) => {
-          tableList[index].querySelector('.table_date').textContent = item.date;
-          tableList[index].querySelector('.table_opponent').textContent = item.opponent;
-          tableList[index].querySelector('.table_match_score').textContent = item.match_score;
-          tableList[index].querySelector('.table_result').textContent = item.result;
-        });
-      }
     } else if (tabText === words[registry[1].lang].friends) {
       const container = document.createElement('div');
       container.classList.add('friends_container');
