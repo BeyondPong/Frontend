@@ -167,7 +167,7 @@
 
 .table_container td {
   font-size: 0.8em;
-  height: 2.0rem;
+  height: 2rem;
 }
 
 /* search */
@@ -271,4 +271,17 @@
   color: var(--black-color);
   cursor: pointer;
   font-weight: bold;
+}
+
+.disabled_button {
+  cursor: not-allowed;
+}
+
+.disabled_friend_button {
+  padding: 0.2rem 1rem;
+  border-radius: 5px;
+  font-weight: bold;
+  background-color: var(--disabled-button-background-color);
+  color: var(--profile-color);
+  cursor: not-allowed;
 }

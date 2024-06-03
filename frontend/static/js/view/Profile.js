@@ -1,7 +1,7 @@
 import AbstractView from './AbstractView.js';
 import registry from '../state/Registry.js';
 import { words } from '../state/Registry.js';
-import { getProfileData, getHistoryData } from '../api/api.js';
+import { getProfileData, getHistoryData, getSearchResultData, postAddFriend } from '../api/api.js';
 
 export default class extends AbstractView {
   constructor(params) {
@@ -13,7 +13,7 @@ export default class extends AbstractView {
               <header class="main_header">
                 <a href="/" id="main_link" class="nav__link" data-link>Ping? Pong!</a>
               </header>
-              <nav class="play_nav">
+              <nav>
               <a href="/login" id="login_link" class="nav__link" data-link>${words[registry[1].lang].login}</a>
               <a href="/play" id="play_link" class="nav__link" data-link>${words[registry[1].lang].play}</a>
               <a href="/profile" id="profile_link" class="nav__link" data-link style="pointer-events: none; color: grey; text-decoration: none;">${
@@ -37,29 +37,15 @@ export default class extends AbstractView {
               `;
   }
 
-  async loadSearchResultData(name) {
-    try {
-      // const response = await fetch('.../name');
-      const response = await fetch('static/data/search.json');
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.log("Failed to load search result data: ", error);
-    }
-  }
-
   async showSearchResult() {
-    document.querySelector('.search_button_container').addEventListener('click', async (e) => {
+    const searchAndDisplayResults = async () => {
       const query = document.getElementById('search_input').value;
       if (query === '') {
         alert('Please enter a friend name.');
         return;
       }
-      const matchFriends = await this.loadSearchResultData(query);
-      if (!matchFriends) {
+      const matchFriends = await getSearchResultData(query);
+      if (!matchFriends || matchFriends.users.length === 0) {
         alert('No match friends');
         return;
       }
@@ -69,29 +55,45 @@ export default class extends AbstractView {
       matchFriends.users.forEach((user) => {
         const friendElement = document.createElement('div');
         friendElement.classList.add('friend');
-        const resultHTML = `
+        let resultHTML = `
           <div class="friend_image" style="background-image: url(${user.profile_img});"></div>
           <div class="friend_name">${user.nickname}</div>
           <div class="friend_message">${user.status_msg}</div>
-          <div class="friend_button"><button class="add_button" data-user-id="${user.id}">ADD</button></div>
         `;
+        if (user.is_friend) {
+          resultHTML += `<div class="disabled_friend_button"><button class="add_button disabled_button" disabled data-user-id="${user.id}">ADD</button></div>`;
+        } else {
+          resultHTML += `<div class="friend_button"><button class="add_button" data-user-id="${user.id}">ADD</button></div>`;
+        }
         friendElement.innerHTML = resultHTML;
         searchResultBox.appendChild(friendElement);
-      })
+      });
+    };
 
-      const buttons = Array.from(document.getElementsByClassName('add_button'));
-      buttons.forEach(button => {
-        button.addEventListener('click', (e) => {
-          const userId = e.target.getAttribute('data-user-id');
-          const user = matchFriends.users.find(u => u.id === parseInt(userId));
-          if (user.is_friend) {
-            alert('Already friend!');
-          }
-          else {
-            alert('New friend added successfully!');
-          }
-        })
-      })
+    document.querySelector('.search_button_container').addEventListener('click', async (e) => {
+      await searchAndDisplayResults();
+    });
+    document.getElementById('search_input').addEventListener('keydown', async (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        await searchAndDisplayResults();
+      }
+    });
+
+    const buttons = Array.from(document.getElementsByClassName('add_button'));
+    buttons.forEach((button) => {
+      button.addEventListener('click', async (e) => {
+        const userId = e.target.getAttribute('data-user-id');
+        const user = matchFriends.users.find((u) => u.id === parseInt(userId));
+        if (user.is_friend === false) {
+          await postAddFriend(userId);
+          alert('New friend added successfully!');
+          e.target.style.cursor = 'not-allowed';
+          e.target.style.backgroundColor = 'grey';
+          e.target.disabled = true;
+          e.target.parentNode.classList.add('disabled_friend_button');
+        }
+      });
     });
   }
   async moveTabs(tabText) {
@@ -229,7 +231,7 @@ export default class extends AbstractView {
       container.classList.add('search_container');
       const searchHTML = `
         <div class="form_container">
-          <form action="#" class="form_box"> 
+          <form action="#" class="form_box">
             <div class="input_container">
               <input type="search" id="search_input" placeholder="Search for a friend..." required>
             </div>
@@ -243,7 +245,6 @@ export default class extends AbstractView {
       container.innerHTML = searchHTML;
       profileContent.replaceChildren(container);
       this.showSearchResult();
-      document.querySelector('.profile_content').textContent = 'search';
     }
   }
 
