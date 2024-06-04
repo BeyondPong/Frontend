@@ -29,8 +29,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
+  /* justify-content: space-between; */
+  justify-content: center;
+  gap: 0.5rem;
   width: 50%;
 }
 
@@ -46,7 +47,6 @@
 }
 
 .profile_name,
-.profile_status,
 .profile_count,
 .profile_lang {
   text-align: center;
@@ -54,27 +54,55 @@
   color: var(--profile-color);
 }
 
+.profile_status {
+  text-align: center;
+  width: 100%;
+}
+
 .profile_name {
   font-size: 1.2rem;
 }
 
 .profile_status_container {
-  font-size: 0.8rem;
-  width: 60%;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  margin-left: 2rem;
-  gap: 0.5rem;
+  gap: 1rem;
+}
+
+.status__input {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.status__msg {
+  margin: 1.4rem;
+}
+
+.status__msg,
+.status__input {
+  font-size: 0.8rem;
+}
+
+.status__msg,
+#status_input {
+  color: var(--profile-color);
+}
+
+#status_input_length {
+  font-size: 0.7rem;
+  color: var(--profile-color);
+  margin-left: 7rem;
 }
 
 .profile_status {
-  width: 80%;
+  width: 100%;
 }
 
 .profile_count {
-  margin-top: 1rem;
+  /* margin-top: 1rem; */
   font-size: calc(1vw + 2vh + 0.5vmin);
 }
 
@@ -88,7 +116,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  margin-left: 4rem;
+  margin-left: 3rem;
 }
 
 .profile_lang_container {
@@ -124,6 +152,26 @@
   cursor: pointer;
 }
 
+#status_input {
+  outline: none;
+  background-color: transparent;
+  border-color: transparent;
+  border-bottom: 1px solid var(--profile-background);
+  color: var(--profile-color);
+}
+
+.profile_status_save {
+  width: 2rem;
+  height: 2rem;
+  cursor: pointer;
+  color: var(--profile-background);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
 .pencil-status {
   width: 2rem;
   height: 2rem;
@@ -139,7 +187,12 @@
   top: -0.5rem;
 }
 
+.hidden {
+  display: none;
+}
+
 /* history */
+
 .table_container {
   table-layout: fixed;
   width: 100%;
