@@ -2,6 +2,7 @@ import AbstractView from './AbstractView.js';
 import registry from '../state/Registry.js';
 import { words } from '../state/Registry.js';
 import { localGame } from '../game/localGame.js';
+import { remoteGame } from '../game/remoteGame.js';
 
 export default class extends AbstractView {
   constructor(params) {
@@ -87,7 +88,20 @@ export default class extends AbstractView {
           </div>
         </div>
       </div>`;
-    this.showModal(modalHtml);
+    await this.showModal(modalHtml);
+    const startButton = document.querySelector('#start_button');
+    startButton.addEventListener('click', async (e) => {
+      this.deleteModal();
+      e.target.style.display = 'none';
+      remoteGame.init();
+    });
+    startButton.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.target.style.display = 'none';
+        this.deleteModal();
+        remoteGame.init();
+      }
+    });
   }
   async tournamentModal() {
     const modalHtml = `
