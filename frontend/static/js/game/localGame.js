@@ -1,8 +1,8 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three/build/three.module.js';
 import { addBlurBackground } from '../utility/blurBackGround.js';
 
-export const localGame = (function (window, document) {
-  async function init() {
+export const localGame = {
+  async init() {
     addBlurBackground();
     const root = document.getElementById('app');
     while (root.childNodes.length > 0) {
@@ -369,9 +369,5 @@ export const localGame = (function (window, document) {
     document.addEventListener('keydown', containerKeyDown);
     document.addEventListener('keyup', containerKeyUp);
     renderer.domElement.style.cursor = 'none';
-  }
-
-  return {
-    init,
-  };
-})(window, window.document);
+  },
+};
