@@ -1,0 +1,47 @@
+canvas {
+  position: absolute;
+  top: 10%;
+  left: 25%;
+}
+
+.win {
+  color: var(--profile-color);
+  font-size: calc(1.5em + 1vw);
+}
+
+#scoreBoard {
+  position: absolute;
+  color: white;
+  top: 2%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: calc(1em + 1vw);
+}
+
+.buttonContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  position: absolute;
+  top: 25%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+}
+
+.gameButton {
+  color: var(--item-color);
+  font-size: calc(1em + 1vw);
+  cursor: pointer;
+}
+
+.gameButton:hover {
+  color: var(--profile-background);
+}
+
+.gameButton:focus {
+  color: var(--profile-background);
+  border: 2px solid var(--item-color);
+}
