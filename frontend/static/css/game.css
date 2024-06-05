@@ -10,12 +10,16 @@ canvas {
 }
 
 #scoreBoard {
+  display: flex;
   position: absolute;
+  flex-direction: column;
   color: white;
-  top: 2%;
-  left: 50%;
-  transform: translateX(-50%);
+  justify-content: center;
+  left: calc(25% + 50% + 20px);
   font-size: calc(1em + 1vw);
+  transform: translateX(0);
+  gap: 50%;
+  height: 100%;
 }
 
 .buttonContainer {
