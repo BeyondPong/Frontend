@@ -10,6 +10,12 @@ export const localGame = {
     }
     const $div = document.createElement('div');
     $div.id = 'scoreBoard';
+    const player1Score = document.createElement('div');
+    player1Score.id = 'player1Score';
+    const player2Score = document.createElement('div');
+    player2Score.id = 'player2Score';
+    $div.appendChild(player2Score);
+    $div.appendChild(player1Score);
     root.appendChild($div);
     let WIDTH = root.offsetWidth / 2,
       HEIGHT = root.offsetHeight / 1.2,
@@ -130,7 +136,8 @@ export const localGame = {
     }
 
     function updateScoreBoard() {
-      scoreBoard.innerHTML = '[Player1] ' + score.player2 + '&nbsp;&nbsp;&nbsp; [Player2] ' + score.player1;
+      document.getElementById('player1Score').innerText = 'Player 1: ' + score.player1;
+      document.getElementById('player2Score').innerText = 'Player 2: ' + score.player2;
     }
 
     function stopBall() {
@@ -271,7 +278,6 @@ export const localGame = {
           stopRender();
           document.removeEventListener('keydown', containerKeyDown);
           document.removeEventListener('keyup', containerKeyUp);
-          scoreBoard.innerHTML = '';
           if (score.player1 === 7) {
             gameEnd('Player 1');
           } else {
