@@ -1,7 +1,7 @@
 import AbstractView from './AbstractView.js';
 import registry from '../state/Registry.js';
 import { words } from '../state/Registry.js';
-import { localGame } from '../game/game.js';
+import { localGame } from '../game/localGame.js';
 
 export default class extends AbstractView {
   constructor(params) {
@@ -54,8 +54,22 @@ export default class extends AbstractView {
         </div>
       </div>
     `;
-    this.showModal(modalHtml);
+    await this.showModal(modalHtml);
+    const startButton = document.querySelector('#start_button');
+    startButton.addEventListener('click', async (e) => {
+      this.deleteModal();
+      e.target.style.display = 'none';
+      localGame.init();
+    });
+    startButton.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.target.style.display = 'none';
+        this.deleteModal();
+        localGame.init();
+      }
+    });
   }
+
   async remoteModal() {
     const modalHtml = `
       <div class="modal_content play_modal">
@@ -96,7 +110,7 @@ export default class extends AbstractView {
     this.showModal(modalHtml);
   }
 
-  showStartButton() {
+  async showStartButton() {
     const startButton = document.createElement('a');
     startButton.id = 'start_button';
     startButton.classList.add('nav__link');
@@ -106,27 +120,15 @@ export default class extends AbstractView {
     const playNav = document.querySelector('.play_nav');
     playNav.innerHTML = '';
     playNav.appendChild(startButton);
-    startButton.addEventListener('click', async (e) => {
-      this.deleteModal();
-      e.target.style.display = 'none';
-      localGame.init();
-    });
-    startButton.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.target.style.display = 'none';
-        this.deleteModal();
-        localGame.init();
-      }
-    });
   }
 
-  showModal(modalHtml) {
+  async showModal(modalHtml) {
     const modalContainer = document.createElement('section');
     modalContainer.classList.add('modal_container');
     modalContainer.innerHTML = modalHtml;
     const mainHeader = document.querySelector('.main_header');
     mainHeader.insertAdjacentElement('afterend', modalContainer);
-    this.showStartButton();
+    await this.showStartButton();
   }
 
   deleteModal() {
