@@ -189,19 +189,21 @@ export default class extends AbstractView {
         const imgCloseButton = document.getElementsByClassName('close_button')[0];
         const avatarList = Array.from(document.getElementsByClassName('profile_img_select'));
         const profileImage = document.getElementsByClassName('profile_img')[0];
+        let imgId;
+        let currentAvatarId = data.profile_img;
+
+        imgCloseButton.addEventListener('click', () => {
+          avatarModal.classList.add('hidden');
+        })
+        imgSaveButton.addEventListener('click', async () => {
+          const imgData = await patchAvatar(imgId);
+          avatarModal.classList.add('hidden');
+          profileImage.style.backgroundImage = `url(/static/assets/${imgId}.png)`;
+          currentAvatarId = imgId;
+        })
 
         avatarEditButton.addEventListener('click', () => {
-          let imgId;
-          const currentAvatarId = data.profile_img;
           avatarModal.classList.remove('hidden');
-          imgCloseButton.addEventListener('click', () => {
-            avatarModal.classList.add('hidden');
-          })
-          imgSaveButton.addEventListener('click', async () => {
-            const data = await patchAvatar(imgId);
-            avatarModal.classList.add('hidden');
-            profileImage.style.backgroundImage = `url(/static/assets/${imgId}.png)`;
-          })
           avatarList.forEach((img) => {
             img.style.border = '2px solid #fff';
 
