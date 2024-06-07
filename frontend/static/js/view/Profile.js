@@ -1,7 +1,7 @@
 import AbstractView from './AbstractView.js';
 import registry from '../state/Registry.js';
 import { words } from '../state/Registry.js';
-import { getProfileData, getHistoryData, getSearchResultData, postAddFriend, patchStatusMessage } from '../api/api.js';
+import { getProfileData, getHistoryData, getSearchResultData, postAddFriend, patchStatusMessage, patchAvatar } from '../api/api.js';
 
 export default class extends AbstractView {
   constructor(params) {
@@ -141,8 +141,8 @@ export default class extends AbstractView {
         const profileHTML = `
         <div class="profile_content_elements">
             <div class="profile_img_container">
-              <div class="profile_img" style="background-image: url(${data.profile_img});">
-                <button class="profile_img_edit pencil-profile" id="profile_img_edit"><i class="fa-solid fa-pencil"></i></button>
+              <div class="profile_img" style="background-image: url(/static/assets/${data.profile_img}.png);">
+                <button class="profile_img_edit pencil-profile" id="avatar_edit"><i class="fa-solid fa-pencil"></i></button>
               </div>
             </div>
             <div class="profile_name_container">
@@ -164,10 +164,65 @@ export default class extends AbstractView {
             </div>
             <span class="profile_count">${data.win_cnt}${words[registry[1].lang].win} ${data.lose_cnt}${words[registry[1].lang].lose
           } </span>
+          <section class="profile_img_modal hidden">
+            <div class="profile_img_modal_flex">
+              <div class="profile_img_set">
+                <div class="profile_img_select" data-img-id="1" style="background-image: url(/static/assets/1.png);"></div>
+                <div class="profile_img_select" data-img-id="2" style="background-image: url(/static/assets/2.png);"></div>
+                <div class="profile_img_select" data-img-id="3" style="background-image: url(/static/assets/3.png);"></div>
+                <div class="profile_img_select" data-img-id="4" style="background-image: url(/static/assets/4.png);"></div>
+              </div>
+              <div class="profile_img_buttons">
+                <div><button class="save_button">SAVE</button></div>
+                <div><button class="close_button">CLOSE</button></div>
+              </div>
+            </div>
+          </section>
         </div>
     `;
         container.innerHTML = profileHTML;
         profileContent.replaceChildren(container);
+
+        const avatarEditButton = document.getElementById('avatar_edit');
+        const avatarModal = document.getElementsByClassName('profile_img_modal')[0];
+        const imgSaveButton = document.getElementsByClassName('save_button')[0];
+        const imgCloseButton = document.getElementsByClassName('close_button')[0];
+        const avatarList = Array.from(document.getElementsByClassName('profile_img_select'));
+        const profileImage = document.getElementsByClassName('profile_img')[0];
+
+        avatarEditButton.addEventListener('click', () => {
+          let imgId;
+          const currentAvatarId = data.profile_img;
+          avatarModal.classList.remove('hidden');
+          imgCloseButton.addEventListener('click', () => {
+            avatarModal.classList.add('hidden');
+          })
+          imgSaveButton.addEventListener('click', async () => {
+            const data = await patchAvatar(imgId);
+            avatarModal.classList.add('hidden');
+            profileImage.style.backgroundImage = `url(/static/assets/${imgId}.png)`;
+          })
+          avatarList.forEach((img) => {
+            img.style.border = '2px solid #fff';
+
+            if (img.getAttribute('data-img-id') === currentAvatarId.toString()) {
+              img.style.border = '4px solid var(--profile-background)';
+            }
+            img.addEventListener('click', () => {
+              avatarList.forEach(img => {
+                img.style.border = '2px solid #fff';
+              });
+              img.style.border = '4px solid var(--profile-background)';
+              imgId = img.getAttribute('data-img-id');
+            })
+            img.addEventListener('mouseenter', () => {
+              img.style.transform = 'scale(1.1)';
+            })
+            img.addEventListener('mouseleave', () => {
+              img.style.transform = 'none';
+            })
+          })
+        })
 
         const input = document.getElementById('status_input');
         const message = document.getElementById('status_msg');

@@ -140,6 +140,15 @@
   right: 0;
 }
 
+.save_button {
+  padding: 0.2rem 1rem;
+  background-color: var(--profile-background);
+  border-radius: 5px;
+  color: var(--black-color);
+  cursor: pointer;
+  font-weight: bold;
+}
+
 .profile_img_edit {
   width: 2rem;
   height: 2rem;
@@ -185,6 +194,61 @@
   position: absolute;
   right: 0.1rem;
   top: -0.5rem;
+}
+
+/* profile image edit / modal */
+.profile_img_modal {
+  width: auto;
+  height: auto;
+  overflow-x: none;
+  background-color: rgba(0, 0, 0, 0.9);
+  border-radius: 3%;
+  position: absolute;
+  margin: 0;
+}
+
+.profile_img_modal_flex {
+  display: flex;
+  flex-direction: column;
+  justify-items: center;
+  align-items: center;
+  gap: 2rem;
+}
+
+.profile_img_set {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  justify-items: center;
+  padding: 1rem;
+  gap: 1em;
+}
+
+.profile_img_select {
+  width: 7rem;
+  height: 7rem;
+  background-size: cover;
+  background-position: center;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  padding: 1rem;
+  transition: border-color 0.3s;
+  cursor: pointer;
+}
+
+.profile_img_buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+.close_button {
+  padding: 0.2rem 1rem;
+  background-color: var(--profile-color);
+  border-radius: 5px;
+  color: var(--black-color);
+  cursor: pointer;
+  font-weight: bold;
 }
 
 .hidden {
