@@ -17,32 +17,42 @@ export const localGame = {
     $div.appendChild(player2Score);
     $div.appendChild(player1Score);
     root.appendChild($div);
-    let WIDTH = root.offsetWidth / 2,
-      HEIGHT = root.offsetHeight / 1.2,
-      VIEW_ANGLE = 100,
-      ASPECT = WIDTH / HEIGHT,
-      NEAR = 0.1,
-      FAR = 15000,
-      FIELD_WIDTH = 1200,
-      FIELD_LENGTH = 3000,
-      BALL_RADIUS = 25,
-      PADDLE_WIDTH = 200,
-      PADDLE_HEIGHT = 30,
-      scoreBoard = document.getElementById('scoreBoard'),
-      container,
-      renderer,
-      camera,
-      mainLight,
-      scene,
-      ball,
-      paddle1,
-      paddle2,
-      field,
-      running,
-      score = {
-        player1: 0,
-        player2: 0,
+    let container, renderer, camera, mainLight, scene, ball, paddle1, paddle2, field, running;
+    let VIEW_ANGLE_INCREMENT = 5;
+    let score = {
+      player1: 0,
+      player2: 0,
+    };
+
+    function updateDimensions() {
+      const WIDTH = root.offsetWidth / 2;
+      const HEIGHT = root.offsetHeight / 1.2;
+      const VIEW_ANGLE = WIDTH / 6;
+      const ASPECT = WIDTH / HEIGHT;
+      const NEAR = 0.1;
+      const FAR = WIDTH * 100;
+      const FIELD_WIDTH = WIDTH * 2;
+      const FIELD_LENGTH = HEIGHT * 3;
+      const BALL_RADIUS = HEIGHT / 15;
+      const PADDLE_WIDTH = WIDTH / 2;
+      const PADDLE_HEIGHT = HEIGHT / 3;
+
+      return {
+        WIDTH,
+        HEIGHT,
+        VIEW_ANGLE,
+        ASPECT,
+        NEAR,
+        FAR,
+        FIELD_WIDTH,
+        FIELD_LENGTH,
+        BALL_RADIUS,
+        PADDLE_WIDTH,
+        PADDLE_HEIGHT,
       };
+    }
+
+    let dimensions = updateDimensions();
 
     function startBallMovement() {
       let direction = Math.random() > 0.5 ? -1 : 1;
@@ -94,18 +104,19 @@ export const localGame = {
     }
 
     function updateBallPosition() {
-      var ballPos = ball.position;
+      let ballPos = ball.position;
 
       ballPos.x += ball.$velocity.x;
       ballPos.z += ball.$velocity.z;
 
-      ballPos.y = -(((ballPos.z - 1) * (ballPos.z - 1)) / 5000) + 435;
+      let maxHeight = dimensions.HEIGHT / 3;
+      ballPos.y = -(((ballPos.z - 1) * (ballPos.z - 1)) / 5000) + maxHeight;
     }
 
     function isSideCollision() {
-      var ballX = ball.position.x,
-        halfFieldWidth = FIELD_WIDTH / 2;
-      return ballX - BALL_RADIUS < -halfFieldWidth || ballX + BALL_RADIUS > halfFieldWidth;
+      let ballX = ball.position.x,
+        halfFieldWidth = dimensions.FIELD_WIDTH / 2;
+      return ballX - dimensions.BALL_RADIUS < -halfFieldWidth || ballX + dimensions.BALL_RADIUS > halfFieldWidth;
     }
 
     function hitBallBack(paddle) {
@@ -114,15 +125,15 @@ export const localGame = {
     }
 
     function isPaddle2Collision() {
-      return ball.position.z - BALL_RADIUS <= paddle2.position.z && isBallAlignedWithPaddle(paddle2);
+      return ball.position.z - dimensions.BALL_RADIUS <= paddle2.position.z && isBallAlignedWithPaddle(paddle2);
     }
 
     function isPaddle1Collision() {
-      return ball.position.z + BALL_RADIUS >= paddle1.position.z && isBallAlignedWithPaddle(paddle1);
+      return ball.position.z + dimensions.BALL_RADIUS >= paddle1.position.z && isBallAlignedWithPaddle(paddle1);
     }
 
     function isBallAlignedWithPaddle(paddle) {
-      var halfPaddleWidth = PADDLE_WIDTH / 2,
+      let halfPaddleWidth = dimensions.PADDLE_WIDTH / 2,
         paddleX = paddle.position.x,
         ballX = ball.position.x;
       return ballX > paddleX - halfPaddleWidth && ballX < paddleX + halfPaddleWidth;
@@ -161,6 +172,12 @@ export const localGame = {
     let paddle2LeftPressed = false;
     let paddle2RightPressed = false;
 
+    function adjustViewAngle(amount) {
+      dimensions.VIEW_ANGLE += amount;
+      camera.fov = dimensions.VIEW_ANGLE;
+      camera.updateProjectionMatrix();
+    }
+
     function containerKeyDown(e) {
       if (e.code === 'ArrowLeft') {
         e.preventDefault();
@@ -174,9 +191,12 @@ export const localGame = {
       } else if (e.code === 'KeyD') {
         e.preventDefault();
         paddle2RightPressed = true;
-      }
-      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+      } else if (e.code === 'ArrowUp') {
         e.preventDefault();
+        adjustViewAngle(VIEW_ANGLE_INCREMENT);
+      } else if (e.code === 'ArrowDown') {
+        e.preventDefault();
+        adjustViewAngle(-VIEW_ANGLE_INCREMENT);
       }
     }
 
@@ -213,8 +233,8 @@ export const localGame = {
       if (paddle2RightPressed) {
         paddle2.position.x += 10;
       }
-      const halfFieldWidth = FIELD_WIDTH / 2;
-      const halfPaddleWidth = PADDLE_WIDTH / 2;
+      const halfFieldWidth = dimensions.FIELD_WIDTH / 2;
+      const halfPaddleWidth = dimensions.PADDLE_WIDTH / 2;
       if (paddle1.position.x - halfPaddleWidth < -halfFieldWidth) {
         paddle1.position.x = -halfFieldWidth + halfPaddleWidth;
       }
@@ -293,87 +313,98 @@ export const localGame = {
       }
     }
 
-    document.addEventListener('keydown', containerKeyDown);
-    document.addEventListener('keyup', containerKeyUp);
-
     function reset() {
       ball.position.set(0, 0, 0);
       ball.$velocity = null;
-      paddle1.position.set(0, 0, FIELD_LENGTH / 2);
-      paddle2.position.set(0, 0, -FIELD_LENGTH / 2);
+      paddle1.position.set(0, 0, dimensions.FIELD_LENGTH / 2);
+      paddle2.position.set(0, 0, -dimensions.FIELD_LENGTH / 2);
     }
 
     function addPaddle() {
-      var paddleGeometry = new THREE.BoxGeometry(PADDLE_WIDTH, PADDLE_HEIGHT, 10, 1, 1, 1),
+      let paddleGeometry = new THREE.BoxGeometry(dimensions.PADDLE_WIDTH, dimensions.PADDLE_HEIGHT, 10, 1, 1, 1),
         paddleMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff }),
         paddle = new THREE.Mesh(paddleGeometry, paddleMaterial);
       scene.add(paddle);
       return paddle;
     }
 
-    container = document.getElementById('app');
+    let edge;
+    function setRender() {
+      container = document.getElementById('app');
+      renderer = new THREE.WebGLRenderer();
+      renderer.setSize(dimensions.WIDTH, dimensions.HEIGHT);
+      renderer.setClearColor(0x000000, 1);
+      container.appendChild(renderer.domElement);
 
-    renderer = new THREE.WebGLRenderer();
-    renderer.setSize(WIDTH, HEIGHT);
-    renderer.setClearColor(0x000000, 1);
-    container.appendChild(renderer.domElement);
+      camera = new THREE.PerspectiveCamera(dimensions.VIEW_ANGLE, dimensions.ASPECT, dimensions.NEAR, dimensions.FAR);
+      camera.position.set(0, 1000, dimensions.FIELD_LENGTH / 2 + 500);
+      scene = new THREE.Scene();
+      scene.add(camera);
 
-    camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
-    camera.position.set(0, 1000, FIELD_LENGTH / 2 + 500);
+      let fieldGeometry = new THREE.BoxGeometry(dimensions.FIELD_WIDTH, 5, dimensions.FIELD_LENGTH, 1, 1, 1);
+      let fieldMaterial = new THREE.MeshLambertMaterial({ color: 0x0000ff });
+      field = new THREE.Mesh(fieldGeometry, fieldMaterial);
+      field.position.set(0, -50, 0);
+      scene.add(field);
 
-    scene = new THREE.Scene();
-    scene.add(camera);
+      paddle1 = addPaddle();
+      paddle1.position.z = dimensions.FIELD_LENGTH / 2;
+      paddle2 = addPaddle();
+      paddle2.position.z = -dimensions.FIELD_LENGTH / 2;
 
-    var fieldGeometry = new THREE.BoxGeometry(FIELD_WIDTH, 5, FIELD_LENGTH, 1, 1, 1),
-      fieldMaterial = new THREE.MeshLambertMaterial({ color: 0x0000ff });
-    field = new THREE.Mesh(fieldGeometry, fieldMaterial);
-    field.position.set(0, -50, 0);
+      let ballGeometry = new THREE.SphereGeometry(dimensions.BALL_RADIUS, 16, 16);
+      let ballMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff });
+      ball = new THREE.Mesh(ballGeometry, ballMaterial);
+      scene.add(ball);
 
-    scene.add(field);
-    paddle1 = addPaddle();
-    paddle1.position.z = FIELD_LENGTH / 2;
-    paddle2 = addPaddle();
-    paddle2.position.z = -FIELD_LENGTH / 2;
+      let edgeGeometry = new THREE.EdgesGeometry(fieldGeometry);
+      let edgeMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 2 });
+      edge = new THREE.LineSegments(edgeGeometry, edgeMaterial);
+      field.add(edge);
 
-    let ballGeometry = new THREE.SphereGeometry(BALL_RADIUS, 16, 16),
-      ballMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff });
-    ball = new THREE.Mesh(ballGeometry, ballMaterial);
-    scene.add(ball);
+      camera.lookAt(ball.position);
+      mainLight = new THREE.HemisphereLight(0xffffff, 0x003300);
+      scene.add(mainLight);
+      camera.lookAt(ball.position);
 
-    let edgeGeometry = new THREE.EdgesGeometry(fieldGeometry);
-    let edgeMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 2 });
-    let edge = new THREE.LineSegments(edgeGeometry, edgeMaterial);
-    field.add(edge);
+      updateScoreBoard();
+      startRender();
+      document.addEventListener('keydown', containerKeyDown);
+      document.addEventListener('keyup', containerKeyUp);
+      renderer.domElement.style.cursor = 'none';
+    }
 
-    camera.lookAt(ball.position);
+    function onWindowResize() {
+      dimensions = updateDimensions();
 
-    mainLight = new THREE.HemisphereLight(0xffffff, 0x003300);
-    scene.add(mainLight);
+      camera.aspect = dimensions.ASPECT;
+      camera.fov = dimensions.VIEW_ANGLE;
+      camera.updateProjectionMatrix();
 
-    let dashMaterial = new THREE.LineDashedMaterial({
-      color: 0xffffff,
-      linewidth: 1,
-      scale: 1,
-      dashSize: 3,
-      gapSize: 1,
-    });
+      renderer.setSize(dimensions.WIDTH, dimensions.HEIGHT);
 
-    let points = [];
-    points.push(new THREE.Vector3(-FIELD_WIDTH / 2, 0, 0));
-    points.push(new THREE.Vector3(FIELD_WIDTH / 2, 0, 0));
-    let dashGeometry = new THREE.BufferGeometry().setFromPoints(points);
+      field.geometry = new THREE.BoxGeometry(dimensions.FIELD_WIDTH, 5, dimensions.FIELD_LENGTH, 1, 1, 1);
+      paddle1.scale.set(
+        dimensions.PADDLE_WIDTH / paddle1.geometry.parameters.width,
+        dimensions.PADDLE_HEIGHT / paddle1.geometry.parameters.height,
+        1,
+      );
+      paddle2.scale.set(
+        dimensions.PADDLE_WIDTH / paddle2.geometry.parameters.width,
+        dimensions.PADDLE_HEIGHT / paddle2.geometry.parameters.height,
+        1,
+      );
+      ball.geometry = new THREE.SphereGeometry(dimensions.BALL_RADIUS, 16, 16);
+      paddle1.position.z = dimensions.FIELD_LENGTH / 2;
+      paddle2.position.z = -dimensions.FIELD_LENGTH / 2;
+      camera.position.set(0, 1000, dimensions.FIELD_LENGTH / 2 + 500);
+      let newEdgeGeometry = new THREE.EdgesGeometry(field.geometry);
+      edge.geometry.dispose();
+      edge.geometry = newEdgeGeometry;
+      updateScoreBoard();
+    }
 
-    let dashLine = new THREE.LineSegments(dashGeometry, dashMaterial);
-    dashLine.computeLineDistances();
-    dashLine.position.set(0, -45, 0);
-
-    scene.add(dashLine);
-
-    camera.lookAt(ball.position);
-    updateScoreBoard();
-    startRender();
-    document.addEventListener('keydown', containerKeyDown);
-    document.addEventListener('keyup', containerKeyUp);
-    renderer.domElement.style.cursor = 'none';
+    window.addEventListener('resize', onWindowResize, false);
+    setRender();
   },
 };
