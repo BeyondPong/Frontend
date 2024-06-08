@@ -4,36 +4,44 @@ export const remoteGame = {
   async init() {
     addBlurBackground();
     const $app = document.getElementById('app');
+    const $div = document.createElement('div');
+    const player1Score = document.createElement('div');
+    const player2Score = document.createElement('div');
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
-    canvas.width = $app.offsetWidth / 2;
-    canvas.height = $app.offsetHeight / 1.2;
-    while ($app.firstChild) {
-      $app.removeChild($app.firstChild);
+    let grid = 15;
+    let paddleWidth = grid * 5;
+    let maxPaddleX = canvas.width - grid - paddleWidth;
+    const paddleSpeed = 6;
+    const ballSpeed = 4;
+
+    function resize() {
+      canvas.width = $app.offsetWidth / 2;
+      canvas.height = $app.offsetHeight / 1.2;
+      paddleWidth = canvas.width / 8;
+      maxPaddleX = canvas.width - grid - paddleWidth;
     }
-    $app.appendChild(canvas);
-    const grid = 15;
-    const paddleWidth = grid * 5; // 80
-    const maxPaddleX = canvas.width - grid - paddleWidth;
 
-    let paddleSpeed = 6;
-    let ballSpeed = 2.5;
+    resize();
+    window.addEventListener('resize', resize);
 
-    const topPaddle = {
+    let topPaddle = {
       x: canvas.width / 2 - paddleWidth / 2,
       y: grid * 2,
       width: paddleWidth,
       height: grid,
-      dx: 0,
+      paddleLeftPressed: false,
+      paddleRightPressed: false,
     };
-    const bottomPaddle = {
+    let bottomPaddle = {
       x: canvas.width / 2 - paddleWidth / 2,
       y: canvas.height - grid * 3,
       width: paddleWidth,
       height: grid,
-      dx: 0,
+      paddleLeftPressed: false,
+      paddleRightPressed: false,
     };
-    const ball = {
+    let ball = {
       x: canvas.width / 2,
       y: canvas.height / 2,
       width: grid,
@@ -42,6 +50,16 @@ export const remoteGame = {
       dx: ballSpeed,
       dy: -ballSpeed,
     };
+    while ($app.firstChild) {
+      $app.removeChild($app.firstChild);
+    }
+    $div.id = 'scoreBoard';
+    player1Score.id = 'player1Score';
+    player2Score.id = 'player2Score';
+    $div.appendChild(player1Score);
+    $div.appendChild(player2Score);
+    $app.appendChild(canvas);
+    $app.appendChild($div);
 
     function collides(obj1, obj2) {
       return (
@@ -54,12 +72,24 @@ export const remoteGame = {
 
     function loop() {
       requestAnimationFrame(loop);
+      topPaddle.width = paddleWidth;
+      bottomPaddle.width = paddleWidth;
       context.clearRect(0, 0, canvas.width, canvas.height);
 
       context.fillStyle = 'blue';
       context.fillRect(0, 0, canvas.width, canvas.height);
-      topPaddle.x += topPaddle.dx;
-      bottomPaddle.x += bottomPaddle.dx;
+      if (topPaddle.paddleLeftPressed) {
+        topPaddle.x -= paddleSpeed;
+      }
+      if (topPaddle.paddleRightPressed) {
+        topPaddle.x += paddleSpeed;
+      }
+      if (bottomPaddle.paddleLeftPressed) {
+        bottomPaddle.x -= paddleSpeed;
+      }
+      if (bottomPaddle.paddleRightPressed) {
+        bottomPaddle.x += paddleSpeed;
+      }
 
       if (topPaddle.x < grid) {
         topPaddle.x = grid;
@@ -120,28 +150,43 @@ export const remoteGame = {
       }
     }
 
-    document.addEventListener('keydown', function (e) {
-      if (e.which === 37) {
-        bottomPaddle.dx = -paddleSpeed;
-      } else if (e.which === 39) {
-        bottomPaddle.dx = paddleSpeed;
-      }
-      if (e.which === 65) {
-        topPaddle.dx = -paddleSpeed;
-      } else if (e.which === 68) {
-        topPaddle.dx = paddleSpeed;
-      }
-    });
-
-    document.addEventListener('keyup', function (e) {
-      if (e.which === 37 || e.which === 39) {
-        bottomPaddle.dx = 0;
-      }
-      if (e.which === 65 || e.which === 68) {
-        topPaddle.dx = 0;
-      }
-    });
+    function addKeyboardEvent() {
+      document.addEventListener('keydown', function (e) {
+        if (e.code === 'ArrowLeft') {
+          e.preventDefault();
+          bottomPaddle.paddleLeftPressed = true;
+        } else if (e.code === 'ArrowRight') {
+          e.preventDefault();
+          bottomPaddle.paddleRightPressed = true;
+        } else if (e.code === 'KeyA') {
+          e.preventDefault();
+          topPaddle.paddleLeftPressed = true;
+        } else if (e.code === 'KeyD') {
+          e.preventDefault();
+          topPaddle.paddleRightPressed = true;
+        }
+      });
+      document.addEventListener('keyup', function (e) {
+        if (e.code === 'ArrowLeft') {
+          e.preventDefault();
+          bottomPaddle.paddleLeftPressed = false;
+        } else if (e.code === 'ArrowRight') {
+          e.preventDefault();
+          bottomPaddle.paddleRightPressed = false;
+        } else if (e.code === 'KeyA') {
+          e.preventDefault();
+          topPaddle.paddleLeftPressed = false;
+        } else if (e.code === 'KeyD') {
+          e.preventDefault();
+          topPaddle.paddleRightPressed = false;
+        }
+        if (e.key == 'ArrowUp' || e.key == 'ArrowDown') {
+          e.preventDefault();
+        }
+      });
+    }
 
     requestAnimationFrame(loop);
+    addKeyboardEvent();
   },
 };
