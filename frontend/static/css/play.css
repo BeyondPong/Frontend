@@ -3,9 +3,9 @@
   grid-template-rows: 0.5fr 1fr 0.5fr;
   grid-template-columns: 0.5fr 2fr 0.5fr;
   grid-template-areas:
-    ". title ."
-    ". image ."
-    ". move .";
+    '. title .'
+    '. image .'
+    '. move .';
 }
 
 .play_modal h2 {
@@ -19,18 +19,20 @@
 
 .local_play_modal_img_container {
   grid-area: image;
-  background-image: url("/static/assets/localPlayModalImg.png");
-  background-size: cover;
+  background-image: url('/static/assets/localPlayModalImg.png');
+  background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
+  width: 100%;
 }
 
 .remote_play_modal_img_container {
   grid-area: image;
-  background-image: url("/static/assets/remotePlayModalImg.png");
-  background-size: cover;
+  background-image: url('/static/assets/remotePlayModalImg.png');
+  background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
+  width: 100%;
 }
 
 .play_modal_text {
