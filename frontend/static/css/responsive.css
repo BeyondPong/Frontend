@@ -49,6 +49,22 @@
     width: 100%;
   }
 
+  /* profile */
+
+  .profile_img_modal {
+    max-height: 50vh;
+    margin-top: 5em;
+  }
+
+  .profile_img_modal_flex {
+    gap: 0;
+  }
+
+  .profile_img_select {
+    max-width: 20vw;
+    max-height: 20vw;
+  }
+
   /* search */
   .search_result_container {
     padding: 0.5rem;

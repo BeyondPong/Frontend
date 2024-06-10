@@ -1,7 +1,7 @@
 import AbstractView from './AbstractView.js';
 import registry from '../state/Registry.js';
 import { words } from '../state/Registry.js';
-import { getProfileData, getHistoryData, getSearchResultData, postAddFriend } from '../api/api.js';
+import { getProfileData, getHistoryData, getSearchResultData, postAddFriend, patchStatusMessage, patchAvatar } from '../api/api.js';
 
 export default class extends AbstractView {
   constructor(params) {
@@ -129,8 +129,8 @@ export default class extends AbstractView {
         const profileHTML = `
         <div class="profile_content_elements">
             <div class="profile_img_container">
-              <div class="profile_img" style="background-image: url(${data.profile_img});">
-                <button class="profile_img_edit pencil-profile" id="profile_img_edit"><i class="fa-solid fa-pencil"></i></button>
+              <div class="profile_img" style="background-image: url(/static/assets/${data.profile_img}.png);">
+                <button class="profile_img_edit pencil-profile" id="avatar_edit"><i class="fa-solid fa-pencil"></i></button>
               </div>
             </div>
             <div class="profile_name_container">
@@ -139,18 +139,126 @@ export default class extends AbstractView {
             </div>
             <div class="profile_status_container">
               <div class="profile_status">
-                <span>${data.status_msg}</span>
+                <div class="status__msg"><span id="status_msg">${data.status_msg}</span></div>
+                <div class="status__input">
+                  <input type="text" id="status_input" class="hidden" />
+                  <div id="status_input_length" class="hidden"><span id="length"></span><span>/20</span></div>
+                </div>
               </div>
+              <div>
               <button class="profile_img_edit" id="status_edit"><i class="fa-solid fa-pencil"></i></button>
+              <button class="profile_status_save hidden" id="status_save"><i class="fa-solid fa-check"></i></button>
+              </div>
             </div>
-            <span class="profile_count">${data.win_cnt}${words[registry[1].lang].win} ${data.lose_cnt}${
-          words[registry[1].lang].lose
-        } </span>
+            <span class="profile_count">${data.win_cnt}${words[registry[1].lang].win} ${data.lose_cnt}${words[registry[1].lang].lose
+          } </span>
+          <section class="profile_img_modal hidden">
+            <div class="profile_img_modal_flex">
+              <div class="profile_img_set">
+                <div class="profile_img_select" data-img-id="1" style="background-image: url(/static/assets/1.png);"></div>
+                <div class="profile_img_select" data-img-id="2" style="background-image: url(/static/assets/2.png);"></div>
+                <div class="profile_img_select" data-img-id="3" style="background-image: url(/static/assets/3.png);"></div>
+                <div class="profile_img_select" data-img-id="4" style="background-image: url(/static/assets/4.png);"></div>
+              </div>
+              <div class="profile_img_buttons">
+                <div><button class="save_button">SAVE</button></div>
+                <div><button class="close_button">CLOSE</button></div>
+              </div>
+            </div>
+          </section>
         </div>
     `;
         container.innerHTML = profileHTML;
         profileContent.replaceChildren(container);
-        document.getElementById('profile_img_edit').addEventListener('click', () => {});
+        const avatarEditButton = document.getElementById('avatar_edit');
+        const avatarModal = document.getElementsByClassName('profile_img_modal')[0];
+        const imgSaveButton = document.getElementsByClassName('save_button')[0];
+        const imgCloseButton = document.getElementsByClassName('close_button')[0];
+        const avatarList = Array.from(document.getElementsByClassName('profile_img_select'));
+        const profileImage = document.getElementsByClassName('profile_img')[0];
+        let imgId;
+        let currentAvatarId = data.profile_img;
+
+        imgCloseButton.addEventListener('click', () => {
+          avatarModal.classList.add('hidden');
+        })
+        imgSaveButton.addEventListener('click', async () => {
+          const imgData = await patchAvatar(imgId);
+          avatarModal.classList.add('hidden');
+          profileImage.style.backgroundImage = `url(/static/assets/${imgId}.png)`;
+          currentAvatarId = imgId;
+        })
+
+        avatarEditButton.addEventListener('click', () => {
+          avatarModal.classList.remove('hidden');
+          avatarList.forEach((img) => {
+            img.style.border = '2px solid #fff';
+
+            if (img.getAttribute('data-img-id') === currentAvatarId.toString()) {
+              img.style.border = '4px solid var(--profile-background)';
+            }
+            img.addEventListener('click', () => {
+              avatarList.forEach(img => {
+                img.style.border = '2px solid #fff';
+              });
+              img.style.border = '4px solid var(--profile-background)';
+              imgId = img.getAttribute('data-img-id');
+            })
+            img.addEventListener('mouseenter', () => {
+              img.style.transform = 'scale(1.1)';
+            })
+            img.addEventListener('mouseleave', () => {
+              img.style.transform = 'none';
+            })
+          })
+        })
+
+        const input = document.getElementById('status_input');
+        const message = document.getElementById('status_msg');
+        const editButton = document.getElementById('status_edit');
+        const saveButton = document.getElementById('status_save');
+        const lengthContainer = document.getElementById('status_input_length');
+        const length = document.getElementById('length');
+
+        editButton.addEventListener('click', () => {
+          editButton.classList.toggle('hidden');
+          saveButton.classList.toggle('hidden');
+          message.classList.toggle('hidden');
+          lengthContainer.classList.toggle('hidden');
+          input.classList.toggle('hidden');
+          input.value = message.textContent;
+          length.textContent = message.textContent.length;
+          input.addEventListener('input', () => {
+            length.textContent = input.value.length;
+            if (input.value === '' || input.value.length > 20) {
+              input.style.borderBottomColor = 'var(--disabled-button-background-color)';
+              saveButton.style.cursor = 'not-allowed';
+              saveButton.style.color = 'var(--disabled-button-background-color)';
+              saveButton.disabled = true;
+            } else {
+              input.style.borderBottomColor = 'var(--profile-background)';
+              saveButton.style.cursor = 'pointer';
+              saveButton.style.color = 'var(--profile-background)';
+              saveButton.disabled = false;
+            }
+            if (input.value.length > 20) {
+              input.disabled = true;
+            } else {
+              input.disabled = false;
+            }
+          })
+        });
+        saveButton.addEventListener('click', async () => {
+          if (input.value !== message.textContent) {
+            const data = await patchStatusMessage(input.value);
+          }
+          message.textContent = input.value;
+          editButton.classList.toggle('hidden');
+          saveButton.classList.toggle('hidden');
+          input.classList.toggle('hidden');
+          message.classList.toggle('hidden');
+          lengthContainer.classList.toggle('hidden');
+        })
       }
     } else if (tabText === words[registry[1].lang].history) {
       const container = document.createElement('div');

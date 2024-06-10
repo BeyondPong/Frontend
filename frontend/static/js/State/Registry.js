@@ -1,3 +1,5 @@
+import { patchLanguage } from "../api/api.js";
+
 export const getStoredLang = () => {
   return localStorage.getItem('lang') || 'en';
 };
@@ -9,6 +11,9 @@ export const setStoredLang = (lang) => {
 export const changeLanguage = (lang) => {
   registry[1].lang = lang;
   setStoredLang(lang);
+  if (registry[0].islogin === true) {
+    const data = patchLanguage(lang);
+  }
 };
 
 const registry = [{ islogin: true }, { lang: getStoredLang() }];
