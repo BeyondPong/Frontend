@@ -1,6 +1,8 @@
-import AbstractView from "./AbstractView.js";
-import registry from "../state/Registry.js";
-import { words } from "../state/Registry.js";
+import AbstractView from './AbstractView.js';
+import registry from '../state/Registry.js';
+import { words } from '../state/Registry.js';
+import { localGame } from '../game/localGame.js';
+import { remoteGame } from '../game/remoteGame.js';
 
 export default class extends AbstractView {
   constructor(params) {
@@ -13,15 +15,9 @@ export default class extends AbstractView {
         <a href="/" id="main_link" class="nav__link" data-link>Ping? Pong!</a>
       </header>
 			<nav class="play_nav">
-        <a tabindex="0" class="nav__link" id="local_link">${
-          words[registry[1].lang].local
-        }</a>
-         <a tabindex="0" class="nav__link" id="remote_link">${
-           words[registry[1].lang].remote
-         }</a>
-         <a tabindex="0" class="nav__link" id="tournament_link">${
-           words[registry[1].lang].tournament
-         }</a>
+        <a tabindex="0" class="nav__link" id="local_link">${words[registry[1].lang].local}</a>
+         <a tabindex="0" class="nav__link" id="remote_link">${words[registry[1].lang].remote}</a>
+         <a tabindex="0" class="nav__link" id="tournament_link">${words[registry[1].lang].tournament}</a>
 			</nav>
 			`;
   }
@@ -59,8 +55,22 @@ export default class extends AbstractView {
         </div>
       </div>
     `;
-    this.showModal(modalHtml);
+    await this.showModal(modalHtml);
+    const startButton = document.querySelector('#start_button');
+    startButton.addEventListener('click', async (e) => {
+      this.deleteModal();
+      e.target.style.display = 'none';
+      localGame.init();
+    });
+    startButton.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.target.style.display = 'none';
+        this.deleteModal();
+        localGame.init();
+      }
+    });
   }
+
   async remoteModal() {
     const modalHtml = `
       <div class="modal_content play_modal">
@@ -78,7 +88,20 @@ export default class extends AbstractView {
           </div>
         </div>
       </div>`;
-    this.showModal(modalHtml);
+    await this.showModal(modalHtml);
+    const startButton = document.querySelector('#start_button');
+    startButton.addEventListener('click', async (e) => {
+      this.deleteModal();
+      e.target.style.display = 'none';
+      remoteGame.init();
+    });
+    startButton.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.target.style.display = 'none';
+        this.deleteModal();
+        remoteGame.init();
+      }
+    });
   }
   async tournamentModal() {
     const modalHtml = `
@@ -101,37 +124,29 @@ export default class extends AbstractView {
     this.showModal(modalHtml);
   }
 
-  showStartButton() {
-    const startButton = document.createElement("a");
-    startButton.id = "start_button";
-    startButton.classList.add("nav__link");
-    startButton.classList.add("play_nav");
+  async showStartButton() {
+    const startButton = document.createElement('a');
+    startButton.id = 'start_button';
+    startButton.classList.add('nav__link');
+    startButton.classList.add('play_nav');
     startButton.tabIndex = 0;
     startButton.innerHTML = words[registry[1].lang].start;
-    const playNav = document.querySelector(".play_nav");
-    playNav.innerHTML = "";
+    const playNav = document.querySelector('.play_nav');
+    playNav.innerHTML = '';
     playNav.appendChild(startButton);
-    startButton.addEventListener("click", () => {
-      this.deleteModal();
-    });
-    startButton.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        this.deleteModal();
-      }
-    });
   }
 
-  showModal(modalHtml) {
-    const modalContainer = document.createElement("section");
-    modalContainer.classList.add("modal_container");
+  async showModal(modalHtml) {
+    const modalContainer = document.createElement('section');
+    modalContainer.classList.add('modal_container');
     modalContainer.innerHTML = modalHtml;
-    const mainHeader = document.querySelector(".main_header");
-    mainHeader.insertAdjacentElement("afterend", modalContainer);
-    this.showStartButton();
+    const mainHeader = document.querySelector('.main_header');
+    mainHeader.insertAdjacentElement('afterend', modalContainer);
+    await this.showStartButton();
   }
 
   deleteModal() {
-    const modal = document.querySelector(".play_modal");
-    modal.style.display = "none";
+    const modal = document.querySelector('.play_modal');
+    modal.style.display = 'none';
   }
 }

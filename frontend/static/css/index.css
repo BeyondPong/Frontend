@@ -3,13 +3,16 @@
 @import url(./main.css);
 @import url(./error.css);
 @import url(./profile.css);
+@import url('./game.css');
 
 :root {
   --disabled-background-color: #3130a1;
+  --disabled-button-background-color: grey;
   --item-color: white;
   --profile-color: #f6faf9;
   --profile-background: #ffcd29;
   --black-color: black;
+  --friend_state-color: #27da7b;
 }
 
 html,
@@ -20,7 +23,7 @@ body,
   width: 100%;
   height: 100%;
   box-sizing: border-box;
-  font-family: "Ubuntu", sans-serif;
+  font-family: 'Ubuntu', sans-serif;
 }
 
 body {
@@ -35,10 +38,10 @@ body {
   grid-template-rows: 20% 40% 30% 10%;
   grid-template-columns: 1fr 3fr 1fr;
   grid-template-areas:
-    "header header header"
-    "content content nav"
-    "content content nav"
-    ". . .";
+    'header header header'
+    'content content nav'
+    'content content nav'
+    '. . .';
 }
 
 header {
@@ -95,9 +98,9 @@ a {
 }
 
 body.error-background {
-  background-image: url("/static/assets/errorBackgroundImg.png");
+  background-image: url('/static/assets/errorBackgroundImg.png');
 }
 
 body.normal-background {
-  background-image: url("/static/assets/normalBackgroundImg.png");
+  background-image: url('/static/assets/normalBackgroundImg.png');
 }
