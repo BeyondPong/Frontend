@@ -269,10 +269,10 @@ export default class extends AbstractView {
           <table class="table_container">
             <thead>
               <tr>
-                <th>Date</th>
-                <th>Opponent</th>
-                <th>Match Score</th>
-                <th>Result</th>
+                <th>${words[registry[1].lang].table_date}</th>
+                <th>${words[registry[1].lang].table_opponent}</th>
+                <th>${words[registry[1].lang].table_score}</th>
+                <th>${words[registry[1].lang].table_result}</th>
               </tr>
             </thead>
             <tbody class="table_tbody">
