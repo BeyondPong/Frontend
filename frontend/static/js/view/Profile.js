@@ -81,9 +81,9 @@ export default class extends AbstractView {
           <div class="friend_message">${user.status_msg}</div>
         `;
         if (user.is_friend) {
-          resultHTML += `<div class="disabled_friend_button"><button class="add_button disabled_button" disabled data-user-id="${user.id}">ADD</button></div>`;
+          resultHTML += `<div class="disabled_friend_button"><button class="add_button disabled_button" disabled data-user-id="${user.id}">${words[registry[1].lang].friend_add_button}</button></div>`;
         } else {
-          resultHTML += `<div class="friend_button"><button class="add_button" data-user-id="${user.id}">ADD</button></div>`;
+          resultHTML += `<div class="friend_button"><button class="add_button" data-user-id="${user.id}">${words[registry[1].lang].friend_add_button}</button></div>`;
         }
         friendElement.innerHTML = resultHTML;
         searchResultBox.appendChild(friendElement);
