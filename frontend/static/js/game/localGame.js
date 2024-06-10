@@ -10,12 +10,32 @@ export const localGame = {
     }
     const $div = document.createElement('div');
     $div.id = 'scoreBoard';
+    $div.style.display = 'flex';
+    $div.style.flexDirection = 'column';
+
+    const player1Container = document.createElement('div');
+    const player1Label = document.createElement('div');
+    player1Label.innerText = 'Player 1';
+    player1Label.style.whiteSpace = 'nowrap';
     const player1Score = document.createElement('div');
     player1Score.id = 'player1Score';
+    player1Score.style.display = 'inline';
+    player1Container.appendChild(player1Label);
+    player1Container.appendChild(player1Score);
+
+    const player2Container = document.createElement('div');
+    const player2Label = document.createElement('div');
+    player2Label.innerText = 'Player 2';
+    player2Label.style.whiteSpace = 'nowrap';
     const player2Score = document.createElement('div');
     player2Score.id = 'player2Score';
-    $div.appendChild(player2Score);
-    $div.appendChild(player1Score);
+    player2Score.style.display = 'inline';
+    player2Container.appendChild(player2Label);
+    player2Container.appendChild(player2Score);
+
+    $div.appendChild(player1Container);
+    $div.appendChild(player2Container);
+
     root.appendChild($div);
     let container, renderer, camera, mainLight, scene, ball, paddle1, paddle2, field, running;
     let VIEW_ANGLE_INCREMENT = 5;
@@ -147,8 +167,8 @@ export const localGame = {
     }
 
     function updateScoreBoard() {
-      document.getElementById('player1Score').innerText = 'Player 1: ' + score.player1;
-      document.getElementById('player2Score').innerText = 'Player 2: ' + score.player2;
+      document.getElementById('player1Score').innerText = score.player1;
+      document.getElementById('player2Score').innerText = score.player2;
     }
 
     function stopBall() {
@@ -268,7 +288,7 @@ export const localGame = {
       mainButton.innerHTML = 'Main';
       mainButton.setAttribute('tabindex', '0');
       const buttonContainer = document.createElement('div');
-      buttonContainer.classList.add('buttonContainer');
+      buttonContainer.classList.add('local_buttonContainer');
       document.getElementById('app').appendChild(buttonContainer);
       buttonContainer.appendChild($score);
       buttonContainer.appendChild($win);
@@ -307,9 +327,10 @@ export const localGame = {
         }
         renderer.render(scene, camera);
         requestAnimationFrame(render);
-
         processBallMovement();
         updatePaddlePosition();
+      } else {
+        renderer.render(scene, camera);
       }
     }
 
@@ -402,6 +423,7 @@ export const localGame = {
       edge.geometry.dispose();
       edge.geometry = newEdgeGeometry;
       updateScoreBoard();
+      renderer.render(scene, camera);
     }
 
     window.addEventListener('resize', onWindowResize, false);
