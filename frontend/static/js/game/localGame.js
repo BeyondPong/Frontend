@@ -78,7 +78,7 @@ export const localGame = {
       let direction = Math.random() > 0.5 ? -1 : 1;
       ball.$velocity = {
         x: 0,
-        z: direction * 20,
+        z: direction * 35,
       };
       ball.$stopped = false;
     }
@@ -241,17 +241,17 @@ export const localGame = {
 
     function updatePaddlePosition() {
       if (paddle1LeftPressed) {
-        paddle1.position.x -= 10;
+        paddle1.position.x -= 30;
       }
       if (paddle1RightPressed) {
-        paddle1.position.x += 10;
+        paddle1.position.x += 30;
       }
 
       if (paddle2LeftPressed) {
-        paddle2.position.x -= 10;
+        paddle2.position.x -= 30;
       }
       if (paddle2RightPressed) {
-        paddle2.position.x += 10;
+        paddle2.position.x += 30;
       }
       const halfFieldWidth = dimensions.FIELD_WIDTH / 2;
       const halfPaddleWidth = dimensions.PADDLE_WIDTH / 2;
@@ -386,7 +386,6 @@ export const localGame = {
       camera.lookAt(ball.position);
       mainLight = new THREE.HemisphereLight(0xffffff, 0x003300);
       scene.add(mainLight);
-      camera.lookAt(ball.position);
 
       updateScoreBoard();
       startRender();
