@@ -3,6 +3,7 @@
 @import url(./main.css);
 @import url(./error.css);
 @import url(./profile.css);
+@import url('./game.css');
 
 :root {
   --disabled-background-color: #3130a1;
@@ -11,7 +12,7 @@
   --profile-color: #f6faf9;
   --profile-background: #ffcd29;
   --black-color: black;
-  --friend_state-color: #27DA7B;
+  --friend_state-color: #27da7b;
 }
 
 html,
@@ -103,4 +104,3 @@ body.error-background {
 body.normal-background {
   background-image: url('/static/assets/normalBackgroundImg.png');
 }
-

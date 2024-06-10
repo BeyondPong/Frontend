@@ -26,7 +26,7 @@ export const getHistoryData = async () => {
 
 export const getSearchResultData = async (userId) => {
   try {
-    const response = await fetch(`http://localhost:8000/profile/search?nickname=${userId}`);
+    const response = await fetch(`http://localhost:8000/profile/search/?nickname=${userId}`);
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
