@@ -94,9 +94,6 @@ export const remoteGame = {
       dx: 0,
       dy: ballSpeed,
     };
-    while ($app.firstChild) {
-      $app.removeChild($app.firstChild);
-    }
     $app.appendChild($canvas);
     $app.appendChild($div);
 
