@@ -162,8 +162,8 @@ export default class extends AbstractView {
                 <div class="profile_img_select" data-img-id="4" style="background-image: url(/static/assets/4.png);"></div>
               </div>
               <div class="profile_img_buttons">
-                <div><button class="save_button">SAVE</button></div>
-                <div><button class="close_button">CLOSE</button></div>
+                <div><button class="save_button">${words[registry[1].lang].avatar_save_button}</button></div>
+                <div><button class="close_button">${words[registry[1].lang].avatar_close_button}</button></div>
               </div>
             </div>
           </section>
