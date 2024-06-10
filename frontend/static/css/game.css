@@ -10,6 +10,7 @@ canvas {
 }
 
 #scoreBoard {
+  text-align: center;
   display: flex;
   position: absolute;
   flex-direction: column;
@@ -22,7 +23,21 @@ canvas {
   height: 100%;
 }
 
-.buttonContainer {
+.remote_buttonContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50%;
+  white-space: nowrap;
+}
+
+.local_buttonContainer {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -32,7 +47,8 @@ canvas {
   top: 25%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 100%;
+  width: 50%;
+  white-space: nowrap;
 }
 
 .gameButton {
