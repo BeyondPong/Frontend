@@ -88,6 +88,23 @@ export default class extends AbstractView {
         friendElement.innerHTML = resultHTML;
         searchResultBox.appendChild(friendElement);
       });
+
+      const buttons = Array.from(document.getElementsByClassName('add_button'));
+      buttons.forEach((button) => {
+        button.addEventListener('click', async (e) => {
+          console.log('click');
+          const userId = e.target.getAttribute('data-user-id');
+          const user = matchFriends.users.find((u) => u.id === parseInt(userId));
+          if (user.is_friend === false) {
+            await postAddFriend(userId);
+            alert('New friend added successfully!');
+            e.target.style.cursor = 'not-allowed';
+            e.target.style.backgroundColor = 'grey';
+            e.target.disabled = true;
+            e.target.parentNode.classList.add('disabled_friend_button');
+          }
+        });
+      });
     };
 
     document.querySelector('.search_button_container').addEventListener('click', async (e) => {
@@ -98,22 +115,6 @@ export default class extends AbstractView {
         e.preventDefault();
         await searchAndDisplayResults();
       }
-    });
-
-    const buttons = Array.from(document.getElementsByClassName('add_button'));
-    buttons.forEach((button) => {
-      button.addEventListener('click', async (e) => {
-        const userId = e.target.getAttribute('data-user-id');
-        const user = matchFriends.users.find((u) => u.id === parseInt(userId));
-        if (user.is_friend === false) {
-          await postAddFriend(userId);
-          alert('New friend added successfully!');
-          e.target.style.cursor = 'not-allowed';
-          e.target.style.backgroundColor = 'grey';
-          e.target.disabled = true;
-          e.target.parentNode.classList.add('disabled_friend_button');
-        }
-      });
     });
   }
 
@@ -293,28 +294,28 @@ export default class extends AbstractView {
               <div class="friend_image" style="background-image: url(https://cdn.intra.42.fr/users/22a150a2b718bb79bbe204dc8e4a4ae7/misukim.jpg);"></div>
               <div class="friend_name">sgo</div>
               <div class="friend_message">안녕하세요 저는 상태메세지입니다. 방가</div>
-              <div class="friend_button"><button class="add_button" data-user-id="#">DELETE</button></div>
+              <div class="friend_button"><button class="#" data-user-id="#">DELETE</button></div>
             </div>
             <div class="friend">
               <div class="friend_state friend_online"></div>
               <div class="friend_image" style="background-image: url(https://cdn.intra.42.fr/users/22a150a2b718bb79bbe204dc8e4a4ae7/misukim.jpg);"></div>
               <div class="friend_name">seoson</div>
               <div class="friend_message">안녕하세요 방가</div>
-              <div class="friend_button"><button class="add_button" data-user-id="#">DELETE</button></div>
+              <div class="friend_button"><button class="#" data-user-id="#">DELETE</button></div>
             </div>
               <div class="friend">
                 <div class="friend_state"></div>
                 <div class="friend_image" style="background-image: url(https://cdn.intra.42.fr/users/22a150a2b718bb79bbe204dc8e4a4ae7/misukim.jpg);"></div>
                 <div class="friend_name">jonim</div>
                 <div class="friend_message">안녕하세요 저는 상태메세지입니다. 방가</div>
-                <div class="friend_button"><button class="add_button" data-user-id="#">DELETE</button></div>
+                <div class="friend_button"><button class="#" data-user-id="#">DELETE</button></div>
               </div>
               <div class="friend">
                 <div class="friend_state"></div>
                 <div class="friend_image" style="background-image: url(https://cdn.intra.42.fr/users/22a150a2b718bb79bbe204dc8e4a4ae7/misukim.jpg);"></div>
                 <div class="friend_name">jusohn</div>
                 <div class="friend_message">hi</div>
-                <div class="friend_button"><button class="add_button" data-user-id="#">DELETE</button></div>
+                <div class="friend_button"><button class="#" data-user-id="#">DELETE</button></div>
               </div>
           </div>
         </div>
