@@ -36,7 +36,7 @@
 }
 
 .play_modal_text {
-  margin-top: 0.8em;
+  margin-top: 0.6em;
   display: flex;
   grid-area: move;
   color: var(--item-color);
