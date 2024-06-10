@@ -41,6 +41,7 @@ export const words = {
     table_opponent: 'Opponent',
     table_score: 'Match Score',
     table_result: 'Result',
+    friend_search_placeholder: 'Search for a friend...',
     friend_add_button: 'ADD',
   },
   ko: {
@@ -65,6 +66,7 @@ export const words = {
     table_opponent: '상대',
     table_score: '점수',
     table_result: '결과',
+    friend_search_placeholder: '추가할 친구를 검색하세요',
     friend_add_button: '친구추가',
   },
   jp: {
@@ -89,6 +91,7 @@ export const words = {
     table_opponent: '相手',
     table_score: 'スコア',
     table_result: '競技結果',
+    friend_search_placeholder: 'IDを検索',
     friend_add_button: 'しんせいする',
   },
 };

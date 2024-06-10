@@ -329,7 +329,7 @@ export default class extends AbstractView {
         <div class="form_container">
           <form action="#" class="form_box">
             <div class="input_container">
-              <input type="search" id="search_input" placeholder="Search for a friend..." required>
+              <input type="search" id="search_input" placeholder='${words[registry[1].lang].friend_search_placeholder}' required>
             </div>
             <div class="search_button_container"><button type="button" class="search_button"><i class="fa-solid fa-magnifying-glass"></i></button></div>
           </form>
