@@ -66,12 +66,12 @@ export default class extends AbstractView {
     const searchAndDisplayResults = async () => {
       const query = document.getElementById('search_input').value;
       if (query === '') {
-        alert('Please enter a friend name.');
+        alert(`${words[registry.lang].friend_search_error_nomatch}`);
         return;
       }
       const matchFriends = await getSearchResultData(query);
       if (!matchFriends || matchFriends.users.length === 0) {
-        alert('No match friends');
+        alert(`${words[registry.lang].friend_search_error_noinput}`);
         return;
       }
       const searchResultBox = document.querySelector('.search_result_box');
@@ -102,7 +102,7 @@ export default class extends AbstractView {
           const user = matchFriends.users.find((u) => u.id === parseInt(userId));
           if (user.is_friend === false) {
             await postAddFriend(userId);
-            alert('New friend added successfully!');
+            alert(`${words[registry.lang].friend_message_success}`);
             e.target.style.cursor = 'not-allowed';
             e.target.style.backgroundColor = 'grey';
             e.target.disabled = true;

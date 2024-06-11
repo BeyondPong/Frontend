@@ -45,6 +45,9 @@ export const words = {
     friend_delete_button: 'DELETE',
     friend_search_placeholder: 'Search for a friend...',
     friend_add_button: 'ADD',
+    friend_search_error_nomatch: 'No match friends',
+    friend_search_error_noinput: 'Please enter a friend name.',
+    friend_message_success: 'New friend added successfully!',
   },
   ko: {
     play: '플레이',
@@ -72,6 +75,9 @@ export const words = {
     friend_delete_button: '삭제',
     friend_search_placeholder: '추가할 친구를 검색하세요',
     friend_add_button: '친구추가',
+    friend_search_error_nomatch: '일치하는 아이디가 없습니다',
+    friend_search_error_noinput: '친구 추가를 위해 아이디를 입력해주세요',
+    friend_message_success: '친구 추가가 완료되었습니다',
   },
   jp: {
     play: 'プレー',
@@ -99,6 +105,9 @@ export const words = {
     friend_delete_button: '削除',
     friend_search_placeholder: 'IDを検索',
     friend_add_button: 'しんせいする',
+    friend_search_error_nomatch: '一致するIDがありません。',
+    friend_search_error_noinput: '友達追加のためにIDを入力してください。',
+    friend_message_success: '友達の追加が完了しました。',
   },
 };
 
