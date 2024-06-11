@@ -23,16 +23,14 @@ export default class extends AbstractView {
               <nav>
               <a href="/login" id="login_link" class="nav__link" data-link>${words[registry.lang].login}</a>
               <a href="/play" id="play_link" class="nav__link" data-link>${words[registry.lang].play}</a>
-              <a href="/profile" id="profile_link" class="nav__link" data-link style="pointer-events: none; color: grey; text-decoration: none;">${
-                words[registry.lang].profile
-              }</a>
+              <a href="/profile" id="profile_link" class="nav__link" data-link style="pointer-events: none; color: grey; text-decoration: none;">${words[registry.lang].profile
+      }</a>
               </nav>
               <section class="modal_container">
                 <div class="modal_content profile_modal">
                   <ul class="profile_nav">
-                    <li class="profile_nav_item"><a href="#" class="information">${
-                      words[registry.lang].information
-                    }</a></li>
+                    <li class="profile_nav_item"><a href="#" class="information">${words[registry.lang].information
+      }</a></li>
                     <li class="profile_nav_item"><a href="#" class="history">${words[registry.lang].history}</a></li>
                     <li class="profile_nav_item"><a href="#" class="friends">${words[registry.lang].friends}</a></li>
                     <li class="profile_nav_item"><a href="#" class="search">${words[registry.lang].search}</a></li>
@@ -68,12 +66,12 @@ export default class extends AbstractView {
     const searchAndDisplayResults = async () => {
       const query = document.getElementById('search_input').value;
       if (query === '') {
-        alert('Please enter a friend name.');
+        alert(`${words[registry.lang].friend_search_error_nomatch}`);
         return;
       }
       const matchFriends = await getSearchResultData(query);
       if (!matchFriends || matchFriends.users.length === 0) {
-        alert('No match friends');
+        alert(`${words[registry.lang].friend_search_error_noinput}`);
         return;
       }
       const searchResultBox = document.querySelector('.search_result_box');
@@ -88,12 +86,29 @@ export default class extends AbstractView {
           <div class="friend_message">${user.status_msg}</div>
         `;
         if (user.is_friend) {
-          resultHTML += `<div class="disabled_friend_button"><button class="add_button disabled_button" disabled data-user-id="${user.id}">ADD</button></div>`;
+          resultHTML += `<div class="disabled_friend_button"><button class="add_button disabled_button" disabled data-user-id="${user.id}">${words[registry.lang].friend_add_button}</button></div>`;
         } else {
-          resultHTML += `<div class="friend_button"><button class="add_button" data-user-id="${user.id}">ADD</button></div>`;
+          resultHTML += `<div class="friend_button"><button class="add_button" data-user-id="${user.id}">${words[registry.lang].friend_add_button}</button></div>`;
         }
         friendElement.innerHTML = resultHTML;
         searchResultBox.appendChild(friendElement);
+      });
+
+      const buttons = Array.from(document.getElementsByClassName('add_button'));
+      buttons.forEach((button) => {
+        button.addEventListener('click', async (e) => {
+          console.log('click');
+          const userId = e.target.getAttribute('data-user-id');
+          const user = matchFriends.users.find((u) => u.id === parseInt(userId));
+          if (user.is_friend === false) {
+            await postAddFriend(userId);
+            alert(`${words[registry.lang].friend_message_success}`);
+            e.target.style.cursor = 'not-allowed';
+            e.target.style.backgroundColor = 'grey';
+            e.target.disabled = true;
+            e.target.parentNode.classList.add('disabled_friend_button');
+          }
+        });
       });
     };
 
@@ -106,22 +121,6 @@ export default class extends AbstractView {
         await searchAndDisplayResults();
       }
     });
-
-    const buttons = Array.from(document.getElementsByClassName('add_button'));
-    buttons.forEach((button) => {
-      button.addEventListener('click', async (e) => {
-        const userId = e.target.getAttribute('data-user-id');
-        const user = matchFriends.users.find((u) => u.id === parseInt(userId));
-        if (user.is_friend === false) {
-          await postAddFriend(userId);
-          alert('New friend added successfully!');
-          e.target.style.cursor = 'not-allowed';
-          e.target.style.backgroundColor = 'grey';
-          e.target.disabled = true;
-          e.target.parentNode.classList.add('disabled_friend_button');
-        }
-      });
-    });
   }
 
   async moveTabs(tabText) {
@@ -129,7 +128,9 @@ export default class extends AbstractView {
     profileContent.innerHTML = '';
     if (tabText === words[registry.lang].information) {
       const data = await getProfileData();
-      if (data.status_msg === null) data.status_msg = `안녕하세요 ${data.nickname}입니다.`;
+      if (data.status_msg === null) {
+        data.status_msg = `안녕하세요 ${data.nickname}입니다.`;
+      }
       if (data) {
         const container = document.createElement('div');
         container.classList.add('profile_container');
@@ -157,9 +158,8 @@ export default class extends AbstractView {
               <button class="profile_status_save hidden" id="status_save"><i class="fa-solid fa-check"></i></button>
               </div>
             </div>
-            <span class="profile_count">${data.win_cnt}${words[registry.lang].win} ${data.lose_cnt}${
-          words[registry.lang].lose
-        } </span>
+            <span class="profile_count">${data.win_cnt}${words[registry.lang].win} ${data.lose_cnt}${words[registry.lang].lose
+          } </span>
           <section class="profile_img_modal hidden">
             <div class="profile_img_modal_flex">
               <div class="profile_img_set">
@@ -169,8 +169,8 @@ export default class extends AbstractView {
                 <div class="profile_img_select" data-img-id="4" style="background-image: url(/static/assets/4.png);"></div>
               </div>
               <div class="profile_img_buttons">
-                <div><button class="save_button">SAVE</button></div>
-                <div><button class="close_button">CLOSE</button></div>
+                <div><button class="save_button">${words[registry.lang].avatar_save_button}</button></div>
+                <div><button class="close_button">${words[registry.lang].avatar_close_button}</button></div>
               </div>
             </div>
           </section>
@@ -276,10 +276,10 @@ export default class extends AbstractView {
           <table class="table_container">
             <thead>
               <tr>
-                <th>Date</th>
-                <th>Opponent</th>
-                <th>Match Score</th>
-                <th>Result</th>
+                <th>${words[registry.lang].table_date}</th>
+                <th>${words[registry.lang].table_opponent}</th>
+                <th>${words[registry.lang].table_score}</th>
+                <th>${words[registry.lang].table_result}</th>
               </tr>
             </thead>
             <tbody class="table_tbody">
@@ -301,28 +301,28 @@ export default class extends AbstractView {
               <div class="friend_image" style="background-image: url(https://cdn.intra.42.fr/users/22a150a2b718bb79bbe204dc8e4a4ae7/misukim.jpg);"></div>
               <div class="friend_name">sgo</div>
               <div class="friend_message">안녕하세요 저는 상태메세지입니다. 방가</div>
-              <div class="friend_button"><button class="add_button" data-user-id="#">DELETE</button></div>
+              <div class="friend_button"><button class="#" data-user-id="#">${words[registry.lang].friend_delete_button}</button></div>
             </div>
             <div class="friend">
               <div class="friend_state friend_online"></div>
               <div class="friend_image" style="background-image: url(https://cdn.intra.42.fr/users/22a150a2b718bb79bbe204dc8e4a4ae7/misukim.jpg);"></div>
               <div class="friend_name">seoson</div>
               <div class="friend_message">안녕하세요 방가</div>
-              <div class="friend_button"><button class="add_button" data-user-id="#">DELETE</button></div>
+              <div class="friend_button"><button class="#" data-user-id="#">${words[registry.lang].friend_delete_button}</button></div>
             </div>
               <div class="friend">
                 <div class="friend_state"></div>
                 <div class="friend_image" style="background-image: url(https://cdn.intra.42.fr/users/22a150a2b718bb79bbe204dc8e4a4ae7/misukim.jpg);"></div>
                 <div class="friend_name">jonim</div>
                 <div class="friend_message">안녕하세요 저는 상태메세지입니다. 방가</div>
-                <div class="friend_button"><button class="add_button" data-user-id="#">DELETE</button></div>
+                <div class="friend_button"><button class="#" data-user-id="#">${words[registry.lang].friend_delete_button}</button></div>
               </div>
               <div class="friend">
                 <div class="friend_state"></div>
                 <div class="friend_image" style="background-image: url(https://cdn.intra.42.fr/users/22a150a2b718bb79bbe204dc8e4a4ae7/misukim.jpg);"></div>
                 <div class="friend_name">jusohn</div>
                 <div class="friend_message">hi</div>
-                <div class="friend_button"><button class="add_button" data-user-id="#">DELETE</button></div>
+                <div class="friend_button"><button class="#" data-user-id="#">${words[registry.lang].friend_delete_button}</button></div>
               </div>
           </div>
         </div>
@@ -336,7 +336,7 @@ export default class extends AbstractView {
         <div class="form_container">
           <form action="#" class="form_box">
             <div class="input_container">
-              <input type="search" id="search_input" placeholder="Search for a friend..." required>
+              <input type="search" id="search_input" placeholder='${words[registry.lang].friend_search_placeholder}' required>
             </div>
             <div class="search_button_container"><button type="button" class="search_button"><i class="fa-solid fa-magnifying-glass"></i></button></div>
           </form>

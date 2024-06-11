@@ -4,7 +4,6 @@ import Login from '../view/Login.js';
 import Profile from '../view/Profile.js';
 import NotFound from '../view/NotFound.js';
 import NotLogin from '../view/NotLogin.js';
-import registry from '../state/Registry.js';
 import pathToRegex from '../utility/pathToRegex.js';
 import getParams from '../utility/getParams.js';
 import navigateTo from '../utility/navigateTo.js';
