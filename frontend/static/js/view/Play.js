@@ -15,9 +15,9 @@ export default class extends AbstractView {
         <a href="/" id="main_link" class="nav__link" data-link>Ping? Pong!</a>
       </header>
 			<nav class="play_nav">
-        <a tabindex="0" class="nav__link" id="local_link">${words[registry[1].lang].local}</a>
-         <a tabindex="0" class="nav__link" id="remote_link">${words[registry[1].lang].remote}</a>
-         <a tabindex="0" class="nav__link" id="tournament_link">${words[registry[1].lang].tournament}</a>
+        <a tabindex="0" class="nav__link" id="local_link">${words[registry.lang].local}</a>
+         <a tabindex="0" class="nav__link" id="remote_link">${words[registry.lang].remote}</a>
+         <a tabindex="0" class="nav__link" id="tournament_link">${words[registry.lang].tournament}</a>
 			</nav>
 			`;
   }
@@ -26,7 +26,7 @@ export default class extends AbstractView {
       <div class="modal_content play_modal">
         <div class="local_modal_heading">
           <h2 class="local_modal_heading2">
-              ${words[registry[1].lang].play}
+              ${words[registry.lang].play}
           </h2>
           <div class="local_modal_heading3_container">
           <h3 class="local_modal_heading3">
@@ -41,16 +41,16 @@ export default class extends AbstractView {
         </div>
         <div class="play_modal_text">
           <div class="play_move_left">
-            ${words[registry[1].lang].moveleft}
+            ${words[registry.lang].moveleft}
           </div>
           <div class="play_move_right">
-            ${words[registry[1].lang].moveright}
+            ${words[registry.lang].moveright}
           </div>
           <div class="play_move_left">
-            ${words[registry[1].lang].moveleft}
+            ${words[registry.lang].moveleft}
           </div>
           <div class="play_move_right">
-            ${words[registry[1].lang].moveright}
+            ${words[registry.lang].moveright}
           </div>
         </div>
       </div>
@@ -75,16 +75,16 @@ export default class extends AbstractView {
     const modalHtml = `
       <div class="modal_content play_modal">
         <h2>
-            ${words[registry[1].lang].play}
+            ${words[registry.lang].play}
         </h2>
         <div class="remote_play_modal_img_container">
         </div>
         <div class="play_modal_text">
           <div class="play_move_left">
-            ${words[registry[1].lang].moveleft}
+            ${words[registry.lang].moveleft}
           </div>
           <div class="play_move_right">
-            ${words[registry[1].lang].moveright}
+            ${words[registry.lang].moveright}
           </div>
         </div>
       </div>`;
@@ -107,16 +107,16 @@ export default class extends AbstractView {
     const modalHtml = `
       <div class="modal_content play_modal">
         <h2>
-            ${words[registry[1].lang].play}
+            ${words[registry.lang].play}
         </h2>
         <div class="remote_play_modal_img_container">
         </div>
         <div class="play_modal_text">
           <div class="play_move_left">
-            ${words[registry[1].lang].moveleft}
+            ${words[registry.lang].moveleft}
           </div>
           <div class="play_move_right">
-            ${words[registry[1].lang].moveright}
+            ${words[registry.lang].moveright}
           </div>
         </div>
       </div>
@@ -130,7 +130,7 @@ export default class extends AbstractView {
     startButton.classList.add('nav__link');
     startButton.classList.add('play_nav');
     startButton.tabIndex = 0;
-    startButton.innerHTML = words[registry[1].lang].start;
+    startButton.innerHTML = words[registry.lang].start;
     const playNav = document.querySelector('.play_nav');
     playNav.innerHTML = '';
     playNav.appendChild(startButton);

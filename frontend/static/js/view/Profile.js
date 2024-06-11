@@ -1,7 +1,14 @@
 import AbstractView from './AbstractView.js';
 import registry from '../state/Registry.js';
 import { words } from '../state/Registry.js';
-import { getProfileData, getHistoryData, getSearchResultData, postAddFriend, patchStatusMessage, patchAvatar } from '../api/api.js';
+import {
+  getProfileData,
+  getHistoryData,
+  getSearchResultData,
+  postAddFriend,
+  patchStatusMessage,
+  patchAvatar,
+} from '../api/api.js';
 
 export default class extends AbstractView {
   constructor(params) {
@@ -14,21 +21,21 @@ export default class extends AbstractView {
                 <a href="/" id="main_link" class="nav__link" data-link>Ping? Pong!</a>
               </header>
               <nav>
-              <a href="/login" id="login_link" class="nav__link" data-link>${words[registry[1].lang].login}</a>
-              <a href="/play" id="play_link" class="nav__link" data-link>${words[registry[1].lang].play}</a>
+              <a href="/login" id="login_link" class="nav__link" data-link>${words[registry.lang].login}</a>
+              <a href="/play" id="play_link" class="nav__link" data-link>${words[registry.lang].play}</a>
               <a href="/profile" id="profile_link" class="nav__link" data-link style="pointer-events: none; color: grey; text-decoration: none;">${
-                words[registry[1].lang].profile
+                words[registry.lang].profile
               }</a>
               </nav>
               <section class="modal_container">
                 <div class="modal_content profile_modal">
                   <ul class="profile_nav">
                     <li class="profile_nav_item"><a href="#" class="information">${
-                      words[registry[1].lang].information
+                      words[registry.lang].information
                     }</a></li>
-                    <li class="profile_nav_item"><a href="#" class="history">${words[registry[1].lang].history}</a></li>
-                    <li class="profile_nav_item"><a href="#" class="friends">${words[registry[1].lang].friends}</a></li>
-                    <li class="profile_nav_item"><a href="#" class="search">${words[registry[1].lang].search}</a></li>
+                    <li class="profile_nav_item"><a href="#" class="history">${words[registry.lang].history}</a></li>
+                    <li class="profile_nav_item"><a href="#" class="friends">${words[registry.lang].friends}</a></li>
+                    <li class="profile_nav_item"><a href="#" class="search">${words[registry.lang].search}</a></li>
                   </ul>
                   <div class="profile_content">
                   </div>
@@ -121,7 +128,7 @@ export default class extends AbstractView {
   async moveTabs(tabText) {
     const profileContent = document.querySelector('.profile_content');
     profileContent.innerHTML = '';
-    if (tabText === words[registry[1].lang].information) {
+    if (tabText === words[registry.lang].information) {
       const data = await getProfileData();
       if (data.status_msg === null) data.status_msg = `안녕하세요 ${data.nickname}입니다.`;
       if (data) {
@@ -151,8 +158,9 @@ export default class extends AbstractView {
               <button class="profile_status_save hidden" id="status_save"><i class="fa-solid fa-check"></i></button>
               </div>
             </div>
-            <span class="profile_count">${data.win_cnt}${words[registry[1].lang].win} ${data.lose_cnt}${words[registry[1].lang].lose
-          } </span>
+            <span class="profile_count">${data.win_cnt}${words[registry.lang].win} ${data.lose_cnt}${
+          words[registry.lang].lose
+        } </span>
           <section class="profile_img_modal hidden">
             <div class="profile_img_modal_flex">
               <div class="profile_img_set">
@@ -182,13 +190,13 @@ export default class extends AbstractView {
 
         imgCloseButton.addEventListener('click', () => {
           avatarModal.classList.add('hidden');
-        })
+        });
         imgSaveButton.addEventListener('click', async () => {
           const imgData = await patchAvatar(imgId);
           avatarModal.classList.add('hidden');
           profileImage.style.backgroundImage = `url(/static/assets/${imgId}.png)`;
           currentAvatarId = imgId;
-        })
+        });
 
         avatarEditButton.addEventListener('click', () => {
           avatarModal.classList.remove('hidden');
@@ -199,20 +207,20 @@ export default class extends AbstractView {
               img.style.border = '4px solid var(--profile-background)';
             }
             img.addEventListener('click', () => {
-              avatarList.forEach(img => {
+              avatarList.forEach((img) => {
                 img.style.border = '2px solid #fff';
               });
               img.style.border = '4px solid var(--profile-background)';
               imgId = img.getAttribute('data-img-id');
-            })
+            });
             img.addEventListener('mouseenter', () => {
               img.style.transform = 'scale(1.1)';
-            })
+            });
             img.addEventListener('mouseleave', () => {
               img.style.transform = 'none';
-            })
-          })
-        })
+            });
+          });
+        });
 
         const input = document.getElementById('status_input');
         const message = document.getElementById('status_msg');
@@ -247,7 +255,7 @@ export default class extends AbstractView {
             } else {
               input.disabled = false;
             }
-          })
+          });
         });
         saveButton.addEventListener('click', async () => {
           if (input.value !== message.textContent) {
@@ -259,9 +267,9 @@ export default class extends AbstractView {
           input.classList.toggle('hidden');
           message.classList.toggle('hidden');
           lengthContainer.classList.toggle('hidden');
-        })
+        });
       }
-    } else if (tabText === words[registry[1].lang].history) {
+    } else if (tabText === words[registry.lang].history) {
       const container = document.createElement('div');
       container.classList.add('history_container');
       const historyHTML = `
@@ -283,7 +291,7 @@ export default class extends AbstractView {
       container.innerHTML = historyHTML;
       profileContent.replaceChildren(container);
       this.showHistoryResult();
-    } else if (tabText === words[registry[1].lang].friends) {
+    } else if (tabText === words[registry.lang].friends) {
       const container = document.createElement('div');
       container.classList.add('friends_container');
       const friendsHTML = `
@@ -345,7 +353,7 @@ export default class extends AbstractView {
   }
 
   defaultTabs() {
-    this.moveTabs(words[registry[1].lang].information);
+    this.moveTabs(words[registry.lang].information);
     document.querySelector('.information').classList.add('active_tab');
   }
 }

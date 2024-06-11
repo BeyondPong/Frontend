@@ -55,6 +55,25 @@ export const postAddFriend = async (userId) => {
   }
 };
 
+export const postLoginCode = async (code) => {
+  try {
+    const response = await fetch(`http://localhost:8000/login/oauth/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ code: code }),
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const patchStatusMessage = async (message) => {
   try {
     const response = await fetch('http://localhost:8000/profile/information/message/', {
@@ -72,7 +91,7 @@ export const patchStatusMessage = async (message) => {
   } catch (error) {
     console.log(error);
   }
-}
+};
 
 export const patchAvatar = async (imgId) => {
   try {
@@ -91,7 +110,7 @@ export const patchAvatar = async (imgId) => {
   } catch (error) {
     console.log(error);
   }
-}
+};
 
 export const patchLanguage = async (lang) => {
   try {
@@ -110,4 +129,4 @@ export const patchLanguage = async (lang) => {
   } catch (error) {
     console.log(error);
   }
-}
+};
