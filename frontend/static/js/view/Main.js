@@ -8,7 +8,7 @@ export default class extends AbstractView {
 
   async getHtml() {
     const currentLang = registry.lang;
-    const isLoggedIn = localStorage.getItem('token') !== null; // 로그인 상태 확인
+    const isLoggedIn = localStorage.getItem('token') !== null;
 
     return `
       <header class="main_header">
