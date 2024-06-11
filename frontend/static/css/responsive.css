@@ -131,6 +131,10 @@
     overflow-x: auto;
   }
 
+  .friend_add_modal {
+    max-width: 35vh;
+  }
+
   header {
     margin-left: 0;
     margin-top: 10%;
