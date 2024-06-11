@@ -1,4 +1,4 @@
-import { patchLanguage } from "../api/api.js";
+import { patchLanguage } from '../api/api.js';
 
 export const getStoredLang = () => {
   return localStorage.getItem('lang') || 'en';
@@ -9,20 +9,21 @@ export const setStoredLang = (lang) => {
 };
 
 export const changeLanguage = (lang) => {
-  registry[1].lang = lang;
+  registry.lang = lang;
   setStoredLang(lang);
-  if (registry[0].islogin === true) {
+  if (localStorage.getItem('token') !== null) {
     const data = patchLanguage(lang);
   }
 };
 
-const registry = [{ islogin: true }, { lang: getStoredLang() }];
+const registry = { lang: getStoredLang() };
 
 export const words = {
   en: {
     play: 'Play',
     profile: 'Profile',
     login: 'Login',
+    logout: 'Logout',
     moveleft: 'moveleft',
     moveright: 'moveright',
     start: 'Start',
@@ -40,6 +41,7 @@ export const words = {
     play: '플레이',
     profile: '프로필',
     login: '로그인',
+    logout: '로그아웃',
     moveleft: '왼쪽으로 이동',
     moveright: '오른쪽으로 이동',
     start: '시작',
@@ -57,6 +59,7 @@ export const words = {
     play: 'プレー',
     profile: 'プロフィール',
     login: 'ログイン',
+    logout: 'ログアウト',
     moveleft: '左に移動',
     moveright: '右に移動',
     start: 'スタート',
