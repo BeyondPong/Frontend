@@ -10,17 +10,24 @@ export default class extends AbstractView {
   }
 
   async getHtml() {
+    const isLogin = localStorage.getItem('token') !== null;
+
     return `
       <header class="main_header">
         <a href="/" id="main_link" class="nav__link" data-link>Ping? Pong!</a>
       </header>
-			<nav class="play_nav">
+      <nav class="play_nav">
         <a tabindex="0" class="nav__link" id="local_link">${words[registry.lang].local}</a>
-         <a tabindex="0" class="nav__link" id="remote_link">${words[registry.lang].remote}</a>
-         <a tabindex="0" class="nav__link" id="tournament_link">${words[registry.lang].tournament}</a>
-			</nav>
-			`;
+        <a tabindex="0" class="nav__link" id="remote_link" style="${
+          isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
+        }">${words[registry.lang].remote}</a>
+        <a tabindex="0" class="nav__link" id="tournament_link" style="${
+          isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
+        }">${words[registry.lang].tournament}</a>
+      </nav>
+    `;
   }
+
   async localModal() {
     const modalHtml = `
       <div class="modal_content play_modal">
