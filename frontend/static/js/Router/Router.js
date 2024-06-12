@@ -17,11 +17,12 @@ export class Router {
       { path: '/', view: Main },
       { path: '/login', view: Login },
       { path: '/logout', view: Main },
+      { path: '/login_code/', view: Main },
+      // { path: '/2fa', view: 2FA}
       { path: '/play', view: Play },
       { path: '/profile', view: Profile },
       { path: '/notlogin', view: NotLogin },
       { path: '/notfound', view: NotFound },
-      { path: '/login_code/', view: Main },
     ];
   }
 
@@ -124,7 +125,10 @@ export class Router {
     if (localStorage.getItem('token') === null) {
       match = this.handleNotLogin();
       await this.render(match);
-    } else {
+    } else if (localStorage.getItem('2FA') === 'pending') {
+      window.location.href = '/2fa';
+    }
+    else {
       await this.render(match);
       const viewInstance = new match.route.view(getParams(match));
       const navItems = Array.from(document.getElementsByClassName('profile_nav_item'));
