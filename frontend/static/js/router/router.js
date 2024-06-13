@@ -133,9 +133,11 @@ export class Router {
         item.addEventListener('click', (e) => {
           e.preventDefault();
           navItems.forEach((nav) => nav.querySelector('a').classList.remove('active_tab'));
-          e.target.closest('a').classList.add('active_tab');
-          const tabText = e.target.closest('a').textContent.trim();
-          viewInstance.moveTabs(tabText);
+          if (e.target.closest('a') !== null) {
+            e.target.closest('a').classList.add('active_tab');
+            const tabText = e.target.closest('a').textContent.trim();
+            viewInstance.moveTabs(tabText);
+          }
         });
       });
       updateBackground('normal');

@@ -90,7 +90,6 @@ export default class extends AbstractView {
       const deleteButtons = Array.from(document.getElementsByClassName('delete_button'));
       deleteButtons.forEach((button) => {
         button.addEventListener('click', async (e) => {
-          console.log("delete button");
           const userId = e.target.getAttribute('data-user-id');
           await deleteFriend(userId);
           e.target.classList.add('disabled_button');
@@ -130,21 +129,24 @@ export default class extends AbstractView {
       matchFriends.users.forEach((user) => {
         const friendElement = document.createElement('div');
         friendElement.classList.add('friend');
+        if (user.status_msg === null) {
+          user.status_msg = `안녕하세요 ${user.nickname}입니다.`;
+        }
         let resultHTML = `
           <div class="friend_image" style="background-image: url(/static/assets/${user.profile_img});"></div>
           <div class="friend_name">${user.nickname}</div>
           <div class="friend_message">${user.status_msg}</div>
         `;
         if (user.is_friend) {
-          resultHTML += `<div class="disabled_friend_button"><button class="add_button disabled_button" disabled data-user-id="${user.id}">${words[registry.lang].friend_add_button}</button></div>`;
+          resultHTML += `<div class="disabled_friend_button friend_add_button"><button class="add_button disabled_button" disabled data-user-id="${user.id}">${words[registry.lang].friend_add_button}</button></div>`;
         } else {
-          resultHTML += `<div class="friend_button"><button class="add_button" data-user-id="${user.id}">${words[registry.lang].friend_add_button}</button></div>`;
+          resultHTML += `<div class="friend_button friend_add_button"><button class="add_button" data-user-id="${user.id}">${words[registry.lang].friend_add_button}</button></div>`;
         }
         friendElement.innerHTML = resultHTML;
         searchResultBox.appendChild(friendElement);
       });
 
-      const buttons = Array.from(document.getElementsByClassName('add_button'));
+      const buttons = Array.from(document.getElementsByClassName('friend_add_button'));
       buttons.forEach((button) => {
         button.addEventListener('click', async (e) => {
           const userId = e.target.getAttribute('data-user-id');
@@ -178,10 +180,10 @@ export default class extends AbstractView {
     profileContent.innerHTML = '';
     if (tabText === words[registry.lang].information) {
       const data = await getProfileData();
-      if (data.status_msg === null) {
-        data.status_msg = `안녕하세요 ${data.nickname}입니다.`;
-      }
       if (data) {
+        if (data.status_msg === null) {
+          data.status_msg = `안녕하세요 ${data.nickname}입니다.`;
+        }
         const container = document.createElement('div');
         container.classList.add('profile_container');
         const profileHTML = `
