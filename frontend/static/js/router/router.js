@@ -27,6 +27,7 @@ export class Router {
       { path: '/notlogin', view: NotLogin },
       { path: '/notfound', view: NotFound },
     ];
+    this.socket = null;
   }
 
   async route() {
@@ -111,6 +112,7 @@ export class Router {
   }
 
   async handleLogoutRoute(match) {
+    this.socket.close();
     localStorage.removeItem('token');
     window.location.href = '/';
     this.handleMainRoute(match);
@@ -131,6 +133,24 @@ export class Router {
       //   window.location.href = '/2fa';
       //   return;
       // }
+      const token = localStorage.getItem('token');
+      this.socket = new WebSocket(`ws://localhost:8000/ws/member/login_room/?token=${token}`);
+
+      this.socket.onopen = function (event) {
+        console.log('WebSocket connection opened.');
+      };
+
+      this.socket.onmessage = function (event) {
+        const data = event.data;
+        console.log(data);
+      };
+      this.socket.onclose = function (event) {
+        console.log('WebSocket connection closed. Code:', event.code, 'Reason:', event.reason);
+      };
+
+      this.socket.onerror = function (error) {
+        console.log('WebSocket error: ' + error.message);
+      };
     }
     const viewInstance = new match.route.view(getParams(match));
     await this.render(match);
