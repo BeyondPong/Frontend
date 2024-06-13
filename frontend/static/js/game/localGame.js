@@ -33,8 +33,8 @@ export const localGame = {
     player2Container.appendChild(player2Label);
     player2Container.appendChild(player2Score);
 
-    $div.appendChild(player1Container);
     $div.appendChild(player2Container);
+    $div.appendChild(player1Container);
 
     root.appendChild($div);
     let container, renderer, camera, mainLight, scene, ball, paddle1, paddle2, field, running;
