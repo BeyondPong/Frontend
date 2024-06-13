@@ -67,6 +67,24 @@ export const getSearchResultData = async (userId) => {
   }
 };
 
+export const deleteFriend = async (userId) => {
+  try {
+    const response = await fetch(`http://localhost:8000/profile/friends/${userId}/`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': 'Bearer' + ' ' + localStorage.getItem('token'),
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 export const postAddFriend = async (userId) => {
   try {
     const response = await fetch(`http://localhost:8000/profile/search/${userId}/`, {
