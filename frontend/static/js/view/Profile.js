@@ -4,7 +4,9 @@ import { words } from '../state/Registry.js';
 import {
   getProfileData,
   getHistoryData,
+  getFriendsData,
   getSearchResultData,
+  deleteFriend,
   postAddFriend,
   patchStatusMessage,
   patchAvatar,
@@ -68,6 +70,44 @@ export default class extends AbstractView {
       });
     }
   }
+
+  async showFriendsResult() {
+    const friendResultBox = document.querySelector('.friends_result_box');
+    friendResultBox.innerHTML = '';
+
+    const data = await getFriendsData();
+    if (data) {
+      data.forEach((friend) => {
+        const friendDiv = document.createElement('div');
+        friendDiv.classList.add('friend');
+        if (friend.status_msg === null) {
+          friend.status_msg = `안녕하세요 ${friend.nickname}입니다.`;
+        }
+        const friendHTML = `
+            <div class="friend_state friend_online"></div>
+            <div class="friend_image" style="background-image: url(/static/assets/${friend.profile_img}.png);"></div>
+            <div class="friend_name">${friend.nickname}</div>
+            <div class="friend_message">${friend.status_msg}</div>
+            <div class="friend_button delete_button"><button class="#" data-user-id=${friend.id}>${words[registry.lang].friend_delete_button}</button></div>
+        `;
+        friendDiv.innerHTML = friendHTML;
+        friendResultBox.appendChild(friendDiv);
+      })
+      const deleteButtons = Array.from(document.getElementsByClassName('delete_button'));
+      deleteButtons.forEach((button) => {
+        button.addEventListener('click', async (e) => {
+          const userId = e.target.getAttribute('data-user-id');
+          await deleteFriend(userId);
+          e.target.classList.add('disabled_button');
+          e.target.disabled = true;
+          const parent = e.target.parentElement;
+          parent.classList.add('disabled_button');
+          e.target.disabled = true;
+        })
+      })
+    }
+  }
+
   async showSearchResult() {
     const searchAndDisplayResults = async () => {
       const friendModal = document.getElementsByClassName('friend_add_modal')[0];
@@ -95,25 +135,24 @@ export default class extends AbstractView {
       matchFriends.users.forEach((user) => {
         const friendElement = document.createElement('div');
         friendElement.classList.add('friend');
+        if (user.status_msg === null) {
+          user.status_msg = `안녕하세요 ${user.nickname}입니다.`;
+        }
         let resultHTML = `
-          <div class="friend_image" style="background-image: url(${user.profile_img});"></div>
+          <div class="friend_image" style="background-image: url(/static/assets/${user.profile_img});"></div>
           <div class="friend_name">${user.nickname}</div>
           <div class="friend_message">${user.status_msg}</div>
         `;
         if (user.is_friend) {
-          resultHTML += `<div class="disabled_friend_button"><button class="add_button disabled_button" disabled data-user-id="${
-            user.id
-          }">${words[registry.lang].friend_add_button}</button></div>`;
+          resultHTML += `<div class="disabled_friend_button friend_add_button"><button class="add_button disabled_button" disabled data-user-id="${user.id}">${words[registry.lang].friend_add_button}</button></div>`;
         } else {
-          resultHTML += `<div class="friend_button"><button class="add_button" data-user-id="${user.id}">${
-            words[registry.lang].friend_add_button
-          }</button></div>`;
+          resultHTML += `<div class="friend_button friend_add_button"><button class="add_button" data-user-id="${user.id}">${words[registry.lang].friend_add_button}</button></div>`;
         }
         friendElement.innerHTML = resultHTML;
         searchResultBox.appendChild(friendElement);
       });
 
-      const buttons = Array.from(document.getElementsByClassName('add_button'));
+      const buttons = Array.from(document.getElementsByClassName('friend_add_button'));
       buttons.forEach((button) => {
         button.addEventListener('click', async (e) => {
           const userId = e.target.getAttribute('data-user-id');
@@ -147,10 +186,10 @@ export default class extends AbstractView {
     profileContent.innerHTML = '';
     if (tabText === words[registry.lang].information) {
       const data = await getProfileData();
-      if (data.status_msg === null) {
-        data.status_msg = `안녕하세요 ${data.nickname}입니다.`;
-      }
       if (data) {
+        if (data.status_msg === null) {
+          data.status_msg = `안녕하세요 ${data.nickname}입니다.`;
+        }
         const container = document.createElement('div');
         container.classList.add('profile_container');
         const profileHTML = `
@@ -316,47 +355,13 @@ export default class extends AbstractView {
       const friendsHTML = `
         <div class="friends_result_container">
           <div class="friends_result_box">
-            <div class="friend">
-              <div class="friend_state friend_online"></div>
-              <div class="friend_image" style="background-image: url(https://cdn.intra.42.fr/users/22a150a2b718bb79bbe204dc8e4a4ae7/misukim.jpg);"></div>
-              <div class="friend_name">sgo</div>
-              <div class="friend_message">안녕하세요 저는 상태메세지입니다. 방가</div>
-              <div class="friend_button"><button class="#" data-user-id="#">${
-                words[registry.lang].friend_delete_button
-              }</button></div>
-            </div>
-            <div class="friend">
-              <div class="friend_state friend_online"></div>
-              <div class="friend_image" style="background-image: url(https://cdn.intra.42.fr/users/22a150a2b718bb79bbe204dc8e4a4ae7/misukim.jpg);"></div>
-              <div class="friend_name">seoson</div>
-              <div class="friend_message">안녕하세요 방가</div>
-              <div class="friend_button"><button class="#" data-user-id="#">${
-                words[registry.lang].friend_delete_button
-              }</button></div>
-            </div>
-              <div class="friend">
-                <div class="friend_state"></div>
-                <div class="friend_image" style="background-image: url(https://cdn.intra.42.fr/users/22a150a2b718bb79bbe204dc8e4a4ae7/misukim.jpg);"></div>
-                <div class="friend_name">jonim</div>
-                <div class="friend_message">안녕하세요 저는 상태메세지입니다. 방가</div>
-                <div class="friend_button"><button class="#" data-user-id="#">${
-                  words[registry.lang].friend_delete_button
-                }</button></div>
-              </div>
-              <div class="friend">
-                <div class="friend_state"></div>
-                <div class="friend_image" style="background-image: url(https://cdn.intra.42.fr/users/22a150a2b718bb79bbe204dc8e4a4ae7/misukim.jpg);"></div>
-                <div class="friend_name">jusohn</div>
-                <div class="friend_message">hi</div>
-                <div class="friend_button"><button class="#" data-user-id="#">${
-                  words[registry.lang].friend_delete_button
-                }</button></div>
-              </div>
           </div>
         </div>
       `;
       container.innerHTML = friendsHTML;
       profileContent.replaceChildren(container);
+      this.showFriendsResult();
+
     } else {
       const container = document.createElement('div');
       container.classList.add('search_container');
