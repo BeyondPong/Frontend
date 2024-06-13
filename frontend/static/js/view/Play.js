@@ -120,8 +120,96 @@ export default class extends AbstractView {
           </div>
         </div>
       </div>
+      <div class="modal_content tournament_container hidden">
+        <div class="tournament_container_flex">
+          <div>
+            <input type="text" class="input_box" placeholder="${words[registry.lang].tournament_nickname_placeholder}" maxlength="10"/>
+          </div>
+          <div><button class="close_button check_button">CHECK</button></div>
+        </div>
+      </div>
   `;
     this.showModal(modalHtml);
+    const startButton = document.querySelector('#start_button');
+
+    startButton.addEventListener('click', async (e) => {
+      e.target.style.display = 'none';
+      this.deleteModal();
+
+      const container = document.querySelector('.tournament_container');
+      const checkButton = document.querySelector('.check_button');
+      const inputBox = document.querySelector('.input_box');
+
+      container.classList.remove('hidden');
+      checkButton.disabled = true;
+      checkButton.classList.add('disabled_button');
+      inputBox.addEventListener('input', () => {
+        if (inputBox.value.length < 2 || inputBox.value.length > 10) {
+          checkButton.disabled = true;
+          checkButton.classList.add('disabled_button');
+        } else {
+          checkButton.disabled = false;
+          checkButton.classList.remove('disabled_button');
+        }
+      })
+      checkButton.addEventListener('click', () => {
+        // API, 소켓 연결 예정. 닉네임 중복검사 필요.
+        const nickName = inputBox.value;
+        // container.classList.add('hidden');
+        const container = document.querySelector('.tournament_container_flex');
+        while (container.childNodes.length > 0) {
+          container.removeChild(container.firstChild);
+        }
+        const newDiv = document.createElement('div');
+        newDiv.classList.add('history_container');
+        const tableHTML = `
+        <div class="table_box">
+          <table class="table_container">
+            <thead>
+              <tr>
+                <th>No.</th>
+                <th>${words[registry.lang].tournament_table_nickname}</th>
+                <th>${words[registry.lang].tournament_table_score}</th>
+              </tr>
+            </thead>
+            <tbody class="table_tbody">
+              <tr>
+                <td class="table_number">1</td>
+                <td class="table_nickname">아보카도</td>
+                <td class="table_score">11 Win 2 Lose</td>
+              </tr>
+              <tr>
+                <td class="table_number">2</td>
+                <td class="table_nickname">바나나</td>
+                <td class="table_score">1 Win 2 Lose</td>
+              </tr>
+              <tr>
+                <td class="table_number">3</td>
+                <td class="table_nickname">끄투마스터고승준</td>
+                <td class="table_score">0 Win 3 Lose</td>
+              </tr>
+              <tr>
+                <td class="table_number">4</td>
+                <td class="table_nickname">할라피뇨</td>
+                <td class="table_score">4 Win 0 Lose</td>
+              </tr>
+            </tbody>
+          </table>
+          </div>
+        `;
+        newDiv.innerHTML = tableHTML;
+        container.replaceChildren(newDiv);
+
+      })
+    });
+
+
+    startButton.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.target.style.display = 'none';
+        this.deleteModal();
+      }
+    });
   }
 
   async showStartButton() {

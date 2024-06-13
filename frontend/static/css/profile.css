@@ -387,6 +387,7 @@
 
 .disabled_button {
   cursor: not-allowed;
+  background-color: var(--disabled-button-background-color);
 }
 
 .disabled_friend_button {
