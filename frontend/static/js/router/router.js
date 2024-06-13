@@ -4,12 +4,15 @@ import Login from '../view/Login.js';
 import Profile from '../view/Profile.js';
 import NotFound from '../view/NotFound.js';
 import NotLogin from '../view/NotLogin.js';
+import Fa from '../view/2FA.js';
 import pathToRegex from '../utility/pathToRegex.js';
 import getParams from '../utility/getParams.js';
 import navigateTo from '../utility/navigateTo.js';
 import updateBackground from '../utility/updateBackground.js';
 import { postLoginCode } from '../api/api.js';
 import { removeBlurBackground } from '../utility/blurBackGround.js';
+import { checkLogin } from '../utility/checkLogin.js';
+import { check2FAStatus } from '../utility/check2FA.js';
 
 export class Router {
   constructor() {
@@ -17,11 +20,12 @@ export class Router {
       { path: '/', view: Main },
       { path: '/login', view: Login },
       { path: '/logout', view: Main },
+      { path: '/login_code/', view: Main },
+      { path: '/2fa', view: Fa },
       { path: '/play', view: Play },
       { path: '/profile', view: Profile },
       { path: '/notlogin', view: NotLogin },
       { path: '/notfound', view: NotFound },
-      { path: '/login_code/', view: Main },
     ];
   }
 
@@ -68,6 +72,9 @@ export class Router {
       case '/login_code/':
         await this.handleAutorhizationCode();
         break;
+      case '/2fa':
+        await this.handle2FA(match);
+        break;
       case '/logout':
         await this.handleLogoutRoute(match);
         break;
@@ -87,6 +94,22 @@ export class Router {
     }
   }
 
+  async handle2FA(match) {
+    if (check2FAStatus() === true) {
+      window.location.href = '/';
+      return;
+    }
+    if (checkLogin() === false) {
+      window.location.href = '/notlogin';
+      return;
+    }
+    updateBackground('normal');
+    removeBlurBackground();
+    await this.render(match);
+    const viewInstance = new match.route.view(getParams(match));
+    viewInstance.addEvent();
+  }
+
   async handleLogoutRoute(match) {
     localStorage.removeItem('token');
     window.location.href = '/';
@@ -103,6 +126,12 @@ export class Router {
   }
 
   async handleMainRoute(match) {
+    if (checkLogin() === true) {
+      // if (check2FAStatus() === false) {
+      //   window.location.href = '/2fa';
+      //   return;
+      // }
+    }
     const viewInstance = new match.route.view(getParams(match));
     await this.render(match);
     await viewInstance.onMounted();
@@ -112,8 +141,7 @@ export class Router {
 
   async handleLoginRoute() {
     if (localStorage.getItem('token') !== null) {
-      navigateTo('/');
-      updateBackground('normal');
+      window.location.href = '/';
     } else if (!localStorage.getItem('token')) {
       window.location.href =
         'https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-4540298f9d0123b1db55521edf596a7625a4deea7a1b957bf5dbe1d7dc2ec9ab&redirect_uri=http://localhost:5173/login_code/&response_type=code';
@@ -121,10 +149,14 @@ export class Router {
   }
 
   async handleProfileRoute(match) {
-    if (localStorage.getItem('token') === null) {
+    if (checkLogin() === false) {
       match = this.handleNotLogin();
       await this.render(match);
     } else {
+      // if (check2FAStatus() === false) {
+      //   window.location.href = '/2fa';
+      //   return;
+      // }
       await this.render(match);
       const viewInstance = new match.route.view(getParams(match));
       const navItems = Array.from(document.getElementsByClassName('profile_nav_item'));
@@ -146,6 +178,12 @@ export class Router {
   }
 
   async handlePlayRoute(match) {
+    if (checkLogin() === true) {
+      // if (check2FAStatus() === false) {
+      //   window.location.href = '/2fa';
+      //   return;
+      // }
+    }
     await this.render(match);
     const viewInstance = new match.route.view(getParams(match));
     const localLink = document.getElementById('local_link');
