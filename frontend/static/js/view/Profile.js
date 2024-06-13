@@ -4,6 +4,7 @@ import { words } from '../state/Registry.js';
 import {
   getProfileData,
   getHistoryData,
+  getFriendsData,
   getSearchResultData,
   postAddFriend,
   patchStatusMessage,
@@ -62,6 +63,29 @@ export default class extends AbstractView {
       });
     }
   }
+
+  async showFriendsResult() {
+    const friendResultBox = document.querySelector('.friends_result_box');
+    friendResultBox.innerHTML = '';
+
+    const data = await getFriendsData();
+    if (data) {
+      data.forEach((friend) => {
+        const friendDiv = document.createElement('div');
+        friendDiv.classList.add('friend');
+        const friendHTML = `
+          <div class="friend_state friend_online"></div>
+            <div class="friend_image" style="background-image: url(/static/assets/${friend.profile_img}.png);"></div>
+            <div class="friend_name">${friend.nickname}</div>
+            <div class="friend_message">${friend.status_msg}</div>
+            <div class="friend_button"><button class="#" data-user-id=${friend.id}>${words[registry.lang].friend_delete_button}</button></div>
+        `;
+        friendDiv.innerHTML = friendHTML;
+        friendResultBox.appendChild(friendDiv);
+      })
+    }
+  }
+
   async showSearchResult() {
     const searchAndDisplayResults = async () => {
       const friendModal = document.getElementsByClassName('friend_add_modal')[0];
@@ -90,7 +114,7 @@ export default class extends AbstractView {
         const friendElement = document.createElement('div');
         friendElement.classList.add('friend');
         let resultHTML = `
-          <div class="friend_image" style="background-image: url(${user.profile_img});"></div>
+          <div class="friend_image" style="background-image: url(/static/assets/${user.profile_img});"></div>
           <div class="friend_name">${user.nickname}</div>
           <div class="friend_message">${user.status_msg}</div>
         `;
@@ -312,32 +336,12 @@ export default class extends AbstractView {
               <div class="friend_message">안녕하세요 저는 상태메세지입니다. 방가</div>
               <div class="friend_button"><button class="#" data-user-id="#">${words[registry.lang].friend_delete_button}</button></div>
             </div>
-            <div class="friend">
-              <div class="friend_state friend_online"></div>
-              <div class="friend_image" style="background-image: url(https://cdn.intra.42.fr/users/22a150a2b718bb79bbe204dc8e4a4ae7/misukim.jpg);"></div>
-              <div class="friend_name">seoson</div>
-              <div class="friend_message">안녕하세요 방가</div>
-              <div class="friend_button"><button class="#" data-user-id="#">${words[registry.lang].friend_delete_button}</button></div>
-            </div>
-              <div class="friend">
-                <div class="friend_state"></div>
-                <div class="friend_image" style="background-image: url(https://cdn.intra.42.fr/users/22a150a2b718bb79bbe204dc8e4a4ae7/misukim.jpg);"></div>
-                <div class="friend_name">jonim</div>
-                <div class="friend_message">안녕하세요 저는 상태메세지입니다. 방가</div>
-                <div class="friend_button"><button class="#" data-user-id="#">${words[registry.lang].friend_delete_button}</button></div>
-              </div>
-              <div class="friend">
-                <div class="friend_state"></div>
-                <div class="friend_image" style="background-image: url(https://cdn.intra.42.fr/users/22a150a2b718bb79bbe204dc8e4a4ae7/misukim.jpg);"></div>
-                <div class="friend_name">jusohn</div>
-                <div class="friend_message">hi</div>
-                <div class="friend_button"><button class="#" data-user-id="#">${words[registry.lang].friend_delete_button}</button></div>
-              </div>
           </div>
         </div>
       `;
       container.innerHTML = friendsHTML;
       profileContent.replaceChildren(container);
+      this.showFriendsResult();
     } else {
       const container = document.createElement('div');
       container.classList.add('search_container');
