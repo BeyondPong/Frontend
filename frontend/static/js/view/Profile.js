@@ -70,14 +70,23 @@ export default class extends AbstractView {
   }
   async showSearchResult() {
     const searchAndDisplayResults = async () => {
+      const friendModal = document.getElementsByClassName('friend_add_modal')[0];
+      const friendModalButton = document.querySelector('#friend_modal_button');
+      friendModalButton.addEventListener('click', () => {
+        friendModal.classList.add('hidden');
+      })
+
       const query = document.getElementById('search_input').value;
       if (query === '') {
-        alert(`${words[registry.lang].friend_search_error_nomatch}`);
+        friendModal.classList.remove('hidden');
+        friendModal.querySelector('span').textContent = `${words[registry.lang].friend_search_error_noinput}`;
         return;
       }
+      friendModal.classList.add('hidden');
       const matchFriends = await getSearchResultData(query);
       if (!matchFriends || matchFriends.users.length === 0) {
-        alert(`${words[registry.lang].friend_search_error_noinput}`);
+        friendModal.classList.remove('hidden');
+        friendModal.querySelector('span').textContent = `${words[registry.lang].friend_search_error_nomatch}`;
         return;
       }
       const searchResultBox = document.querySelector('.search_result_box');
@@ -107,12 +116,12 @@ export default class extends AbstractView {
       const buttons = Array.from(document.getElementsByClassName('add_button'));
       buttons.forEach((button) => {
         button.addEventListener('click', async (e) => {
-          console.log('click');
           const userId = e.target.getAttribute('data-user-id');
           const user = matchFriends.users.find((u) => u.id === parseInt(userId));
           if (user.is_friend === false) {
             await postAddFriend(userId);
-            alert(`${words[registry.lang].friend_message_success}`);
+            friendModal.classList.remove('hidden');
+            friendModal.querySelector('span').textContent = `${words[registry.lang].friend_message_success}`;
             e.target.style.cursor = 'not-allowed';
             e.target.style.backgroundColor = 'grey';
             e.target.disabled = true;
@@ -361,6 +370,12 @@ export default class extends AbstractView {
             </div>
             <div class="search_button_container"><button type="button" class="search_button"><i class="fa-solid fa-magnifying-glass"></i></button></div>
           </form>
+          <section class="friend_add_modal hidden" id="friend_add_modal">
+            <div class="friend_add_modal_flex">
+              <div><span class="friend_add_modal_message"><span></div>
+              <div><button class="save_button" id="friend_modal_button">${words[registry.lang].confirm_button}</button></div>
+            </div>
+          </section>
         </div>
         <div class="search_result_container">
           <div class="search_result_box"></div>

@@ -34,6 +34,9 @@ export const words = {
     local: 'Local',
     remote: 'Remote',
     tournament: 'Tournament',
+    tournament_nickname_placeholder: 'Please enter a nickname for tournament',
+    tournament_table_nickname: 'nickname',
+    tournament_table_score: 'score',
     avatar_save_button: 'SAVE',
     avatar_close_button: 'CLOSE',
     win: 'Win',
@@ -48,6 +51,7 @@ export const words = {
     friend_search_error_nomatch: 'No match friends',
     friend_search_error_noinput: 'Please enter a friend name.',
     friend_message_success: 'New friend added successfully!',
+    confirm_button: 'OK',
   },
   ko: {
     play: '플레이',
@@ -64,6 +68,9 @@ export const words = {
     local: '로컬 플레이',
     remote: '원격 플레이',
     tournament: '토너먼트',
+    tournament_nickname_placeholder: '토너먼트 닉네임을 설정해주세요',
+    tournament_table_nickname: '닉네임',
+    tournament_table_score: '스코어',
     avatar_save_button: '저장',
     avatar_close_button: '닫기',
     win: '승',
@@ -78,6 +85,7 @@ export const words = {
     friend_search_error_nomatch: '일치하는 아이디가 없습니다',
     friend_search_error_noinput: '친구 추가를 위해 아이디를 입력해주세요',
     friend_message_success: '친구 추가가 완료되었습니다',
+    confirm_button: '확인',
   },
   jp: {
     play: 'プレー',
@@ -94,6 +102,9 @@ export const words = {
     local: 'ローカルプレイ',
     remote: 'リモートプレイ',
     tournament: 'トーナメント',
+    tournament_nickname_placeholder: 'トーナメントニックネームを設定してください。',
+    tournament_table_nickname: 'ニックネーム',
+    tournament_table_score: 'スコア',
     avatar_save_button: 'セーブ',
     avatar_close_button: 'とじる',
     win: '勝ち',
@@ -108,6 +119,7 @@ export const words = {
     friend_search_error_nomatch: '一致するIDがありません。',
     friend_search_error_noinput: '友達追加のためにIDを入力してください。',
     friend_message_success: '友達の追加が完了しました。',
+    confirm_button: 'OK',
   },
 };
 
