@@ -96,14 +96,20 @@ export const localGame = {
 
       if (isSideCollision()) {
         ball.$velocity.x *= -1;
+        ball.position.x =
+          ball.position.x < 0
+            ? -dimensions.FIELD_WIDTH / 2 + dimensions.BALL_RADIUS
+            : dimensions.FIELD_WIDTH / 2 - dimensions.BALL_RADIUS;
       }
 
       if (isPaddle1Collision()) {
         hitBallBack(paddle1);
+        ball.position.z = paddle1.position.z - dimensions.BALL_RADIUS - 1;
       }
 
       if (isPaddle2Collision()) {
         hitBallBack(paddle2);
+        ball.position.z = paddle2.position.z + dimensions.BALL_RADIUS + 1;
       }
 
       if (isPastPaddle1()) {
