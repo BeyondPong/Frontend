@@ -1,4 +1,5 @@
 import AbstractView from './AbstractView.js';
+import { postLogin2FA, postLoginCode2FA } from '../api/api.js';
 import { addBlurBackground } from '../utility/blurBackGround.js';
 
 export default class extends AbstractView {
@@ -40,14 +41,34 @@ export default class extends AbstractView {
 
     const checkBtn = document.getElementById('checkBtn');
     checkBtn.textContent = 'VERIFY';
+    let tryCount = 0;
+    checkBtn.addEventListener('click', async (e) => {
+      const faCodeInputs = document.querySelectorAll('.fa_code_input');
+      const faCode = Array.from(faCodeInputs)
+        .map((input) => input.value)
+        .join('');
+      const response = await postLoginCode2FA(faCode);
+      if (response) {
+        window.location.href = '/';
+        window.localStorage.setItem('2FA', response.token);
+      } else {
+        tryCount += 1;
+        if (tryCount === 3) {
+          alert('Rewrite your email to get 2FA code');
+          window.location.href = '/';
+        }
+      }
+    });
   }
 
   async checkEmail(email) {
     const emailPattern = /.+@(gmail\.com|naver\.com)$/;
     if (emailPattern.test(email)) {
       console.log('Valid email:', email);
+      await postLogin2FA(email);
       await this.checkCode();
     } else {
+      alert('Invalid email address use gmail.com or naver.com only');
       console.error('Invalid email:', email);
     }
   }
