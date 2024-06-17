@@ -1,7 +1,7 @@
 import { addBlurBackground } from '../utility/blurBackGround.js';
 
 export const remoteGame = {
-  async init() {
+  async init(socket) {
     addBlurBackground();
     const $app = document.getElementById('app');
     const root = document.getElementById('app');
@@ -41,6 +41,8 @@ export const remoteGame = {
 
     const $canvas = document.createElement('canvas');
     const context = $canvas.getContext('2d');
+    $canvas.width = $app.offsetWidth / 2;
+    $canvas.height = $app.offsetHeight / 1.2;
     let grid = 15;
     let paddleWidth = grid * 6;
     let maxPaddleX = $canvas.width - grid - paddleWidth;
@@ -58,17 +60,7 @@ export const remoteGame = {
       document.getElementById('player2Score').innerText = score.player2;
     }
 
-    function resize() {
-      $canvas.width = $app.offsetWidth / 2;
-      $canvas.height = $app.offsetHeight / 1.2;
-      paddleWidth = $canvas.width / 7;
-      maxPaddleX = $canvas.width - grid - paddleWidth;
-      if (running === false) render();
-    }
-
     updateScore();
-    resize();
-    window.addEventListener('resize', resize);
 
     let topPaddle = {
       x: $canvas.width / 2 - paddleWidth / 2,

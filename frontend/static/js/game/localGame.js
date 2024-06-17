@@ -78,7 +78,7 @@ export const localGame = {
       let direction = Math.random() > 0.5 ? -1 : 1;
       ball.$velocity = {
         x: 0,
-        z: direction * 35,
+        z: direction * 25,
       };
       ball.$stopped = false;
     }

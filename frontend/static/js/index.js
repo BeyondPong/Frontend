@@ -1,5 +1,5 @@
-import { Router } from "./router/router.js";
-import navigateTo from "./utility/navigateTo.js";
+import { Router } from './router/router.js';
+import navigateTo from './utility/navigateTo.js';
 
 const router = new Router();
 window.addEventListener('popstate', () => router.route());
