@@ -135,7 +135,9 @@ export class Router {
         return;
       }
       const token = localStorage.getItem('2FA');
-      this.socket = new WebSocket(`ws://localhost:8000/ws/member/login_room/?token=${token}`);
+      if (!this.socket || this.socket.readyState === WebSocket.CLOSED) {
+        this.socket = new WebSocket(`ws://localhost:8000/ws/member/login_room/?token=${token}`);
+      }
 
       this.socket.onopen = function (event) {
         console.log('WebSocket connection opened.');
