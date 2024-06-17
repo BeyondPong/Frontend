@@ -114,6 +114,7 @@ export class Router {
   async handleLogoutRoute(match) {
     this.socket.close();
     localStorage.removeItem('token');
+    localStorage.removeItem('2FA');
     window.location.href = '/';
     this.handleMainRoute(match);
   }
@@ -129,11 +130,11 @@ export class Router {
 
   async handleMainRoute(match) {
     if (checkLogin() === true) {
-      // if (check2FAStatus() === false) {
-      //   window.location.href = '/2fa';
-      //   return;
-      // }
-      const token = localStorage.getItem('token');
+      if (check2FAStatus() === false) {
+        window.location.href = '/2fa';
+        return;
+      }
+      const token = localStorage.getItem('2FA');
       this.socket = new WebSocket(`ws://localhost:8000/ws/member/login_room/?token=${token}`);
 
       this.socket.onopen = function (event) {
@@ -173,10 +174,10 @@ export class Router {
       match = this.handleNotLogin();
       await this.render(match);
     } else {
-      // if (check2FAStatus() === false) {
-      //   window.location.href = '/2fa';
-      //   return;
-      // }
+      if (check2FAStatus() === false) {
+        window.location.href = '/2fa';
+        return;
+      }
       await this.render(match);
       const viewInstance = new match.route.view(getParams(match));
       const navItems = Array.from(document.getElementsByClassName('profile_nav_item'));
@@ -199,10 +200,10 @@ export class Router {
 
   async handlePlayRoute(match) {
     if (checkLogin() === true) {
-      // if (check2FAStatus() === false) {
-      //   window.location.href = '/2fa';
-      //   return;
-      // }
+      if (check2FAStatus() === false) {
+        window.location.href = '/2fa';
+        return;
+      }
     }
     await this.render(match);
     const viewInstance = new match.route.view(getParams(match));
