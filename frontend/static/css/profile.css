@@ -450,5 +450,13 @@
 }
 
 .friend_online {
-  background-color: #27DA7B;
+  background-color: #27da7b;
+}
+
+#unregister {
+  color: rgb(185, 9, 9);
+}
+
+#unregister:hover {
+  color: black;
 }
