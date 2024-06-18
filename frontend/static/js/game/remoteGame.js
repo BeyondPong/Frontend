@@ -45,7 +45,6 @@ export const remoteGame = {
     $canvas.height = $app.offsetHeight / 1.2;
     let grid = 15;
     let paddleWidth = grid * 6;
-    let maxPaddleX = $canvas.width - grid - paddleWidth;
     let score = {
       player1: 0,
       player2: 0,
@@ -88,15 +87,6 @@ export const remoteGame = {
     };
     $app.appendChild($canvas);
     $app.appendChild($div);
-
-    function collides(obj1, obj2) {
-      return (
-        obj1.x < obj2.x + obj2.width &&
-        obj1.x + obj1.width > obj2.x &&
-        obj1.y < obj2.y + obj2.height &&
-        obj1.y + obj1.height > obj2.y
-      );
-    }
 
     function addPoint(player) {
       score[player]++;
@@ -179,81 +169,6 @@ export const remoteGame = {
       $canvas.style.cursor = 'auto';
     }
 
-    function calculate() {
-      if (running === false) {
-        return;
-      }
-
-      if (topPaddle.paddleLeftPressed) {
-        topPaddle.x -= paddleSpeed;
-      }
-      if (topPaddle.paddleRightPressed) {
-        topPaddle.x += paddleSpeed;
-      }
-      if (bottomPaddle.paddleLeftPressed) {
-        bottomPaddle.x -= paddleSpeed;
-      }
-      if (bottomPaddle.paddleRightPressed) {
-        bottomPaddle.x += paddleSpeed;
-      }
-
-      if (topPaddle.x < grid) {
-        topPaddle.x = grid;
-      } else if (topPaddle.x > maxPaddleX) {
-        topPaddle.x = maxPaddleX;
-      }
-
-      if (bottomPaddle.x < grid) {
-        bottomPaddle.x = grid;
-      } else if (bottomPaddle.x > maxPaddleX) {
-        bottomPaddle.x = maxPaddleX;
-      }
-
-      ball.x += ball.dx;
-      ball.y += ball.dy;
-
-      if (ball.x < grid) {
-        ball.x = grid;
-        ball.dx *= -1;
-      } else if (ball.x + grid > $canvas.width - grid) {
-        ball.x = $canvas.width - grid * 2;
-        ball.dx *= -1;
-      }
-
-      if (ball.y < 0) {
-        addPoint('player2');
-        updateScore();
-        gameStop();
-        setTimeout(() => reset('player2'), 1000);
-      } else if (ball.y > $canvas.height) {
-        addPoint('player1');
-        updateScore();
-        gameStop();
-        setTimeout(() => reset('player1'), 1000);
-      }
-
-      if (score.player1 === 7 || score.player2 === 7) {
-        gameStop();
-        if (score.player1 === 7) {
-          gameEnd('Player 1');
-        } else {
-          gameEnd('Player 2');
-        }
-      }
-
-      if (collides(ball, topPaddle)) {
-        ball.dy *= -1;
-        ball.y = topPaddle.y + topPaddle.height;
-        let hitPos = (ball.x - topPaddle.x) / topPaddle.width - 0.5;
-        ball.dx = hitPos * ballSpeed * 2;
-      } else if (collides(ball, bottomPaddle)) {
-        ball.dy *= -1;
-        ball.y = bottomPaddle.y - ball.height;
-        let hitPos = (ball.x - bottomPaddle.x) / bottomPaddle.width - 0.5;
-        ball.dx = hitPos * ballSpeed * 2;
-      }
-    }
-
     function render() {
       context.clearRect(0, 0, $canvas.width, $canvas.height);
 
@@ -279,9 +194,45 @@ export const remoteGame = {
       $canvas.style.cursor = 'none';
     }
 
+    const responseMessage = {
+      type: 'start_game',
+      message: 'i want to play game',
+    };
+    socket.send(JSON.stringify(responseMessage));
+
+    function settingGame(data) {
+      console.log('DATA : ', data);
+    }
+
+    function moveTabEvent() {
+      window.addEventListener(
+        'popstate',
+        () => {
+          running = false;
+          if (socket) {
+            socket.close();
+            console.log('소켓 연결이 종료되었습니다.');
+          }
+        },
+        { once: true },
+      );
+    }
+
     function loop() {
-      calculate();
-      render();
+      console.log(socket);
+      socket.onmessage = function (event) {
+        const data = JSON.parse(event.data);
+        console.log(data);
+        if (data.type === 'start_game') {
+          settingGame(data);
+        } else if (data.type == 'update_score') {
+          console.log(data);
+          updateScore();
+        } else if (data.type == 'move_ball') {
+          console.log(data);
+          render();
+        }
+      };
       if (running) {
         requestAnimationFrame(loop);
       }
@@ -323,7 +274,8 @@ export const remoteGame = {
       });
     }
 
-    requestAnimationFrame(loop);
     addKeyboardEvent();
+    moveTabEvent();
+    requestAnimationFrame(loop);
   },
 };
