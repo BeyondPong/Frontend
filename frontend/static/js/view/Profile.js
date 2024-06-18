@@ -10,6 +10,7 @@ import {
   postAddFriend,
   patchStatusMessage,
   patchAvatar,
+  deleteAccount,
 } from '../api/api.js';
 
 export default class extends AbstractView {
@@ -18,24 +19,23 @@ export default class extends AbstractView {
   }
 
   async getHtml() {
-    const isLoggedIn = localStorage.getItem('token') !== null;
-
     return `
               <header class="main_header">
                 <a href="/" id="main_link" class="nav__link" data-link>Ping? Pong!</a>
               </header>
               <nav>
-              <a href="${isLoggedIn ? '/logout' : '/login'}"id="${isLoggedIn ? 'logout_link' : 'login_link'
-      }" class="nav__link" data-link>${isLoggedIn ? words[registry.lang].logout : words[registry.lang].login}</a>
+              <a href="/" id="unregister" class="nav__link" data-link>${words[registry.lang].unregister}</a>
               <a href="/play" id="play_link" class="nav__link" data-link>${words[registry.lang].play}</a>
-              <a href="/profile" id="profile_link" class="nav__link" data-link style="pointer-events: none; color: grey; text-decoration: none;">${words[registry.lang].profile
-      }</a>
+              <a href="/profile" id="profile_link" class="nav__link" data-link style="pointer-events: none; color: grey; text-decoration: none;">${
+                words[registry.lang].profile
+              }</a>
               </nav>
               <section class="modal_container">
                 <div class="modal_content profile_modal">
                   <ul class="profile_nav">
-                    <li class="profile_nav_item"><a href="#" class="information">${words[registry.lang].information
-      }</a></li>
+                    <li class="profile_nav_item"><a href="#" class="information">${
+                      words[registry.lang].information
+                    }</a></li>
                     <li class="profile_nav_item"><a href="#" class="history">${words[registry.lang].history}</a></li>
                     <li class="profile_nav_item"><a href="#" class="friends">${words[registry.lang].friends}</a></li>
                     <li class="profile_nav_item"><a href="#" class="search">${words[registry.lang].search}</a></li>
@@ -45,6 +45,26 @@ export default class extends AbstractView {
                 </div>
               </section>
               `;
+  }
+
+  async addEvent() {
+    const unregisterLink = document.getElementById('unregister');
+    unregisterLink.addEventListener('click', async (e) => {
+      e.preventDefault();
+      await deleteAccount();
+      localStorage.removeItem('token');
+      localStorage.removeItem('2FA');
+      window.location.href = '/';
+    });
+    unregisterLink.addEventListener('keydown', async (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        await deleteAccount();
+        localStorage.removeItem('token');
+        localStorage.removeItem('2FA');
+        window.location.href = '/';
+      }
+    });
   }
 
   async showHistoryResult() {
@@ -85,7 +105,9 @@ export default class extends AbstractView {
             <div class="friend_image" style="background-image: url(/static/assets/${friend.profile_img}.png);"></div>
             <div class="friend_name">${friend.nickname}</div>
             <div class="friend_message">${friend.status_msg}</div>
-            <div class="friend_button delete_button"><button class="#" data-user-id=${friend.id}>${words[registry.lang].friend_delete_button}</button></div>
+            <div class="friend_button delete_button"><button class="#" data-user-id=${friend.id}>${
+          words[registry.lang].friend_delete_button
+        }</button></div>
         `;
         friendDiv.innerHTML = friendHTML;
         friendResultBox.appendChild(friendDiv);
@@ -94,7 +116,7 @@ export default class extends AbstractView {
         } else {
           document.querySelector('.friend_state').classList.remove('friend_online');
         }
-      })
+      });
       const deleteButtons = Array.from(document.getElementsByClassName('delete_button'));
       deleteButtons.forEach((button) => {
         button.addEventListener('click', async (e) => {
@@ -105,8 +127,8 @@ export default class extends AbstractView {
           const parent = e.target.parentElement;
           parent.classList.add('disabled_button');
           e.target.disabled = true;
-        })
-      })
+        });
+      });
     }
   }
 
@@ -116,7 +138,7 @@ export default class extends AbstractView {
       const friendModalButton = document.querySelector('#friend_modal_button');
       friendModalButton.addEventListener('click', () => {
         friendModal.classList.add('hidden');
-      })
+      });
 
       const query = document.getElementById('search_input').value;
       if (query === '') {
@@ -146,9 +168,13 @@ export default class extends AbstractView {
           <div class="friend_message">${user.status_msg}</div>
         `;
         if (user.is_friend) {
-          resultHTML += `<div class="disabled_friend_button friend_add_button"><button class="add_button disabled_button" disabled data-user-id="${user.id}">${words[registry.lang].friend_add_button}</button></div>`;
+          resultHTML += `<div class="disabled_friend_button friend_add_button"><button class="add_button disabled_button" disabled data-user-id="${
+            user.id
+          }">${words[registry.lang].friend_add_button}</button></div>`;
         } else {
-          resultHTML += `<div class="friend_button friend_add_button"><button class="add_button" data-user-id="${user.id}">${words[registry.lang].friend_add_button}</button></div>`;
+          resultHTML += `<div class="friend_button friend_add_button"><button class="add_button" data-user-id="${
+            user.id
+          }">${words[registry.lang].friend_add_button}</button></div>`;
         }
         friendElement.innerHTML = resultHTML;
         searchResultBox.appendChild(friendElement);
@@ -218,8 +244,9 @@ export default class extends AbstractView {
               <button class="profile_status_save hidden" id="status_save"><i class="fa-solid fa-check"></i></button>
               </div>
             </div>
-            <span class="profile_count">${data.win_cnt}${words[registry.lang].win} ${data.lose_cnt}${words[registry.lang].lose
-          } </span>
+            <span class="profile_count">${data.win_cnt}${words[registry.lang].win} ${data.lose_cnt}${
+          words[registry.lang].lose
+        } </span>
           <section class="profile_img_modal hidden">
             <div class="profile_img_modal_flex">
               <div class="profile_img_set">
@@ -362,7 +389,6 @@ export default class extends AbstractView {
       container.innerHTML = friendsHTML;
       profileContent.replaceChildren(container);
       this.showFriendsResult();
-
     } else {
       const container = document.createElement('div');
       container.classList.add('search_container');
@@ -370,15 +396,18 @@ export default class extends AbstractView {
         <div class="form_container">
           <form action="#" class="form_box">
             <div class="input_container">
-              <input type="search" id="search_input" placeholder='${words[registry.lang].friend_search_placeholder
-        }' required>
+              <input type="search" id="search_input" placeholder='${
+                words[registry.lang].friend_search_placeholder
+              }' required>
             </div>
             <div class="search_button_container"><button type="button" class="search_button"><i class="fa-solid fa-magnifying-glass"></i></button></div>
           </form>
           <section class="friend_add_modal hidden" id="friend_add_modal">
             <div class="friend_add_modal_flex">
               <div><span class="friend_add_modal_message"><span></div>
-              <div><button class="save_button" id="friend_modal_button">${words[registry.lang].confirm_button}</button></div>
+              <div><button class="save_button" id="friend_modal_button">${
+                words[registry.lang].confirm_button
+              }</button></div>
             </div>
           </section>
         </div>
