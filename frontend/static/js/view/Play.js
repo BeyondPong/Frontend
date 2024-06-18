@@ -27,12 +27,10 @@ export default class extends AbstractView {
       </div>
       <nav class="play_nav">
         <a tabindex="0" class="nav__link" id="local_link">${words[registry.lang].local}</a>
-        <a tabindex="0" class="nav__link" id="remote_link" style="${
-          isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
-        }">${words[registry.lang].remote}</a>
-        <a tabindex="0" class="nav__link" id="tournament_link" style="${
-          isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
-        }">${words[registry.lang].tournament}</a>
+        <a tabindex="0" class="nav__link" id="remote_link" style="${isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
+      }">${words[registry.lang].remote}</a>
+        <a tabindex="0" class="nav__link" id="tournament_link" style="${isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
+      }">${words[registry.lang].tournament}</a>
       </nav>
     `;
   }
@@ -119,6 +117,7 @@ export default class extends AbstractView {
       }
     });
   }
+
   async play(mode) {
     const getRoomNames = async (mode) => {
       const response = await getRoomName(mode);
@@ -148,7 +147,13 @@ export default class extends AbstractView {
 
         this.socket.onopen = (event) => {
           console.log('Connection established');
-          loadingSpinner.style.display = 'flex';
+
+          if (mode === 'TOURNAMENT') {
+            this.tournamentNickNameModal();
+            loadingSpinner.style.display = 'none';
+          } else {
+            loadingSpinner.style.display = 'flex';
+          }
         };
 
         this.socket.onmessage = (event) => {
@@ -198,6 +203,88 @@ export default class extends AbstractView {
     }
   }
 
+  tournamentNickNameModal() {
+    const modalHtml = `
+      <div class="tournament_container_flex">
+        <div>
+          <input type="text" class="input_box" placeholder="${words[registry.lang].tournament_nickname_placeholder
+      }" maxlength="10"/>
+        </div>
+        <div><button class="close_button check_button">CHECK</button></div>
+      </div>
+    `;
+    const modalCotainer = document.querySelector('.modal_container');
+    const newContainer = document.createElement('div');
+    newContainer.classList.add('modal_content');
+    newContainer.classList.add('tournament_container');
+    newContainer.innerHTML = modalHtml;
+    modalCotainer.appendChild(newContainer);
+
+    const container = document.querySelector('.tournament_container');
+    const checkButton = document.querySelector('.check_button');
+    const inputBox = document.querySelector('.input_box');
+
+    container.classList.remove('hidden');
+    checkButton.disabled = true;
+    checkButton.classList.add('disabled_button');
+    inputBox.addEventListener('input', () => {
+      if (inputBox.value.length < 2 || inputBox.value.length > 10) {
+        checkButton.disabled = true;
+        checkButton.classList.add('disabled_button');
+      } else {
+        checkButton.disabled = false;
+        checkButton.classList.remove('disabled_button');
+      }
+    });
+    checkButton.addEventListener('click', () => {
+      const nickName = inputBox.value;
+      // container.classList.add('hidden');
+      const container = document.querySelector('.tournament_container_flex');
+      while (container.childNodes.length > 0) {
+        container.removeChild(container.firstChild);
+      }
+      const newDiv = document.createElement('div');
+      newDiv.classList.add('history_container');
+      const tableHTML = `
+      <div class="table_box">
+        <table class="table_container">
+          <thead>
+            <tr>
+              <th>No.</th>
+              <th>${words[registry.lang].tournament_table_nickname}</th>
+              <th>${words[registry.lang].tournament_table_score}</th>
+            </tr>
+          </thead>
+          <tbody class="table_tbody">
+            <tr>
+              <td class="table_number">1</td>
+              <td class="table_nickname">아보카도</td>
+              <td class="table_score">11 Win 2 Lose</td>
+            </tr>
+            <tr>
+              <td class="table_number">2</td>
+              <td class="table_nickname">바나나</td>
+              <td class="table_score">1 Win 2 Lose</td>
+            </tr>
+            <tr>
+              <td class="table_number">3</td>
+              <td class="table_nickname">끄투마스터고승준</td>
+              <td class="table_score">0 Win 3 Lose</td>
+            </tr>
+            <tr>
+              <td class="table_number">4</td>
+              <td class="table_nickname">할라피뇨</td>
+              <td class="table_score">4 Win 0 Lose</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+      `;
+      newDiv.innerHTML = tableHTML;
+      container.replaceChildren(newDiv);
+    });
+  }
+
   async tournamentModal() {
     const modalHtml = `
       <div class="modal_content play_modal">
@@ -215,94 +302,21 @@ export default class extends AbstractView {
           </div>
         </div>
       </div>
-      <div class="modal_content tournament_container hidden">
-        <div class="tournament_container_flex">
-          <div>
-            <input type="text" class="input_box" placeholder="${
-              words[registry.lang].tournament_nickname_placeholder
-            }" maxlength="10"/>
-          </div>
-          <div><button class="close_button check_button">CHECK</button></div>
-        </div>
-      </div>
   `;
     this.showModal(modalHtml);
     const startButton = document.querySelector('#start_button');
 
-    startButton.addEventListener('click', async (e) => {
+    startButton.addEventListener('click', (e) => {
       e.target.style.display = 'none';
       this.deleteModal();
-
-      const container = document.querySelector('.tournament_container');
-      const checkButton = document.querySelector('.check_button');
-      const inputBox = document.querySelector('.input_box');
-
-      container.classList.remove('hidden');
-      checkButton.disabled = true;
-      checkButton.classList.add('disabled_button');
-      inputBox.addEventListener('input', () => {
-        if (inputBox.value.length < 2 || inputBox.value.length > 10) {
-          checkButton.disabled = true;
-          checkButton.classList.add('disabled_button');
-        } else {
-          checkButton.disabled = false;
-          checkButton.classList.remove('disabled_button');
-        }
-      });
-      checkButton.addEventListener('click', () => {
-        // API, 소켓 연결 예정. 닉네임 중복검사 필요.
-        const nickName = inputBox.value;
-        // container.classList.add('hidden');
-        const container = document.querySelector('.tournament_container_flex');
-        while (container.childNodes.length > 0) {
-          container.removeChild(container.firstChild);
-        }
-        const newDiv = document.createElement('div');
-        newDiv.classList.add('history_container');
-        const tableHTML = `
-        <div class="table_box">
-          <table class="table_container">
-            <thead>
-              <tr>
-                <th>No.</th>
-                <th>${words[registry.lang].tournament_table_nickname}</th>
-                <th>${words[registry.lang].tournament_table_score}</th>
-              </tr>
-            </thead>
-            <tbody class="table_tbody">
-              <tr>
-                <td class="table_number">1</td>
-                <td class="table_nickname">아보카도</td>
-                <td class="table_score">11 Win 2 Lose</td>
-              </tr>
-              <tr>
-                <td class="table_number">2</td>
-                <td class="table_nickname">바나나</td>
-                <td class="table_score">1 Win 2 Lose</td>
-              </tr>
-              <tr>
-                <td class="table_number">3</td>
-                <td class="table_nickname">끄투마스터고승준</td>
-                <td class="table_score">0 Win 3 Lose</td>
-              </tr>
-              <tr>
-                <td class="table_number">4</td>
-                <td class="table_nickname">할라피뇨</td>
-                <td class="table_score">4 Win 0 Lose</td>
-              </tr>
-            </tbody>
-          </table>
-          </div>
-        `;
-        newDiv.innerHTML = tableHTML;
-        container.replaceChildren(newDiv);
-      });
+      this.play('TOURNAMENT');
     });
 
     startButton.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         e.target.style.display = 'none';
         this.deleteModal();
+        this.play('TOURNAMENT');
       }
     });
   }
