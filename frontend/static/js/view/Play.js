@@ -175,11 +175,6 @@ export default class extends AbstractView {
                 countdownContainer.innerText = 'Go!';
                 setTimeout(() => {
                   countdownContainer.style.display = 'none';
-                  const responseMessage = {
-                    type: 'start_game',
-                    message: 'i want to play game',
-                  };
-                  this.socket.send(JSON.stringify(responseMessage));
                   remoteGame.init(this.socket);
                 }, 1000);
               }
