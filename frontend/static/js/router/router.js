@@ -76,6 +76,9 @@ export class Router {
       case '/2fa':
         await this.handle2FA(match);
         break;
+      case 'unregister':
+        await this.handleUnregisterRoute(match);
+        break;
       case '/logout':
         await this.handleLogoutRoute(match);
         break;
@@ -95,6 +98,10 @@ export class Router {
     }
   }
 
+  async handleUnregisterRoute(match) {
+    this.handleLoginRoute(match);
+  }
+
   async handle2FA(match) {
     if (check2FAStatus() === true) {
       window.location.href = '/';
@@ -112,7 +119,9 @@ export class Router {
   }
 
   async handleLogoutRoute(match) {
-    this.socket.close();
+    if (this.socket) {
+      this.socket.close();
+    }
     localStorage.removeItem('token');
     localStorage.removeItem('2FA');
     window.location.href = '/';
@@ -154,6 +163,10 @@ export class Router {
       this.socket.onerror = function (error) {
         console.log('WebSocket error: ' + error.message);
       };
+    } else {
+      if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+        this.socket.close();
+      }
     }
     const viewInstance = new match.route.view(getParams(match));
     await this.render(match);
@@ -184,6 +197,7 @@ export class Router {
       const viewInstance = new match.route.view(getParams(match));
       const navItems = Array.from(document.getElementsByClassName('profile_nav_item'));
       viewInstance.defaultTabs();
+      viewInstance.addEvent();
       navItems.forEach((item, index) => {
         item.addEventListener('click', (e) => {
           e.preventDefault();
