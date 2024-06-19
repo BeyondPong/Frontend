@@ -76,9 +76,6 @@ export class Router {
       case '/2fa':
         await this.handle2FA(match);
         break;
-      case 'unregister':
-        await this.handleUnregisterRoute(match);
-        break;
       case '/logout':
         await this.handleLogoutRoute(match);
         break;
@@ -96,10 +93,6 @@ export class Router {
         await this.render(match);
         break;
     }
-  }
-
-  async handleUnregisterRoute(match) {
-    this.handleLoginRoute(match);
   }
 
   async handle2FA(match) {
