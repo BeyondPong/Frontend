@@ -11,7 +11,7 @@ export const setStoredLang = (lang) => {
 export const changeLanguage = (lang) => {
   registry.lang = lang;
   setStoredLang(lang);
-  if (localStorage.getItem('2fa') !== null) {
+  if (localStorage.getItem('2FA') !== null) {
     const data = patchLanguage(lang);
   }
 };
