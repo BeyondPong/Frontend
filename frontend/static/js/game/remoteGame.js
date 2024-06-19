@@ -247,21 +247,12 @@ export const remoteGame = {
 
     }
 
-    function moveTabEvent() {
-      window.addEventListener(
-        'popstate',
-        () => {
-          running = false;
-        },
-        { once: true },
-      );
-    }
-
     function loop() {
+      console.log(socket);
       socket.onmessage = function (event) {
         const data = JSON.parse(event.data);
         console.log(data);
-        if (data.type === 'game_start') {
+        if (data.type === 'start_game') {
           settingGame(data);
         } else if (data.type == 'update_score') {
           console.log(data);
@@ -269,8 +260,6 @@ export const remoteGame = {
         } else if (data.type == 'move_ball') {
           console.log(data);
           render();
-        } else {
-          console.log(data);
         }
       };
       if (running) {
@@ -320,7 +309,6 @@ export const remoteGame = {
     }
 
     addKeyboardEvent();
-    moveTabEvent();
     gameStart();
     requestAnimationFrame(loop);
   },
