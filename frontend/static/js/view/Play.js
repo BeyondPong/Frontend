@@ -27,10 +27,12 @@ export default class extends AbstractView {
       </div>
       <nav class="play_nav">
         <a tabindex="0" class="nav__link" id="local_link">${words[registry.lang].local}</a>
-        <a tabindex="0" class="nav__link" id="remote_link" style="${isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
-      }">${words[registry.lang].remote}</a>
-        <a tabindex="0" class="nav__link" id="tournament_link" style="${isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
-      }">${words[registry.lang].tournament}</a>
+        <a tabindex="0" class="nav__link" id="remote_link" style="${
+          isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
+        }">${words[registry.lang].remote}</a>
+        <a tabindex="0" class="nav__link" id="tournament_link" style="${
+          isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
+        }">${words[registry.lang].tournament}</a>
       </nav>
     `;
   }
@@ -175,7 +177,7 @@ export default class extends AbstractView {
                 countdownContainer.innerText = 'Go!';
                 setTimeout(() => {
                   countdownContainer.style.display = 'none';
-                  remoteGame.init(this.socket);
+                  remoteGame.init(this.socket, nickname);
                 }, 1000);
               }
             }, 1000);
@@ -202,8 +204,9 @@ export default class extends AbstractView {
     const modalHtml = `
       <div class="tournament_container_flex">
         <div>
-          <input type="text" class="input_box" placeholder="${words[registry.lang].tournament_nickname_placeholder
-      }" maxlength="10"/>
+          <input type="text" class="input_box" placeholder="${
+            words[registry.lang].tournament_nickname_placeholder
+          }" maxlength="10"/>
         </div>
         <div><button class="close_button check_button">CHECK</button></div>
       </div>
@@ -244,13 +247,13 @@ export default class extends AbstractView {
 
     checkButton.addEventListener('click', async () => {
       const nickName = inputBox.value;
-      const checkNickName = await postTournamentNickName(nickName, roomName)
+      const checkNickName = await postTournamentNickName(nickName, roomName);
       if (checkNickName.valid === false) {
         tournamentModal.classList.remove('hidden');
         closeButton.addEventListener('click', () => {
           console.log('close button');
           tournamentModal.classList.add('hidden');
-        })
+        });
         return;
       }
 
