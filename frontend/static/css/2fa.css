@@ -86,3 +86,58 @@
   outline: none;
   border-color: var(--button-font-color);
 }
+#gdpr {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  height: auto;
+  background-color: white;
+  border-radius: 10px;
+  z-index: 1000;
+  display: grid;
+  grid-template-rows: 0.2fr 0.2fr 0.2fr 0.1fr 0.3fr;
+  gap: 0.5rem;
+  font-size: calc(0.7vw + 0.8vh);
+  padding: 0.5rem;
+  box-sizing: border-box;
+}
+
+#gdpr h2 {
+  color: black;
+  text-align: center;
+}
+
+#gdpr ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#gdpr ul li {
+  margin-bottom: 0.5rem;
+}
+
+#gdpr button {
+  width: 50%;
+  height: 100%;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  justify-self: center;
+  margin: 0;
+}
+
+#gdpr button:hover {
+  background-color: #45a049;
+}
+
+#dropdown_2fa {
+  position: absolute;
+  left: 80%;
+  top: 10%;
+  z-index: 1001;
+}
