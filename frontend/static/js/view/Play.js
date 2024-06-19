@@ -5,11 +5,11 @@ import { localGame } from '../game/localGame.js';
 import { remoteGame } from '../game/remoteGame.js';
 import { getRoomName, getProfileData, postTournamentNickName } from '../api/api.js';
 import { addBlurBackground, removeBlurBackground } from '../utility/blurBackGround.js';
+import WebSocketManager from '../state/WebSocketManager.js';
 
 export default class extends AbstractView {
   constructor(params) {
     super(params);
-    this.socket = null;
   }
 
   async getHtml() {
@@ -129,75 +129,72 @@ export default class extends AbstractView {
     const setupWebSocket = async (roomName, mode) => {
       const data = await getProfileData();
       const nickname = data.nickname;
-      if (!this.socket || this.socket.readyState === WebSocket.CLOSED) {
-        this.socket = new WebSocket(`ws://localhost:8000/ws/play/${mode}/${roomName}/${nickname}/`);
-        const loadingSpinner = document.getElementById('loading_spinner');
+      WebSocketManager.connectGameSocket(`ws://localhost:8000/ws/play/${mode}/${roomName}/${nickname}/`);
+      const socket = WebSocketManager.returnGameSocket();
+      console.log(socket);
 
-        window.addEventListener('online', () => {
-          console.log('ONLINE');
-          removeBlurBackground();
+      const loadingSpinner = document.getElementById('loading_spinner');
+
+      window.addEventListener('online', () => {
+        console.log('ONLINE');
+        removeBlurBackground();
+        loadingSpinner.style.display = 'none';
+        this.remoteGame.init(socket);
+      });
+
+      window.addEventListener('offline', () => {
+        console.log('OFFLINE');
+        addBlurBackground();
+        loadingSpinner.innerText = 'No Internet Connection';
+        loadingSpinner.style.display = 'flex';
+      });
+
+      socket.onopen = (event) => {
+        console.log('Game socket connected');
+        if (mode === 'TOURNAMENT') {
+          this.tournamentNickNameModal(roomName);
           loadingSpinner.style.display = 'none';
-          this.remoteGame.init(this.socket);
-        });
-
-        window.addEventListener('offline', () => {
-          console.log('OFFLINE');
-          addBlurBackground();
-          loadingSpinner.innerText = 'No Internet Connection';
+        } else {
           loadingSpinner.style.display = 'flex';
-        });
+        }
+      };
+      socket.onclose = (event) => {
+        console.log('Game socket closed');
+      };
+      socket.onerror = (event) => {
+        alert('Error occurred. Please try again.');
+        window.location.href = '/';
+      };
 
-        this.socket.onopen = () => {
-          console.log('Connection established');
+      socket.onmessage = (event) => {
+        console.log('Message from server: ', event.data);
+        const data = JSON.parse(event.data);
+        loadingSpinner.style.display = 'none';
+        if (data.type === 'start_game') {
+          const countdownContainer = document.querySelector('#countdown_container');
+          countdownContainer.style.display = 'flex';
 
-          if (mode === 'TOURNAMENT') {
-            this.tournamentNickNameModal(roomName);
-            loadingSpinner.style.display = 'none';
-          } else {
-            loadingSpinner.style.display = 'flex';
-          }
-        };
-
-        this.socket.onmessage = (event) => {
-          console.log('Message from server: ', event.data);
-          const data = JSON.parse(event.data);
-          loadingSpinner.style.display = 'none';
-          if (data.type === 'start_game') {
-            const countdownContainer = document.querySelector('#countdown_container');
-            countdownContainer.style.display = 'flex';
-
-            let countdown = 3;
-            countdownContainer.innerText = countdown;
-            const countdownInterval = setInterval(() => {
-              countdown--;
-              if (countdown > 0) {
-                countdownContainer.innerText = countdown;
-              } else {
-                clearInterval(countdownInterval);
-                countdownContainer.innerText = 'Go!';
-                setTimeout(() => {
-                  countdownContainer.style.display = 'none';
-                  remoteGame.init(this.socket, nickname);
-                }, 1000);
-              }
-            }, 1000);
-          }
-        };
-
-        this.socket.onclose = (event) => {
-          console.log('Connection closed', event);
-        };
-
-        this.socket.onerror = (error) => {
-          console.error('WebSocket Error: ', error);
-        };
-      }
+          let countdown = 3;
+          countdownContainer.innerText = countdown;
+          const countdownInterval = setInterval(() => {
+            countdown--;
+            if (countdown > 0) {
+              countdownContainer.innerText = countdown;
+            } else {
+              clearInterval(countdownInterval);
+              countdownContainer.innerText = 'Go!';
+              setTimeout(() => {
+                countdownContainer.style.display = 'none';
+                remoteGame.init(socket, nickname);
+              }, 1000);
+            }
+          }, 1000);
+        }
+      };
     };
 
     const roomName = await getRoomNames(mode);
-    if (!this.socket || this.socket.readyState === WebSocket.CLOSED) {
-      await setupWebSocket(roomName, mode);
-    }
+    await setupWebSocket(roomName, mode);
   }
 
   async tournamentNickNameModal(roomName) {
@@ -351,15 +348,11 @@ export default class extends AbstractView {
     playNav.appendChild(startButton);
     const mainLink = document.querySelector('#main_link');
     mainLink.addEventListener('click', () => {
-      if (this.socket) {
-        this.socket.close();
-      }
+      WebSocketManager.closeGameSocket();
     });
     mainLink.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
-        if (this.socket) {
-          this.socket.close();
-        }
+        WebSocketManager.closeGameSocket();
       }
     });
   }
