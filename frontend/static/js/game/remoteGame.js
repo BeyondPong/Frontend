@@ -1,66 +1,31 @@
 import { addBlurBackground } from '../utility/blurBackGround.js';
 
 export const remoteGame = {
-  async init(socket) {
+  async init(socket, nickname) {
     addBlurBackground();
-    const $app = document.getElementById('app');
     const root = document.getElementById('app');
     while (root.childNodes.length > 0) {
       root.removeChild(root.firstChild);
     }
-    const $div = document.createElement('div');
-    $div.id = 'scoreBoard';
-    $div.style.display = 'flex';
-    $div.style.flexDirection = 'column';
-
-    const player1Container = document.createElement('div');
-    const player1Label = document.createElement('div');
-    player1Label.innerText = 'Player 1';
-    player1Label.style.whiteSpace = 'nowrap';
-    const player1Score = document.createElement('div');
-    player1Score.id = 'player1Score';
-    player1Score.style.display = 'inline';
-    player1Score.innerHTML = '0';
-    player1Container.appendChild(player1Label);
-    player1Container.appendChild(player1Score);
-
-    const player2Container = document.createElement('div');
-    const player2Label = document.createElement('div');
-    player2Label.innerText = 'Player 2';
-    player2Label.style.whiteSpace = 'nowrap';
-    const player2Score = document.createElement('div');
-    player2Score.id = 'player2Score';
-    player2Score.style.display = 'inline';
-    player2Score.innerHTML = '0';
-    player2Container.appendChild(player2Label);
-    player2Container.appendChild(player2Score);
-
-    $div.appendChild(player1Container);
-    $div.appendChild(player2Container);
-    root.appendChild($div);
-
+    const $app = document.getElementById('app');
     const $canvas = document.createElement('canvas');
     const context = $canvas.getContext('2d');
     $canvas.width = $app.offsetWidth / 2;
     $canvas.height = $app.offsetHeight / 1.2;
     let grid = 15;
     let paddleWidth = grid * 6;
-    let maxPaddleX = $canvas.width - grid - paddleWidth;
-    let score = {
-      player1: 0,
-      player2: 0,
+    let user = {
+      player1: { name: 'player1', score: 0 },
+      player2: { name: 'player2', score: 0 },
     };
     let running = true;
     let gameEnded = false;
-    let paddleSpeed = 6;
-    let ballSpeed = 6;
 
-    function updateScore() {
-      document.getElementById('player1Score').innerText = score.player1;
-      document.getElementById('player2Score').innerText = score.player2;
+    function updateScore(data) {
+      console.log(data);
+      document.getElementById('player1Score').innerText = user.player1.score;
+      document.getElementById('player2Score').innerText = user.player2.score;
     }
-
-    updateScore();
 
     let topPaddle = {
       x: $canvas.width / 2 - paddleWidth / 2,
@@ -84,19 +49,8 @@ export const remoteGame = {
       width: grid,
       height: grid,
       dx: 0,
-      dy: ballSpeed,
+      dy: 0,
     };
-    $app.appendChild($canvas);
-    $app.appendChild($div);
-
-    function collides(obj1, obj2) {
-      return (
-        obj1.x < obj2.x + obj2.width &&
-        obj1.x + obj1.width > obj2.x &&
-        obj1.y < obj2.y + obj2.height &&
-        obj1.y + obj1.height > obj2.y
-      );
-    }
 
     function addPoint(player) {
       score[player]++;
@@ -179,81 +133,6 @@ export const remoteGame = {
       $canvas.style.cursor = 'auto';
     }
 
-    function calculate() {
-      if (running === false) {
-        return;
-      }
-
-      if (topPaddle.paddleLeftPressed) {
-        topPaddle.x -= paddleSpeed;
-      }
-      if (topPaddle.paddleRightPressed) {
-        topPaddle.x += paddleSpeed;
-      }
-      if (bottomPaddle.paddleLeftPressed) {
-        bottomPaddle.x -= paddleSpeed;
-      }
-      if (bottomPaddle.paddleRightPressed) {
-        bottomPaddle.x += paddleSpeed;
-      }
-
-      if (topPaddle.x < grid) {
-        topPaddle.x = grid;
-      } else if (topPaddle.x > maxPaddleX) {
-        topPaddle.x = maxPaddleX;
-      }
-
-      if (bottomPaddle.x < grid) {
-        bottomPaddle.x = grid;
-      } else if (bottomPaddle.x > maxPaddleX) {
-        bottomPaddle.x = maxPaddleX;
-      }
-
-      ball.x += ball.dx;
-      ball.y += ball.dy;
-
-      if (ball.x < grid) {
-        ball.x = grid;
-        ball.dx *= -1;
-      } else if (ball.x + grid > $canvas.width - grid) {
-        ball.x = $canvas.width - grid * 2;
-        ball.dx *= -1;
-      }
-
-      if (ball.y < 0) {
-        addPoint('player2');
-        updateScore();
-        gameStop();
-        setTimeout(() => reset('player2'), 1000);
-      } else if (ball.y > $canvas.height) {
-        addPoint('player1');
-        updateScore();
-        gameStop();
-        setTimeout(() => reset('player1'), 1000);
-      }
-
-      if (score.player1 === 7 || score.player2 === 7) {
-        gameStop();
-        if (score.player1 === 7) {
-          gameEnd('Player 1');
-        } else {
-          gameEnd('Player 2');
-        }
-      }
-
-      if (collides(ball, topPaddle)) {
-        ball.dy *= -1;
-        ball.y = topPaddle.y + topPaddle.height;
-        let hitPos = (ball.x - topPaddle.x) / topPaddle.width - 0.5;
-        ball.dx = hitPos * ballSpeed * 2;
-      } else if (collides(ball, bottomPaddle)) {
-        ball.dy *= -1;
-        ball.y = bottomPaddle.y - ball.height;
-        let hitPos = (ball.x - bottomPaddle.x) / bottomPaddle.width - 0.5;
-        ball.dx = hitPos * ballSpeed * 2;
-      }
-    }
-
     function render() {
       context.clearRect(0, 0, $canvas.width, $canvas.height);
 
@@ -279,9 +158,80 @@ export const remoteGame = {
       $canvas.style.cursor = 'none';
     }
 
+    function gameStart() {
+      const responseMessage = {
+        type: 'start_game',
+        message: 'i want to play game',
+        width: $canvas.width,
+        height: $canvas.height,
+      };
+      socket.send(JSON.stringify(responseMessage));
+    }
+
+    function settingGame(data) {
+      ball.x = data.data.ball_position.x;
+      ball.y = data.data.ball_position.y;
+      ball.dx = data.data.ball_velocity.x;
+      ball.dy = data.data.ball_velocity.y;
+      user.player1.name = data.data.paddles[0].nickname;
+      user.player2.name = data.data.paddles[1].nickname;
+      topPaddle.x = data.data.paddles[0].x;
+      topPaddle.y = data.data.paddles[0].y;
+      topPaddle.width = data.data.paddles[0].width;
+      topPaddle.height = data.data.paddles[0].height;
+      bottomPaddle.x = data.data.paddles[1].x;
+      bottomPaddle.y = data.data.paddles[1].y;
+      bottomPaddle.width = data.data.paddles[1].width;
+      bottomPaddle.height = data.data.paddles[1].height;
+      user.player1.score = data.data.scores[data.data.paddles[0].nickname];
+      user.player2.score = data.data.scores[data.data.paddles[1].nickname];
+      $app.appendChild($canvas);
+      const $div = document.createElement('div');
+      $div.id = 'scoreBoard';
+      $div.style.display = 'flex';
+      $div.style.flexDirection = 'column';
+      const player1Container = document.createElement('div');
+      const player1Label = document.createElement('div');
+      player1Label.innerText = `data.data.paddles`;
+      player1Label.style.whiteSpace = 'nowrap';
+      const player1Score = document.createElement('div');
+      player1Score.id = 'player1Score';
+      player1Score.style.display = 'inline';
+      player1Score.innerHTML = '0';
+      player1Container.appendChild(player1Label);
+      player1Container.appendChild(player1Score);
+
+      const player2Container = document.createElement('div');
+      const player2Label = document.createElement('div');
+      player2Label.innerText = 'Player 2';
+      player2Label.style.whiteSpace = 'nowrap';
+      const player2Score = document.createElement('div');
+      player2Score.id = 'player2Score';
+      player2Score.style.display = 'inline';
+      player2Score.innerHTML = '0';
+      player2Container.appendChild(player2Label);
+      player2Container.appendChild(player2Score);
+
+      $div.appendChild(player1Container);
+      $div.appendChild(player2Container);
+      root.appendChild($div);
+      document.getElementById('player1Score').innerText = user.player1.score;
+      document.getElementById('player2Score').innerText = user.player2.score;
+    }
+
     function loop() {
-      calculate();
-      render();
+      socket.onmessage = function (event) {
+        const data = JSON.parse(event.data);
+        console.log(data);
+        if (data.type === 'start_game') {
+          settingGame(data);
+        } else if (data.type == 'update_score') {
+          updateScore(data);
+        } else if (data.type == 'move_ball') {
+          console.log(data);
+          render();
+        }
+      };
       if (running) {
         requestAnimationFrame(loop);
       }
@@ -323,7 +273,8 @@ export const remoteGame = {
       });
     }
 
-    requestAnimationFrame(loop);
     addKeyboardEvent();
+    gameStart();
+    requestAnimationFrame(loop);
   },
 };

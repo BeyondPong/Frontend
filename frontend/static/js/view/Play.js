@@ -131,6 +131,7 @@ export default class extends AbstractView {
       const nickname = data.nickname;
       WebSocketManager.connectGameSocket(`ws://localhost:8000/ws/play/${mode}/${roomName}/${nickname}/`);
       const socket = WebSocketManager.returnGameSocket();
+      console.log(socket);
 
       const loadingSpinner = document.getElementById('loading_spinner');
 
@@ -184,11 +185,7 @@ export default class extends AbstractView {
               countdownContainer.innerText = 'Go!';
               setTimeout(() => {
                 countdownContainer.style.display = 'none';
-                const responseMessage = {
-                  type: 'start_game',
-                  message: 'i want to play game',
-                };
-                remoteGame.init(socket);
+                remoteGame.init(socket, nickname);
               }, 1000);
             }
           }, 1000);
