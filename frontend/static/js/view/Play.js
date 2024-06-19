@@ -5,11 +5,11 @@ import { localGame } from '../game/localGame.js';
 import { remoteGame } from '../game/remoteGame.js';
 import { getRoomName, getProfileData, postTournamentNickName } from '../api/api.js';
 import { addBlurBackground, removeBlurBackground } from '../utility/blurBackGround.js';
+import WebSocketManager from '../state/WebSocketManager.js';
 
 export default class extends AbstractView {
   constructor(params) {
     super(params);
-    this.socket = null;
   }
 
   async getHtml() {
@@ -27,10 +27,12 @@ export default class extends AbstractView {
       </div>
       <nav class="play_nav">
         <a tabindex="0" class="nav__link" id="local_link">${words[registry.lang].local}</a>
-        <a tabindex="0" class="nav__link" id="remote_link" style="${isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
-      }">${words[registry.lang].remote}</a>
-        <a tabindex="0" class="nav__link" id="tournament_link" style="${isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
-      }">${words[registry.lang].tournament}</a>
+        <a tabindex="0" class="nav__link" id="remote_link" style="${
+          isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
+        }">${words[registry.lang].remote}</a>
+        <a tabindex="0" class="nav__link" id="tournament_link" style="${
+          isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
+        }">${words[registry.lang].tournament}</a>
       </nav>
     `;
   }
@@ -127,88 +129,84 @@ export default class extends AbstractView {
     const setupWebSocket = async (roomName, mode) => {
       const data = await getProfileData();
       const nickname = data.nickname;
-      if (!this.socket || this.socket.readyState === WebSocket.CLOSED) {
-        this.socket = new WebSocket(`ws://localhost:8000/ws/play/${mode}/${roomName}/${nickname}/`);
-        const loadingSpinner = document.getElementById('loading_spinner');
+      WebSocketManager.connectGameSocket(`ws://localhost:8000/ws/play/${mode}/${roomName}/${nickname}/`);
+      const socket = WebSocketManager.returnGameSocket();
 
-        window.addEventListener('online', () => {
-          console.log('ONLINE');
-          removeBlurBackground();
+      const loadingSpinner = document.getElementById('loading_spinner');
+
+      window.addEventListener('online', () => {
+        console.log('ONLINE');
+        removeBlurBackground();
+        loadingSpinner.style.display = 'none';
+        this.remoteGame.init(socket);
+      });
+
+      window.addEventListener('offline', () => {
+        console.log('OFFLINE');
+        addBlurBackground();
+        loadingSpinner.innerText = 'No Internet Connection';
+        loadingSpinner.style.display = 'flex';
+      });
+
+      socket.onopen = (event) => {
+        console.log('Game socket connected');
+        if (mode === 'TOURNAMENT') {
+          this.tournamentNickNameModal(roomName);
           loadingSpinner.style.display = 'none';
-          this.remoteGame.init(this.socket);
-        });
-
-        window.addEventListener('offline', () => {
-          console.log('OFFLINE');
-          addBlurBackground();
-          loadingSpinner.innerText = 'No Internet Connection';
+        } else {
           loadingSpinner.style.display = 'flex';
-        });
+        }
+      };
+      socket.onclose = (event) => {
+        console.log('Game socket closed');
+      };
+      socket.onerror = (event) => {
+        alert('Error occurred. Please try again.');
+        window.location.href = '/';
+      };
 
-        this.socket.onopen = () => {
-          console.log('Connection established');
+      socket.onmessage = (event) => {
+        console.log('Message from server: ', event.data);
+        const data = JSON.parse(event.data);
+        loadingSpinner.style.display = 'none';
+        if (data.type === 'start_game') {
+          const countdownContainer = document.querySelector('#countdown_container');
+          countdownContainer.style.display = 'flex';
 
-          if (mode === 'TOURNAMENT') {
-            this.tournamentNickNameModal(roomName);
-            loadingSpinner.style.display = 'none';
-          } else {
-            loadingSpinner.style.display = 'flex';
-          }
-        };
-
-        this.socket.onmessage = (event) => {
-          console.log('Message from server: ', event.data);
-          const data = JSON.parse(event.data);
-          loadingSpinner.style.display = 'none';
-          if (data.type === 'start_game') {
-            const countdownContainer = document.querySelector('#countdown_container');
-            countdownContainer.style.display = 'flex';
-
-            let countdown = 3;
-            countdownContainer.innerText = countdown;
-            const countdownInterval = setInterval(() => {
-              countdown--;
-              if (countdown > 0) {
-                countdownContainer.innerText = countdown;
-              } else {
-                clearInterval(countdownInterval);
-                countdownContainer.innerText = 'Go!';
-                setTimeout(() => {
-                  countdownContainer.style.display = 'none';
-                  const responseMessage = {
-                    type: 'start_game',
-                    message: 'i want to play game',
-                  };
-                  this.socket.send(JSON.stringify(responseMessage));
-                  remoteGame.init(this.socket);
-                }, 1000);
-              }
-            }, 1000);
-          }
-        };
-
-        this.socket.onclose = (event) => {
-          console.log('Connection closed', event);
-        };
-
-        this.socket.onerror = (error) => {
-          console.error('WebSocket Error: ', error);
-        };
-      }
+          let countdown = 3;
+          countdownContainer.innerText = countdown;
+          const countdownInterval = setInterval(() => {
+            countdown--;
+            if (countdown > 0) {
+              countdownContainer.innerText = countdown;
+            } else {
+              clearInterval(countdownInterval);
+              countdownContainer.innerText = 'Go!';
+              setTimeout(() => {
+                countdownContainer.style.display = 'none';
+                const responseMessage = {
+                  type: 'start_game',
+                  message: 'i want to play game',
+                };
+                remoteGame.init(socket);
+              }, 1000);
+            }
+          }, 1000);
+        }
+      };
     };
 
     const roomName = await getRoomNames(mode);
-    if (!this.socket || this.socket.readyState === WebSocket.CLOSED) {
-      await setupWebSocket(roomName, mode);
-    }
+    await setupWebSocket(roomName, mode);
   }
 
   async tournamentNickNameModal(roomName) {
     const modalHtml = `
       <div class="tournament_container_flex">
         <div>
-          <input type="text" class="input_box" placeholder="${words[registry.lang].tournament_nickname_placeholder
-      }" maxlength="10"/>
+          <input type="text" class="input_box" placeholder="${
+            words[registry.lang].tournament_nickname_placeholder
+          }" maxlength="10"/>
         </div>
         <div><button class="close_button check_button">CHECK</button></div>
       </div>
@@ -249,13 +247,13 @@ export default class extends AbstractView {
 
     checkButton.addEventListener('click', async () => {
       const nickName = inputBox.value;
-      const checkNickName = await postTournamentNickName(nickName, roomName)
+      const checkNickName = await postTournamentNickName(nickName, roomName);
       if (checkNickName.valid === false) {
         tournamentModal.classList.remove('hidden');
         closeButton.addEventListener('click', () => {
           console.log('close button');
           tournamentModal.classList.add('hidden');
-        })
+        });
         return;
       }
 
@@ -353,15 +351,11 @@ export default class extends AbstractView {
     playNav.appendChild(startButton);
     const mainLink = document.querySelector('#main_link');
     mainLink.addEventListener('click', () => {
-      if (this.socket) {
-        this.socket.close();
-      }
+      WebSocketManager.closeGameSocket();
     });
     mainLink.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
-        if (this.socket) {
-          this.socket.close();
-        }
+        WebSocketManager.closeGameSocket();
       }
     });
   }

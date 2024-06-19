@@ -13,6 +13,7 @@ import { postLoginCode } from '../api/api.js';
 import { removeBlurBackground } from '../utility/blurBackGround.js';
 import { checkLogin } from '../utility/checkLogin.js';
 import { check2FAStatus } from '../utility/check2FA.js';
+import WebSocketManager from '../state/WebSocketManager.js';
 
 export class Router {
   constructor() {
@@ -27,10 +28,10 @@ export class Router {
       { path: '/notlogin', view: NotLogin },
       { path: '/notfound', view: NotFound },
     ];
-    this.socket = null;
   }
 
   async route() {
+    WebSocketManager.closeGameSocket();
     let match = this.findMatch();
     if (!match || location.pathname === '/notfound') {
       match = this.handleNotFound();
@@ -112,9 +113,7 @@ export class Router {
   }
 
   async handleLogoutRoute(match) {
-    if (this.socket) {
-      this.socket.close();
-    }
+    WebSocketManager.closeFriendSocket();
     localStorage.removeItem('token');
     localStorage.removeItem('2FA');
     window.location.href = '/';
@@ -137,29 +136,9 @@ export class Router {
         return;
       }
       const token = localStorage.getItem('2FA');
-      if (!this.socket || this.socket.readyState === WebSocket.CLOSED) {
-        this.socket = new WebSocket(`ws://localhost:8000/ws/member/login_room/?token=${token}`);
-      }
-
-      this.socket.onopen = function (event) {
-        console.log('WebSocket connection opened.');
-      };
-
-      this.socket.onmessage = function (event) {
-        const data = event.data;
-        console.log(data);
-      };
-      this.socket.onclose = function (event) {
-        console.log('WebSocket connection closed. Code:', event.code, 'Reason:', event.reason);
-      };
-
-      this.socket.onerror = function (error) {
-        console.log('WebSocket error: ' + error.message);
-      };
+      WebSocketManager.connectFriendSocket(`ws://localhost:8000/ws/member/login_room/?token=${token}`);
     } else {
-      if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-        this.socket.close();
-      }
+      WebSocketManager.closeFriendSocket();
     }
     const viewInstance = new match.route.view(getParams(match));
     await this.render(match);
