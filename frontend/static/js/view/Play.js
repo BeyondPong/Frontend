@@ -3,7 +3,7 @@ import registry from '../state/Registry.js';
 import { words } from '../state/Registry.js';
 import { localGame } from '../game/localGame.js';
 import { remoteGame } from '../game/remoteGame.js';
-import { getRoomName, getProfileData } from '../api/api.js';
+import { getRoomName, getProfileData, postTournamentNickName } from '../api/api.js';
 import { addBlurBackground, removeBlurBackground } from '../utility/blurBackGround.js';
 
 export default class extends AbstractView {
@@ -145,11 +145,11 @@ export default class extends AbstractView {
           loadingSpinner.style.display = 'flex';
         });
 
-        this.socket.onopen = (event) => {
+        this.socket.onopen = () => {
           console.log('Connection established');
 
           if (mode === 'TOURNAMENT') {
-            this.tournamentNickNameModal();
+            this.tournamentNickNameModal(roomName);
             loadingSpinner.style.display = 'none';
           } else {
             loadingSpinner.style.display = 'flex';
@@ -203,7 +203,7 @@ export default class extends AbstractView {
     }
   }
 
-  tournamentNickNameModal() {
+  async tournamentNickNameModal(roomName) {
     const modalHtml = `
       <div class="tournament_container_flex">
         <div>
@@ -211,6 +211,14 @@ export default class extends AbstractView {
       }" maxlength="10"/>
         </div>
         <div><button class="close_button check_button">CHECK</button></div>
+      </div>
+      <div class="tournament_modal hidden">
+        <div class="tournament_modal_flex">
+          <div>${words[registry.lang].tournament_nickname_error}</div>
+          <div class="close_button tournament_button">
+            <button>OK</button>
+          </div>
+        </div>
       </div>
     `;
     const modalCotainer = document.querySelector('.modal_container');
@@ -223,6 +231,8 @@ export default class extends AbstractView {
     const container = document.querySelector('.tournament_container');
     const checkButton = document.querySelector('.check_button');
     const inputBox = document.querySelector('.input_box');
+    const tournamentModal = document.querySelector('.tournament_modal');
+    const closeButton = document.querySelector('.tournament_button');
 
     container.classList.remove('hidden');
     checkButton.disabled = true;
@@ -236,9 +246,19 @@ export default class extends AbstractView {
         checkButton.classList.remove('disabled_button');
       }
     });
-    checkButton.addEventListener('click', () => {
+
+    checkButton.addEventListener('click', async () => {
       const nickName = inputBox.value;
-      // container.classList.add('hidden');
+      const checkNickName = await postTournamentNickName(nickName, roomName)
+      if (checkNickName.valid === false) {
+        tournamentModal.classList.remove('hidden');
+        closeButton.addEventListener('click', () => {
+          console.log('close button');
+          tournamentModal.classList.add('hidden');
+        })
+        return;
+      }
+
       const container = document.querySelector('.tournament_container_flex');
       while (container.childNodes.length > 0) {
         container.removeChild(container.firstChild);
@@ -285,7 +305,7 @@ export default class extends AbstractView {
     });
   }
 
-  async tournamentModal() {
+  tournamentModal() {
     const modalHtml = `
       <div class="modal_content play_modal">
         <h2>

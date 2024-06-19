@@ -165,6 +165,27 @@ export const deleteFriend = async (userId) => {
   }
 };
 
+export const postTournamentNickName = async (nickName, roomName) => {
+  console.log("API " + roomName);
+  try {
+    const response = await fetch(`http://localhost:8000/play/${nickName}/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer' + ' ' + localStorage.getItem('2FA'),
+      },
+      body: JSON.stringify({ nickname: nickName, room_name: roomName }),
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 export const postAddFriend = async (userId) => {
   try {
     const response = await fetch(`http://localhost:8000/profile/search/${userId}/`, {
