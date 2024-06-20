@@ -98,7 +98,6 @@ export default class extends AbstractView {
         if (friend.status_msg === null) {
           friend.status_msg = `안녕하세요 ${friend.nickname}입니다.`;
         }
-        console.log(friend);
         const friendHTML = `
             <div class="friend_state ${friend.is_connected ? 'friend_online' : '#'}"></div>
             <div class="friend_image" style="background-image: url(/static/assets/${friend.profile_img}.png);"></div>

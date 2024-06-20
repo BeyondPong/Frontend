@@ -27,12 +27,10 @@ export default class extends AbstractView {
       </div>
       <nav class="play_nav">
         <a tabindex="0" class="nav__link" id="local_link">${words[registry.lang].local}</a>
-        <a tabindex="0" class="nav__link" id="remote_link" style="${
-          isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
-        }">${words[registry.lang].remote}</a>
-        <a tabindex="0" class="nav__link" id="tournament_link" style="${
-          isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
-        }">${words[registry.lang].tournament}</a>
+        <a tabindex="0" class="nav__link" id="remote_link" style="${isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
+      }">${words[registry.lang].remote}</a>
+        <a tabindex="0" class="nav__link" id="tournament_link" style="${isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
+      }">${words[registry.lang].tournament}</a>
       </nav>
     `;
   }
@@ -129,7 +127,8 @@ export default class extends AbstractView {
     const setupWebSocket = async (roomName, mode) => {
       const data = await getProfileData();
       const nickname = data.nickname;
-      WebSocketManager.connectGameSocket(`ws://localhost:8000/ws/play/${mode}/${roomName}/${nickname}/`);
+      const token = localStorage.getItem('token');
+      WebSocketManager.connectGameSocket(`ws://localhost:8000/ws/play/${mode}/${roomName}/${nickname}/?token=${token}`);
       let socket = WebSocketManager.returnGameSocket();
 
       const loadingSpinner = document.getElementById('loading_spinner');
@@ -151,7 +150,7 @@ export default class extends AbstractView {
       socket.onopen = (event) => {
         console.log('Game socket connected');
         if (mode === 'TOURNAMENT') {
-          this.tournamentNickNameModal(roomName);
+          this.tournamentNickNameModal(nickname, roomName);
           loadingSpinner.style.display = 'none';
         } else {
           loadingSpinner.style.display = 'flex';
@@ -164,7 +163,7 @@ export default class extends AbstractView {
       socket.onerror = (event) => {
         console.error('Game socket error:', event);
         if (!WebSocketManager.isGameSocketConnecting) {
-          WebSocketManager.connectGameSocket(`ws://localhost:8000/ws/play/${mode}/${roomName}/${nickname}/`);
+          WebSocketManager.connectGameSocket(`ws://localhost:8000/ws/play/${mode}/${roomName}/${nickname}/?token=${token}`);
           socket = WebSocketManager.returnGameSocket();
         }
       };
@@ -200,13 +199,12 @@ export default class extends AbstractView {
     await setupWebSocket(roomName, mode);
   }
 
-  async tournamentNickNameModal(roomName) {
+  async tournamentNickNameModal(realName, roomName) {
     const modalHtml = `
       <div class="tournament_container_flex">
         <div>
-          <input type="text" class="input_box" placeholder="${
-            words[registry.lang].tournament_nickname_placeholder
-          }" maxlength="10"/>
+          <input type="text" class="input_box" placeholder="${words[registry.lang].tournament_nickname_placeholder
+      }" maxlength="10"/>
         </div>
         <div><button class="close_button check_button">CHECK</button></div>
       </div>
@@ -247,7 +245,8 @@ export default class extends AbstractView {
 
     checkButton.addEventListener('click', async () => {
       const nickName = inputBox.value;
-      const checkNickName = await postTournamentNickName(nickName, roomName);
+      const checkNickName = await postTournamentNickName(nickName, realName, roomName);
+      console.log(checkNickName);
       if (checkNickName.valid === false) {
         tournamentModal.classList.remove('hidden');
         closeButton.addEventListener('click', () => {
