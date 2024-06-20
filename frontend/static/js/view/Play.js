@@ -130,8 +130,7 @@ export default class extends AbstractView {
       const data = await getProfileData();
       const nickname = data.nickname;
       WebSocketManager.connectGameSocket(`ws://localhost:8000/ws/play/${mode}/${roomName}/${nickname}/`);
-      const socket = WebSocketManager.returnGameSocket();
-      console.log(socket);
+      let socket = WebSocketManager.returnGameSocket();
 
       const loadingSpinner = document.getElementById('loading_spinner');
 
@@ -161,9 +160,13 @@ export default class extends AbstractView {
       socket.onclose = (event) => {
         console.log('Game socket closed');
       };
+
       socket.onerror = (event) => {
-        alert('Error occurred. Please try again.');
-        window.location.href = '/';
+        console.error('Game socket error:', event);
+        if (!WebSocketManager.isGameSocketConnecting) {
+          WebSocketManager.connectGameSocket(`ws://localhost:8000/ws/play/${mode}/${roomName}/${nickname}/`);
+          socket = WebSocketManager.returnGameSocket();
+        }
       };
 
       socket.onmessage = (event) => {

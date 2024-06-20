@@ -166,7 +166,6 @@ export const deleteFriend = async (userId) => {
 };
 
 export const postTournamentNickName = async (nickName, roomName) => {
-  console.log("API " + roomName);
   try {
     const response = await fetch(`http://localhost:8000/play/${nickName}/`, {
       method: 'POST',
@@ -184,7 +183,7 @@ export const postTournamentNickName = async (nickName, roomName) => {
   } catch (error) {
     console.log(error);
   }
-}
+};
 
 export const postAddFriend = async (userId) => {
   try {
