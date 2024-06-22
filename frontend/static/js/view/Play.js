@@ -129,7 +129,8 @@ export default class extends AbstractView {
     const setupWebSocket = async (roomName, mode) => {
       const data = await getProfileData();
       const nickname = data.nickname;
-      WebSocketManager.connectGameSocket(`ws://localhost:8000/ws/play/${mode}/${roomName}/${nickname}/`);
+      const token = localStorage.getItem('2FA');
+      WebSocketManager.connectGameSocket(`ws://localhost:8000/ws/play/${mode}/${roomName}/${nickname}/?token=${token}`);
       let socket = WebSocketManager.returnGameSocket();
 
       const loadingSpinner = document.getElementById('loading_spinner');
@@ -138,7 +139,7 @@ export default class extends AbstractView {
         console.log('ONLINE');
         removeBlurBackground();
         loadingSpinner.style.display = 'none';
-        this.remoteGame.init(socket);
+        this.remoteGame.init(socket, nickname, 'REMOTE');
       });
 
       window.addEventListener('offline', () => {
@@ -170,7 +171,6 @@ export default class extends AbstractView {
       };
 
       socket.onmessage = (event) => {
-        console.log('Message from server: ', event.data);
         const data = JSON.parse(event.data);
         loadingSpinner.style.display = 'none';
         if (data.type === 'start_game') {
@@ -188,7 +188,7 @@ export default class extends AbstractView {
               countdownContainer.innerText = 'Go!';
               setTimeout(() => {
                 countdownContainer.style.display = 'none';
-                remoteGame.init(socket, nickname);
+                remoteGame.init(socket, nickname, 'REMOTE');
               }, 1000);
             }
           }, 1000);

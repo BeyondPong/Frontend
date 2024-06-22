@@ -1,5 +1,5 @@
 import AbstractView from './AbstractView.js';
-import { postLogin2FA, postLoginCode2FA } from '../api/api.js';
+import { postLogin2FA, postLoginCode2FA, getRegistration } from '../api/api.js';
 import { addBlurBackground } from '../utility/blurBackGround.js';
 import { words, changeLanguage } from '../state/Registry.js';
 import registry from '../state/Registry.js';
@@ -157,7 +157,10 @@ export default class extends AbstractView {
     const check = document.getElementById('checkBtn');
     const faCodeInputs = document.querySelectorAll('.fa_code_input');
 
-    gdpr.style.display = 'grid';
+    const registration = await getRegistration();
+    if (registration.status === 'new_user') {
+      gdpr.style.display = 'grid';
+    }
     const agreeBtn = document.getElementById('agreeBtn');
     agreeBtn.addEventListener('click', (e) => {
       gdpr.style.display = 'none';

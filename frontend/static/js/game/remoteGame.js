@@ -1,7 +1,8 @@
+import { postGameResult } from '../api/api.js';
 import { addBlurBackground } from '../utility/blurBackGround.js';
 
 export const remoteGame = {
-  async init(socket, nickname) {
+  async init(socket, nickname, gameMode) {
     addBlurBackground();
     const root = document.getElementById('app');
     while (root.childNodes.length > 0) {
@@ -12,92 +13,55 @@ export const remoteGame = {
     const context = $canvas.getContext('2d');
     $canvas.width = $app.offsetWidth / 2;
     $canvas.height = $app.offsetHeight / 1.2;
+    $app.appendChild($canvas);
+    let running = true;
     let grid = 15;
     let paddleWidth = grid * 6;
     let user = {
       player1: { name: 'player1', score: 0 },
       player2: { name: 'player2', score: 0 },
     };
-    let running = true;
-    let gameEnded = false;
-
-    function updateScore(data) {
-      console.log(data);
-      document.getElementById('player1Score').innerText = user.player1.score;
-      document.getElementById('player2Score').innerText = user.player2.score;
-    }
 
     let topPaddle = {
       x: $canvas.width / 2 - paddleWidth / 2,
       y: grid * 2,
       width: paddleWidth,
       height: grid,
-      paddleLeftPressed: false,
-      paddleRightPressed: false,
     };
     let bottomPaddle = {
       x: $canvas.width / 2 - paddleWidth / 2,
       y: $canvas.height - grid * 3,
       width: paddleWidth,
       height: grid,
-      paddleLeftPressed: false,
-      paddleRightPressed: false,
     };
     let ball = {
       x: $canvas.width / 2,
       y: $canvas.height / 2,
       width: grid,
       height: grid,
-      dx: 0,
-      dy: 0,
     };
 
-    function addPoint(player) {
-      score[player]++;
-    }
+    let targetBall = { x: ball.x, y: ball.y };
 
-    function reset(player) {
-      if (gameEnded === true) return;
-      running = true;
-      paddleSpeed = 6;
-      ballSpeed = 6;
-      resetBall(player);
-      resetPaddle();
-      loop();
-    }
-
-    function resetBall(player) {
-      ball.x = $canvas.width / 2;
-      ball.y = $canvas.height / 2;
-      ball.dx = 0;
-      if (player === 'player1') {
-        ball.dy = ballSpeed * -1;
-      } else {
-        ball.dy = ballSpeed;
-      }
-    }
-
-    function resetPaddle() {
-      topPaddle.x = $canvas.width / 2 - paddleWidth / 2;
-      bottomPaddle.x = $canvas.width / 2 - paddleWidth / 2;
+    function updateScore(data) {
+      user.player1.score = data.scores[user.player1.name] ?? user.player1.score;
+      user.player2.score = data.scores[user.player2.name] ?? user.player2.score;
+      document.getElementById('player1Score').innerText = user.player1.score;
+      document.getElementById('player2Score').innerText = user.player2.score;
     }
 
     function gameStop() {
       running = false;
-      paddleSpeed = 0;
-      ballSpeed = 0;
     }
 
-    function gameEnd(player) {
-      if (gameEnded === true) return;
-      gameEnded = true;
+    async function gameEnd(data) {
       const $win = document.createElement('div');
       $win.classList.add('win');
-      $win.innerHTML = `${player} wins!!!`;
+      $win.innerHTML = `${data.winner} wins!!!`;
 
       const $score = document.createElement('div');
       $score.classList.add('win');
-      $score.innerHTML = `${score.player1} : ${score.player2}`;
+      $score.innerHTML = `${user.player1.score} : ${user.player2.score}`;
 
       const againButton = document.createElement('button');
       againButton.classList.add('gameButton');
@@ -115,11 +79,11 @@ export const remoteGame = {
       buttonContainer.appendChild(mainButton);
       document.getElementById('app').appendChild(buttonContainer);
       againButton.addEventListener('click', () => {
-        remoteGame.init();
+        remoteGame.init(socket, nickname, gameMode);
       });
       againButton.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
-          remoteGame.init();
+          remoteGame.init(socket, nickname, gameMode);
         }
       });
       mainButton.addEventListener('click', () => {
@@ -131,6 +95,7 @@ export const remoteGame = {
         }
       });
       $canvas.style.cursor = 'auto';
+      await postGameResult(gameMode, user);
     }
 
     function render() {
@@ -169,46 +134,58 @@ export const remoteGame = {
     }
 
     function settingGame(data) {
-      ball.x = data.data.ball_position.x;
-      ball.y = data.data.ball_position.y;
-      ball.dx = data.data.ball_velocity.x;
-      ball.dy = data.data.ball_velocity.y;
-      user.player1.name = data.data.paddles[0].nickname;
-      user.player2.name = data.data.paddles[1].nickname;
-      topPaddle.x = data.data.paddles[0].x;
-      topPaddle.y = data.data.paddles[0].y;
-      topPaddle.width = data.data.paddles[0].width;
-      topPaddle.height = data.data.paddles[0].height;
-      bottomPaddle.x = data.data.paddles[1].x;
-      bottomPaddle.y = data.data.paddles[1].y;
-      bottomPaddle.width = data.data.paddles[1].width;
-      bottomPaddle.height = data.data.paddles[1].height;
-      user.player1.score = data.data.scores[data.data.paddles[0].nickname];
-      user.player2.score = data.data.scores[data.data.paddles[1].nickname];
-      $app.appendChild($canvas);
+      targetBall.x = data.ball_position.x;
+      targetBall.y = data.ball_position.y;
+
+      if (data.paddles[0].nickname === nickname) {
+        user.player1.name = data.paddles[0].nickname;
+        user.player2.name = data.paddles[1].nickname;
+        topPaddle.x = data.paddles[0].x;
+        topPaddle.y = data.paddles[0].y;
+        topPaddle.width = data.paddles[0].width;
+        topPaddle.height = data.paddles[0].height;
+        bottomPaddle.x = data.paddles[1].x;
+        bottomPaddle.y = data.paddles[1].y;
+        bottomPaddle.width = data.paddles[1].width;
+        bottomPaddle.height = data.paddles[1].height;
+      } else {
+        user.player1.name = data.paddles[1].nickname;
+        user.player2.name = data.paddles[0].nickname;
+        topPaddle.x = data.paddles[1].x;
+        topPaddle.y = data.paddles[1].y;
+        topPaddle.width = data.paddles[1].width;
+        topPaddle.height = data.paddles[1].height;
+        bottomPaddle.x = data.paddles[0].x;
+        bottomPaddle.y = data.paddles[0].y;
+        bottomPaddle.width = data.paddles[0].width;
+        bottomPaddle.height = data.paddles[0].height;
+      }
+
+      user.player1.score = data.scores[user.player1.name];
+      user.player2.score = data.scores[user.player2.name];
+
       const $div = document.createElement('div');
       $div.id = 'scoreBoard';
       $div.style.display = 'flex';
       $div.style.flexDirection = 'column';
+
       const player1Container = document.createElement('div');
       const player1Label = document.createElement('div');
-      player1Label.innerText = `data.data.paddles`;
+      player1Label.innerText = user.player1.name;
       player1Label.style.whiteSpace = 'nowrap';
       const player1Score = document.createElement('div');
       player1Score.id = 'player1Score';
       player1Score.style.display = 'inline';
-      player1Score.innerHTML = '0';
       player1Container.appendChild(player1Label);
       player1Container.appendChild(player1Score);
 
       const player2Container = document.createElement('div');
       const player2Label = document.createElement('div');
-      player2Label.innerText = 'Player 2';
+      player2Label.innerText = user.player2.name;
       player2Label.style.whiteSpace = 'nowrap';
       const player2Score = document.createElement('div');
       player2Score.id = 'player2Score';
       player2Score.style.display = 'inline';
-      player2Score.innerHTML = '0';
       player2Container.appendChild(player2Label);
       player2Container.appendChild(player2Score);
 
@@ -219,54 +196,56 @@ export const remoteGame = {
       document.getElementById('player2Score').innerText = user.player2.score;
     }
 
-    function loop() {
+    function setSocket() {
       socket.onmessage = function (event) {
         const data = JSON.parse(event.data);
-        console.log(data);
-        if (data.type === 'start_game') {
-          settingGame(data);
+        if (data.type === 'game_start') {
+          settingGame(data.data);
         } else if (data.type == 'update_score') {
-          updateScore(data);
-        } else if (data.type == 'move_ball') {
-          console.log(data);
-          render();
+          gameStop();
+          updateScore(data.data);
+          running = true;
+        } else if (data.type == 'ball_position') {
+          targetBall.x = data.data.x;
+          targetBall.y = data.data.y;
+        } else if (data.type == 'end_game') {
+          updateScore(data.data);
+          gameEnd(data.data);
         }
       };
+    }
+
+    function animate() {
       if (running) {
-        requestAnimationFrame(loop);
+        ball.x = targetBall.x;
+        ball.y = targetBall.y;
+        render();
+        requestAnimationFrame(animate);
       }
     }
 
     function addKeyboardEvent() {
       document.addEventListener('keydown', function (e) {
+        let responseMessage = {};
         if (e.code === 'ArrowLeft') {
           e.preventDefault();
-          bottomPaddle.paddleLeftPressed = true;
+          responseMessage = {
+            type: 'move_paddle',
+            paddle: nickname,
+            direction: 'left',
+          };
+          socket.send(JSON.stringify(responseMessage));
         } else if (e.code === 'ArrowRight') {
           e.preventDefault();
-          bottomPaddle.paddleRightPressed = true;
-        } else if (e.code === 'KeyA') {
-          e.preventDefault();
-          topPaddle.paddleLeftPressed = true;
-        } else if (e.code === 'KeyD') {
-          e.preventDefault();
-          topPaddle.paddleRightPressed = true;
+          responseMessage = {
+            type: 'move_paddle',
+            paddle: nickname,
+            direction: 'right',
+          };
+          socket.send(JSON.stringify(responseMessage));
         }
       });
       document.addEventListener('keyup', function (e) {
-        if (e.code === 'ArrowLeft') {
-          e.preventDefault();
-          bottomPaddle.paddleLeftPressed = false;
-        } else if (e.code === 'ArrowRight') {
-          e.preventDefault();
-          bottomPaddle.paddleRightPressed = false;
-        } else if (e.code === 'KeyA') {
-          e.preventDefault();
-          topPaddle.paddleLeftPressed = false;
-        } else if (e.code === 'KeyD') {
-          e.preventDefault();
-          topPaddle.paddleRightPressed = false;
-        }
         if (e.key == 'ArrowUp' || e.key == 'ArrowDown') {
           e.preventDefault();
         }
@@ -274,7 +253,8 @@ export const remoteGame = {
     }
 
     addKeyboardEvent();
+    setSocket();
     gameStart();
-    requestAnimationFrame(loop);
+    animate();
   },
 };
