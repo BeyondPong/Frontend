@@ -37,9 +37,66 @@
     padding-top: 2.6rem;
   }
 
+  /* tournament  */
+  .tournament_left_parent::after,
+  .tournament_right_parent::before,
+  .tournament_right_parent::after,
+  .tournament_left_child::before,
+  .tournament_left_child::after,
+  .tournament_right_child::after,
+  .left_last_child::after,
+  .right_last_child::after {
+    display: none;
+  }
+
+  .tournament_list {
+    flex-direction: column;
+  }
+
+  .tournament_player_box {
+    flex-direction: row;
+    border: 2px solid var(--profile-color);
+    box-sizing: border-box;
+    width: 30vw;
+    height: 10vw;
+    max-width: 32vw;
+    background-color: var(--profile-background);
+    overflow: hidden;
+    gap: 0;
+  }
+
+  .tournament_player {
+    width: 30%;
+    height: 100%;
+    padding: 0;
+  }
+
+  .tournament_player_name {
+    font-size: 0.9em;
+    border-radius: 0%;
+    align-content: center;
+  }
+
+  .tournament_right {
+    flex-direction: row-reverse;
+  }
+
+  .tournament_left_childrens,
+  .tournament_right_childrens {
+    gap: 0;
+  }
+
+  .tournament_left_parent,
+  .tournament_right_parent {
+    justify-content: center;
+    margin: 0;
+    margin-left: 2rem;
+  }
+
+  /* profile histroy table */
   .table_box {
     overflow-y: auto;
-    max-height: 12.5rem;
+    max-height: 20rem;
   }
 
   .table_box thead {

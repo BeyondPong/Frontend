@@ -261,42 +261,127 @@ export default class extends AbstractView {
         container.removeChild(container.firstChild);
       }
       const newDiv = document.createElement('div');
-      newDiv.classList.add('history_container');
+      newDiv.classList.add('tournament_list');
       const tableHTML = `
-      <div class="table_box">
-        <table class="table_container">
-          <thead>
-            <tr>
-              <th>No.</th>
-              <th>${words[registry.lang].tournament_table_nickname}</th>
-              <th>${words[registry.lang].tournament_table_score}</th>
-            </tr>
-          </thead>
-          <tbody class="table_tbody">
-            <tr>
-              <td class="table_number">1</td>
-              <td class="table_nickname">아보카도</td>
-              <td class="table_score">11 Win 2 Lose</td>
-            </tr>
-            <tr>
-              <td class="table_number">2</td>
-              <td class="table_nickname">바나나</td>
-              <td class="table_score">1 Win 2 Lose</td>
-            </tr>
-            <tr>
-              <td class="table_number">3</td>
-              <td class="table_nickname">끄투마스터고승준</td>
-              <td class="table_score">0 Win 3 Lose</td>
-            </tr>
-            <tr>
-              <td class="table_number">4</td>
-              <td class="table_nickname">할라피뇨</td>
-              <td class="table_score">4 Win 0 Lose</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="tournament_left">
+          <div class="tournament_left_parent tournament_final">
+            <div class="tournament_player_box">
+              <div class="tournament_player">
+                final1
+              </div>
+            <div class="tournament_player_name">avocado</div>
+           </div>
+          </div>
+          <div class="tournament_left_childrens">
+            <div class="tournament_left_child">
+              <div class="tournament_left">
+                <div class="tournament_left_parent remove-after">
+                  <div class="tournament_player_box tournament_semi">
+                    <div class="tournament_player">
+                      semi1
+                    </div>
+                    <div class="tournament_player_name">seoson</div>
+                  </div>
+                </div> 
+              </div>
+            </div>
+            <div class="tournament_left_child left_last_child">
+              <div class="tournament_left">
+                <div class="tournament_left_parent remove-after">
+                  <div class="tournament_player_box tournament_semi">
+                    <div class="tournament_player">
+                      semi2
+                    </div>
+                    <div class="tournament_player_name">sgo</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tournament_right">
+          <div class="tournament_right_parent remove-after">
+            <div class="tournament_player_box">
+              <div class="tournament_player remove-after">
+                final2
+              </div>
+              <div class="tournament_player_name">misukim</div>
+            </div>
+          </div>
+          <div class="tournament_right_childrens">
+            <div class="tournament_right_child">
+              <div class="tournament_right">
+                <div class="tournament_right_parent remove-before">
+                  <div class="tournament_player_box tournament_semi">
+                    <div class="tournament_player">
+                      semi1
+                    </div>
+                    <div class="tournament_player_name">johsn snow</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="tournament_right_child right_last_child">
+              <div class="tournament_right">
+                <div class="tournament_right_parent remove-before">
+                  <div class="tournament_player_box tournament_semi">
+                    <div class="tournament_player">
+                      semi2
+                    </div>
+                    <div class="tournament_player_name">jonim</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       `;
+
+      // const tableHTML = `
+      //   <div class="tournament_item">
+      //     <div class="tournament_item-parent">
+      //       <p>Parent</p>
+      //     </div>
+      //     <div class="tournament_item-childrens">
+      //       <div class="tournament_item-child">
+      //         <div class="tournament_item">
+      //           <div class="tournament_item-parent only-child-after">
+      //             <p>Parent2</p>
+      //             <div class="tournament_name">avocado</div>
+      //           </div>
+      //         </div>
+      //       </div>
+      //       <div class="tournament_item-child last-child">
+      //         <div class="tournament_item">
+      //           <div class="tournament_item-parent only-child-after">
+      //             <p>Parent3</p>
+      //           </div>
+      //         </div>
+      //       </div>
+      //     </div>
+      //   </div>
+      //   <div class="tournament_item2">
+      //     <div class="tournament_item2-parent only-child-after">
+      //       <p>Parent111</p>
+      //     </div>
+      //     <div class="tournament_item2-childrens">
+      //       <div class="tournament_item2-child">
+      //         <div class="tournament_item2">
+      //           <div class="tournament_item2-parent only-child-before">
+      //             <p>Parent222</p>
+      //           </div>
+      //         </div>
+      //       </div>
+      //       <div class="tournament_item2-child last-child2">
+      //         <div class="tournament_item2">
+      //           <div class="tournament_item2-parent only-child-before">
+      //             <p>Parent333</p>
+      //           </div>
+      //         </div>
+      //       </div>
+      //     </div>
+      //   </div>
+      // `;
       newDiv.innerHTML = tableHTML;
       container.replaceChildren(newDiv);
     });
