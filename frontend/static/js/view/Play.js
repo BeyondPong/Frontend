@@ -280,7 +280,7 @@ export default class extends AbstractView {
                     <div class="tournament_player">
                       semi1
                     </div>
-                    <div class="tournament_player_name">seoson</div>
+                    <div class="tournament_player_name">${checkNickName.nicknames[0].nickname}</div>
                   </div>
                 </div> 
               </div>
@@ -292,7 +292,7 @@ export default class extends AbstractView {
                     <div class="tournament_player">
                       semi2
                     </div>
-                    <div class="tournament_player_name">sgo</div>
+                    <div class="tournament_player_name">${checkNickName.nicknames[2] ? checkNickName.nicknames[2].nickname : ' '}</div>
                   </div>
                 </div>
               </div>
@@ -316,7 +316,7 @@ export default class extends AbstractView {
                     <div class="tournament_player">
                       semi1
                     </div>
-                    <div class="tournament_player_name">johsn snow</div>
+                    <div class="tournament_player_name">${checkNickName.nicknames[1] ? checkNickName.nicknames[1].nickname : ' '}</div>
                   </div>
                 </div>
               </div>
@@ -328,7 +328,7 @@ export default class extends AbstractView {
                     <div class="tournament_player">
                       semi2
                     </div>
-                    <div class="tournament_player_name">jonim</div>
+                    <div class="tournament_player_name">${checkNickName.nicknames[3] ? checkNickName.nicknames[3].nickname : ' '}</div>
                   </div>
                 </div>
               </div>
@@ -336,55 +336,10 @@ export default class extends AbstractView {
           </div>
         </div>
       `;
-
-      // const tableHTML = `
-      //   <div class="tournament_item">
-      //     <div class="tournament_item-parent">
-      //       <p>Parent</p>
-      //     </div>
-      //     <div class="tournament_item-childrens">
-      //       <div class="tournament_item-child">
-      //         <div class="tournament_item">
-      //           <div class="tournament_item-parent only-child-after">
-      //             <p>Parent2</p>
-      //             <div class="tournament_name">avocado</div>
-      //           </div>
-      //         </div>
-      //       </div>
-      //       <div class="tournament_item-child last-child">
-      //         <div class="tournament_item">
-      //           <div class="tournament_item-parent only-child-after">
-      //             <p>Parent3</p>
-      //           </div>
-      //         </div>
-      //       </div>
-      //     </div>
-      //   </div>
-      //   <div class="tournament_item2">
-      //     <div class="tournament_item2-parent only-child-after">
-      //       <p>Parent111</p>
-      //     </div>
-      //     <div class="tournament_item2-childrens">
-      //       <div class="tournament_item2-child">
-      //         <div class="tournament_item2">
-      //           <div class="tournament_item2-parent only-child-before">
-      //             <p>Parent222</p>
-      //           </div>
-      //         </div>
-      //       </div>
-      //       <div class="tournament_item2-child last-child2">
-      //         <div class="tournament_item2">
-      //           <div class="tournament_item2-parent only-child-before">
-      //             <p>Parent333</p>
-      //           </div>
-      //         </div>
-      //       </div>
-      //     </div>
-      //   </div>
-      // `;
       newDiv.innerHTML = tableHTML;
       container.replaceChildren(newDiv);
     });
+
   }
 
   tournamentModal() {
