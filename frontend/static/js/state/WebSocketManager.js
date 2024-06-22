@@ -21,7 +21,6 @@ class WebSocketManager {
     }
   }
 
-
   connectFriendSocket(url) {
     if (
       !this.friendSocket ||
@@ -47,7 +46,7 @@ class WebSocketManager {
       }
     };
   }
-  
+
   setupFriendSocketListeners(url) {
     this.friendSocket.onopen = (event) => {
       console.log('Friend socket connected');
