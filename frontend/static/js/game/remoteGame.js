@@ -2,7 +2,7 @@ import { postGameResult } from '../api/api.js';
 import { addBlurBackground } from '../utility/blurBackGround.js';
 
 export const remoteGame = {
-  async init(socket, nickname, gameMode) {
+  async init(socket, nickname, gameMode, first_user) {
     addBlurBackground();
     const root = document.getElementById('app');
     while (root.childNodes.length > 0) {
@@ -130,12 +130,14 @@ export const remoteGame = {
     }
 
     function gameStart() {
-      const responseMessage = {
-        type: 'start_game',
-        width: $canvas.width,
-        height: $canvas.height,
-      };
-      socket.send(JSON.stringify(responseMessage));
+      if (nickname === first_user) {
+        const responseMessage = {
+          type: 'start_game',
+          width: $canvas.width,
+          height: $canvas.height,
+        };
+        socket.send(JSON.stringify(responseMessage));
+      }
     }
 
     function settingGame(data) {
@@ -204,7 +206,6 @@ export const remoteGame = {
       socket.onmessage = function (event) {
         const data = JSON.parse(event.data);
         if (data.type === 'game_start') {
-          console.log(data);
           settingGame(data.data);
         } else if (data.type == 'update_score') {
           gameStop();

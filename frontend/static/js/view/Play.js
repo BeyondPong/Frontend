@@ -130,6 +130,7 @@ export default class extends AbstractView {
       const token = localStorage.getItem('2FA');
       WebSocketManager.connectGameSocket(`ws://localhost:8000/ws/play/${mode}/${roomName}/${nickname}/?token=${token}`);
       let socket = WebSocketManager.returnGameSocket();
+      let first_user;
 
       const loadingSpinner = document.getElementById('loading_spinner');
 
@@ -137,7 +138,7 @@ export default class extends AbstractView {
         console.log('ONLINE');
         removeBlurBackground();
         loadingSpinner.style.display = 'none';
-        this.remoteGame.init(socket, nickname, 'REMOTE');
+        this.remoteGame.init(socket, nickname, 'REMOTE', first_user);
       });
 
       window.addEventListener('offline', () => {
@@ -172,6 +173,7 @@ export default class extends AbstractView {
         const data = JSON.parse(event.data);
         loadingSpinner.style.display = 'none';
         if (data.type === 'start_game') {
+          first_user = data.data.first_user;
           const countdownContainer = document.querySelector('#countdown_container');
           countdownContainer.style.display = 'flex';
 
@@ -186,7 +188,7 @@ export default class extends AbstractView {
               countdownContainer.innerText = 'Go!';
               setTimeout(() => {
                 countdownContainer.style.display = 'none';
-                remoteGame.init(socket, nickname, 'REMOTE');
+                remoteGame.init(socket, nickname, 'REMOTE', first_user);
               }, 1000);
             }
           }, 1000);
