@@ -27,12 +27,10 @@ export default class extends AbstractView {
       </div>
       <nav class="play_nav">
         <a tabindex="0" class="nav__link" id="local_link">${words[registry.lang].local}</a>
-        <a tabindex="0" class="nav__link" id="remote_link" style="${
-          isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
-        }">${words[registry.lang].remote}</a>
-        <a tabindex="0" class="nav__link" id="tournament_link" style="${
-          isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
-        }">${words[registry.lang].tournament}</a>
+        <a tabindex="0" class="nav__link" id="remote_link" style="${isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
+      }">${words[registry.lang].remote}</a>
+        <a tabindex="0" class="nav__link" id="tournament_link" style="${isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
+      }">${words[registry.lang].tournament}</a>
       </nav>
     `;
   }
@@ -152,7 +150,7 @@ export default class extends AbstractView {
       socket.onopen = (event) => {
         console.log('Game socket connected');
         if (mode === 'TOURNAMENT') {
-          this.tournamentNickNameModal(roomName);
+          this.tournamentNickNameModal(nickname, roomName);
           loadingSpinner.style.display = 'none';
         } else {
           loadingSpinner.style.display = 'flex';
@@ -165,7 +163,7 @@ export default class extends AbstractView {
       socket.onerror = (event) => {
         console.error('Game socket error:', event);
         if (!WebSocketManager.isGameSocketConnecting) {
-          WebSocketManager.connectGameSocket(`ws://localhost:8000/ws/play/${mode}/${roomName}/${nickname}/`);
+          WebSocketManager.connectGameSocket(`ws://localhost:8000/ws/play/${mode}/${roomName}/${nickname}/?token=${token}`);
           socket = WebSocketManager.returnGameSocket();
         }
       };
@@ -200,13 +198,12 @@ export default class extends AbstractView {
     await setupWebSocket(roomName, mode);
   }
 
-  async tournamentNickNameModal(roomName) {
+  async tournamentNickNameModal(realName, roomName) {
     const modalHtml = `
       <div class="tournament_container_flex">
         <div>
-          <input type="text" class="input_box" placeholder="${
-            words[registry.lang].tournament_nickname_placeholder
-          }" maxlength="10"/>
+          <input type="text" class="input_box" placeholder="${words[registry.lang].tournament_nickname_placeholder
+      }" maxlength="10"/>
         </div>
         <div><button class="close_button check_button">CHECK</button></div>
       </div>
@@ -247,7 +244,8 @@ export default class extends AbstractView {
 
     checkButton.addEventListener('click', async () => {
       const nickName = inputBox.value;
-      const checkNickName = await postTournamentNickName(nickName, roomName);
+      const checkNickName = await postTournamentNickName(nickName, realName, roomName);
+      console.log(checkNickName);
       if (checkNickName.valid === false) {
         tournamentModal.classList.remove('hidden');
         closeButton.addEventListener('click', () => {
@@ -262,45 +260,85 @@ export default class extends AbstractView {
         container.removeChild(container.firstChild);
       }
       const newDiv = document.createElement('div');
-      newDiv.classList.add('history_container');
+      newDiv.classList.add('tournament_list');
       const tableHTML = `
-      <div class="table_box">
-        <table class="table_container">
-          <thead>
-            <tr>
-              <th>No.</th>
-              <th>${words[registry.lang].tournament_table_nickname}</th>
-              <th>${words[registry.lang].tournament_table_score}</th>
-            </tr>
-          </thead>
-          <tbody class="table_tbody">
-            <tr>
-              <td class="table_number">1</td>
-              <td class="table_nickname">아보카도</td>
-              <td class="table_score">11 Win 2 Lose</td>
-            </tr>
-            <tr>
-              <td class="table_number">2</td>
-              <td class="table_nickname">바나나</td>
-              <td class="table_score">1 Win 2 Lose</td>
-            </tr>
-            <tr>
-              <td class="table_number">3</td>
-              <td class="table_nickname">끄투마스터고승준</td>
-              <td class="table_score">0 Win 3 Lose</td>
-            </tr>
-            <tr>
-              <td class="table_number">4</td>
-              <td class="table_nickname">할라피뇨</td>
-              <td class="table_score">4 Win 0 Lose</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="tournament_left">
+          <div class="tournament_left_parent tournament_final">
+            <div class="tournament_player_box">
+              <div class="tournament_player">
+                final1
+              </div>
+            <div class="tournament_player_name">avocado</div>
+           </div>
+          </div>
+          <div class="tournament_left_childrens">
+            <div class="tournament_left_child">
+              <div class="tournament_left">
+                <div class="tournament_left_parent remove-after">
+                  <div class="tournament_player_box tournament_semi">
+                    <div class="tournament_player">
+                      semi1
+                    </div>
+                    <div class="tournament_player_name">${checkNickName.nicknames[0].nickname}</div>
+                  </div>
+                </div> 
+              </div>
+            </div>
+            <div class="tournament_left_child left_last_child">
+              <div class="tournament_left">
+                <div class="tournament_left_parent remove-after">
+                  <div class="tournament_player_box tournament_semi">
+                    <div class="tournament_player">
+                      semi2
+                    </div>
+                    <div class="tournament_player_name">${checkNickName.nicknames[2] ? checkNickName.nicknames[2].nickname : ' '}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tournament_right">
+          <div class="tournament_right_parent remove-after">
+            <div class="tournament_player_box">
+              <div class="tournament_player remove-after">
+                final2
+              </div>
+              <div class="tournament_player_name">misukim</div>
+            </div>
+          </div>
+          <div class="tournament_right_childrens">
+            <div class="tournament_right_child">
+              <div class="tournament_right">
+                <div class="tournament_right_parent remove-before">
+                  <div class="tournament_player_box tournament_semi">
+                    <div class="tournament_player">
+                      semi1
+                    </div>
+                    <div class="tournament_player_name">${checkNickName.nicknames[1] ? checkNickName.nicknames[1].nickname : ' '}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="tournament_right_child right_last_child">
+              <div class="tournament_right">
+                <div class="tournament_right_parent remove-before">
+                  <div class="tournament_player_box tournament_semi">
+                    <div class="tournament_player">
+                      semi2
+                    </div>
+                    <div class="tournament_player_name">${checkNickName.nicknames[3] ? checkNickName.nicknames[3].nickname : ' '}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       `;
       newDiv.innerHTML = tableHTML;
       container.replaceChildren(newDiv);
     });
+
   }
 
   tournamentModal() {

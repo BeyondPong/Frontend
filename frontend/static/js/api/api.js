@@ -213,15 +213,15 @@ export const deleteFriend = async (userId) => {
   }
 };
 
-export const postTournamentNickName = async (nickName, roomName) => {
+export const postTournamentNickName = async (nickName, realName, roomName) => {
   try {
-    const response = await fetch(`http://localhost:8000/play/${nickName}/`, {
+    const response = await fetch(`http://localhost:8000/play/nickname/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer' + ' ' + localStorage.getItem('2FA'),
       },
-      body: JSON.stringify({ nickname: nickName, room_name: roomName }),
+      body: JSON.stringify({ nickname: nickName, realname: realName, room_name: roomName }),
     });
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
