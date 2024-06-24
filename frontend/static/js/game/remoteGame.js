@@ -27,12 +27,14 @@ export const remoteGame = {
       y: grid * 2,
       width: paddleWidth,
       height: grid,
+      name: '',
     };
     let bottomPaddle = {
       x: $canvas.width / 2 - paddleWidth / 2,
       y: $canvas.height - grid * 3,
       width: paddleWidth,
       height: grid,
+      name: '',
     };
     let ball = {
       x: $canvas.width / 2,
@@ -55,13 +57,18 @@ export const remoteGame = {
     }
 
     async function gameEnd(data) {
+      await postGameResult(gameMode, user);
       const $win = document.createElement('div');
       $win.classList.add('win');
       $win.innerHTML = `${data.winner} wins!!!`;
 
       const $score = document.createElement('div');
       $score.classList.add('win');
-      $score.innerHTML = `${user.player1.score} : ${user.player2.score}`;
+      if (data.winner === nickname) {
+        $score.innerHTML = `${data.scores[nickname]} : ${data.scores[data.loser]}`;
+      } else {
+        $score.innerHTML = `${data.scores[data.loser]} : ${data.scores[nickname]}`;
+      }
 
       const againButton = document.createElement('button');
       againButton.classList.add('gameButton');
@@ -95,7 +102,6 @@ export const remoteGame = {
         }
       });
       $canvas.style.cursor = 'auto';
-      await postGameResult(gameMode, user);
     }
 
     function render() {
@@ -126,7 +132,6 @@ export const remoteGame = {
     function gameStart() {
       const responseMessage = {
         type: 'start_game',
-        message: 'i want to play game',
         width: $canvas.width,
         height: $canvas.height,
       };
@@ -137,29 +142,18 @@ export const remoteGame = {
       targetBall.x = data.ball_position.x;
       targetBall.y = data.ball_position.y;
 
-      if (data.paddles[0].nickname === nickname) {
-        user.player1.name = data.paddles[0].nickname;
-        user.player2.name = data.paddles[1].nickname;
-        topPaddle.x = data.paddles[0].x;
-        topPaddle.y = data.paddles[0].y;
-        topPaddle.width = data.paddles[0].width;
-        topPaddle.height = data.paddles[0].height;
-        bottomPaddle.x = data.paddles[1].x;
-        bottomPaddle.y = data.paddles[1].y;
-        bottomPaddle.width = data.paddles[1].width;
-        bottomPaddle.height = data.paddles[1].height;
-      } else {
-        user.player1.name = data.paddles[1].nickname;
-        user.player2.name = data.paddles[0].nickname;
-        topPaddle.x = data.paddles[1].x;
-        topPaddle.y = data.paddles[1].y;
-        topPaddle.width = data.paddles[1].width;
-        topPaddle.height = data.paddles[1].height;
-        bottomPaddle.x = data.paddles[0].x;
-        bottomPaddle.y = data.paddles[0].y;
-        bottomPaddle.width = data.paddles[0].width;
-        bottomPaddle.height = data.paddles[0].height;
-      }
+      user.player1.name = data.paddles[0].nickname;
+      bottomPaddle.name = data.paddles[0].nickname;
+      user.player2.name = data.paddles[1].nickname;
+      topPaddle.name = data.paddles[1].nickname;
+      topPaddle.x = data.paddles[1].x;
+      topPaddle.y = data.paddles[1].y;
+      topPaddle.width = data.paddles[1].width;
+      topPaddle.height = data.paddles[1].height;
+      bottomPaddle.x = data.paddles[0].x;
+      bottomPaddle.y = data.paddles[0].y;
+      bottomPaddle.width = data.paddles[0].width;
+      bottomPaddle.height = data.paddles[0].height;
 
       user.player1.score = data.scores[user.player1.name];
       user.player2.score = data.scores[user.player2.name];
@@ -189,28 +183,50 @@ export const remoteGame = {
       player2Container.appendChild(player2Label);
       player2Container.appendChild(player2Score);
 
-      $div.appendChild(player1Container);
       $div.appendChild(player2Container);
+      $div.appendChild(player1Container);
       root.appendChild($div);
       document.getElementById('player1Score').innerText = user.player1.score;
       document.getElementById('player2Score').innerText = user.player2.score;
+    }
+
+    function restartGame() {
+      setTimeout(() => {
+        let responseMessage = {
+          type: 'restart_game',
+        };
+        socket.send(JSON.stringify(responseMessage));
+        running = true;
+      }, 2000);
     }
 
     function setSocket() {
       socket.onmessage = function (event) {
         const data = JSON.parse(event.data);
         if (data.type === 'game_start') {
+          console.log(data);
           settingGame(data.data);
         } else if (data.type == 'update_score') {
           gameStop();
           updateScore(data.data);
           running = true;
+          // restartGame();
         } else if (data.type == 'ball_position') {
           targetBall.x = data.data.x;
           targetBall.y = data.data.y;
         } else if (data.type == 'end_game') {
           updateScore(data.data);
           gameEnd(data.data);
+        } else if (data.type == 'paddle_position') {
+          data.data.forEach((paddleData) => {
+            if (paddleData.nickname === topPaddle.name) {
+              topPaddle.x = paddleData.x;
+              topPaddle.y = paddleData.y;
+            } else if (paddleData.nickname === bottomPaddle.name) {
+              bottomPaddle.x = paddleData.x;
+              bottomPaddle.y = paddleData.y;
+            }
+          });
         }
       };
     }
