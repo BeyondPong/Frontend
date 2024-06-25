@@ -140,6 +140,72 @@
   border-radius: 15px;
   padding: 0.4rem;
   text-align: center;
+
+  cursor: pointer;
+  transition: filter 0.3s ease;
+}
+
+.tournament_player_name:hover {
+  filter: brightness(90%);
+}
+
+[data-toggle="tooltip"] {
+  position: relative;
+  display: inline-block;
+}
+
+[data-toggle="tooltip"]::before {
+  content: "";
+  position: absolute;
+  top: -0.3rem;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 0.25rem 0.3rem 0 0.3rem;
+  border-style: solid;
+  border-color: #181919 transparent transparent transparent;
+  z-index: 99;
+  opacity: 0;
+}
+
+[data-placement="bottom"]::before {
+  top: 100%;
+  margin-top: 0.5rem;
+  transform: translateX(-50%) translatey(-100%) rotate(-180deg);
+}
+
+[data-toggle="tooltip"]::after {
+  content: attr(tooltip-title);
+  position: absolute;
+  left: 50%;
+  top: -0.3rem;
+  transform: translateX(-50%) translateY(-100%);
+  text-align: center;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.9);
+  border-radius: 5px;
+  padding: 0.25rem 0.125rem;
+  font-size: 1rem;
+  min-width: 7rem;
+  pointer-events: none;
+  padding: 0.25rem 0.25rem;
+  z-index: 99;
+  opacity: 0;
+}
+
+[data-placement='bottom']::after {
+  top: 100%;
+  margin-top: 0.5rem;
+  transform: translateX(-50%) translateY(0%);
+}
+
+[data-toggle="tooltip"]:hover::after,
+[data-toggle="tooltip"]:hover::before {
+  opacity: 1
+}
+
+.no-tooltip[data-toggle="tooltip"]:hover::before,
+.no-tooltip[data-toggle="tooltip"]:hover::after {
+  opacity: 0;
 }
 
 .tournament_left {
@@ -182,7 +248,6 @@
   position: absolute;
   background-color: white;
   right: 0;
-  /* top: 45%; */
   top: calc(var(--player-height) * 0.45);
   transform: translateX(100%);
   width: 1.5rem;

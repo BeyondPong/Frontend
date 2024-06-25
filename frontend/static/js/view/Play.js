@@ -249,7 +249,8 @@ export default class extends AbstractView {
               <div class="tournament_player">
                 <img class="player_avatar" src="/static/assets/tournament_avatar.png" alt="tournament finalist avatar"/>
               </div>
-            <div class="tournament_player_name"></div>
+            <div class="tournament_player_name" data-toggle="tooltip" data-placement="bottom" tooltip-title="">
+            </div>
            </div>
           </div>
           <div class="tournament_left_childrens">
@@ -260,7 +261,7 @@ export default class extends AbstractView {
                     <div class="tournament_player">
                       <img class="player_avatar" src="#" alt="tournament semi finalist avatar"/>
                     </div>
-                    <div class="tournament_player_name"></div>
+                    <div class="tournament_player_name" data-toggle="tooltip" data-placement="bottom" tooltip-title=""></div>
                   </div>
                 </div> 
               </div>
@@ -272,7 +273,7 @@ export default class extends AbstractView {
                     <div class="tournament_player">
                       <img class="player_avatar" src="#" alt="tournament semi finalist avatar"/>
                     </div>
-                    <div class="tournament_player_name"></div>
+                    <div class="tournament_player_name" data-toggle="tooltip" data-placement="bottom" tooltip-title=""></div>
                   </div>
                 </div>
               </div>
@@ -285,7 +286,7 @@ export default class extends AbstractView {
               <div class="tournament_player remove-after">
                 <img class="player_avatar" src="/static/assets/tournament_avatar.png" alt="tournament finalist avatar"/>
               </div>
-              <div class="tournament_player_name"></div>
+              <div class="tournament_player_name" data-toggle="tooltip" data-placement="bottom" tooltip-title=""></div>
             </div>
           </div>
           <div class="tournament_right_childrens">
@@ -296,7 +297,7 @@ export default class extends AbstractView {
                     <div class="tournament_player">
                       <img class="player_avatar" src="#" alt="tournament semi finalist avatar"/>
                     </div>
-                    <div class="tournament_player_name"></div>
+                    <div class="tournament_player_name" data-toggle="tooltip" data-placement="bottom" tooltip-title=""></div>
                   </div>
                 </div>
               </div>
@@ -308,7 +309,7 @@ export default class extends AbstractView {
                     <div class="tournament_player">
                       <img class="player_avatar" src="#" alt="tournament semi finalist avatar"/>
                     </div>
-                    <div class="tournament_player_name"></div>
+                    <div class="tournament_player_name" data-toggle="tooltip" data-placement="bottom" tooltip-title=""></div>
                   </div>
                 </div>
               </div>
@@ -337,7 +338,7 @@ export default class extends AbstractView {
         newDiv.classList.add('tournament_list');
         newDiv.innerHTML = tableHTML;
         container.replaceChildren(newDiv);
-        console.log(players);
+
         const tournamentSemiPlayers = Array.from(document.getElementsByClassName('tournament_semi'));
         tournamentSemiPlayers.forEach((parentDiv, index) => {
           const children = parentDiv.children;
@@ -345,11 +346,14 @@ export default class extends AbstractView {
           const nicknameDiv = children[1];
           if (players[index]) {
             console.log(players[index].nickname);
+            nicknameDiv.classList.remove('no-tooltip');
             avatarDiv.querySelector('img').src = `/static/assets/${players[index].profile_img}.png`;
             nicknameDiv.textContent = players[index].nickname;
+            nicknameDiv.setAttribute('tooltip-title', `${players[index].win_cnt} ${words[registry.lang].win} ${players[index].lose_cnt} ${words[registry.lang].lose}`);
           } else {
             avatarDiv.querySelector('img').src = `/static/assets/tournament_avatar.png`;
-            nicknameDiv.textContent = ' ';
+            nicknameDiv.textContent = "  ";
+            nicknameDiv.classList.add('no-tooltip');
           }
         })
       } else {
@@ -372,7 +376,6 @@ export default class extends AbstractView {
         }
       };
     });
-
   }
 
   tournamentModal() {
