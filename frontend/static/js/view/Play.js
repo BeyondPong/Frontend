@@ -255,7 +255,7 @@ export default class extends AbstractView {
           <div class="tournament_left_parent tournament_final">
             <div class="tournament_player_box">
               <div class="tournament_player">
-                <img class="player_avatar" src="/static/assets/tournament_avatar.png" alt="tournament finalist avatar"/>
+                <img class="player_avatar" src="/static/assets/tournamentFinalAvatar.png" alt="tournament finalist avatar"/>
               </div>
             <div class="tournament_player_name" data-toggle="tooltip" data-placement="bottom" tooltip-title="">
             </div>
@@ -292,7 +292,7 @@ export default class extends AbstractView {
           <div class="tournament_right_parent remove-after">
             <div class="tournament_player_box">
               <div class="tournament_player remove-after">
-                <img class="player_avatar" src="/static/assets/tournament_avatar.png" alt="tournament finalist avatar"/>
+                <img class="player_avatar" src="/static/assets/tournamentFinalAvatar.png" alt="tournament finalist avatar"/>
               </div>
               <div class="tournament_player_name" data-toggle="tooltip" data-placement="bottom" tooltip-title=""></div>
             </div>
@@ -363,8 +363,8 @@ export default class extends AbstractView {
               }`,
             );
           } else {
-            avatarDiv.querySelector('img').src = `/static/assets/tournament_avatar.png`;
-            nicknameDiv.textContent = '  ';
+            avatarDiv.querySelector('img').src = `/static/assets/tournamentAvatar.png`;
+            nicknameDiv.textContent = "  ";
             nicknameDiv.classList.add('no-tooltip');
           }
         });
