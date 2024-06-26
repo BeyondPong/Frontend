@@ -137,22 +137,7 @@ export default class extends AbstractView {
 
       const loadingSpinner = document.getElementById('loading_spinner');
 
-      window.addEventListener('online', () => {
-        console.log('ONLINE');
-        removeBlurBackground();
-        loadingSpinner.style.display = 'none';
-        remoteGame.init(socket, nickname, 'REMOTE', first_user);
-      });
-
-      window.addEventListener('offline', () => {
-        console.log('OFFLINE');
-        addBlurBackground();
-        loadingSpinner.innerText = 'No Internet Connection';
-        loadingSpinner.style.display = 'flex';
-      });
-
       socket.onopen = (event) => {
-        console.log('Game socket connected');
         if (mode === 'TOURNAMENT') {
           this.tournamentNickNameModal(nickname, roomName, socket);
           loadingSpinner.style.display = 'none';
@@ -364,7 +349,7 @@ export default class extends AbstractView {
             );
           } else {
             avatarDiv.querySelector('img').src = `/static/assets/tournamentAvatar.png`;
-            nicknameDiv.textContent = "  ";
+            nicknameDiv.textContent = '  ';
             nicknameDiv.classList.add('no-tooltip');
           }
         });
