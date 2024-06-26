@@ -191,6 +191,9 @@ export default class extends AbstractView {
         }
       });
       input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          check.click();
+        }
         if (e.key === 'Backspace' && input.value.length === 1) {
           input.value = '';
         } else if (e.key === 'Backspace' && input.value.length === 0 && index > 0) {
