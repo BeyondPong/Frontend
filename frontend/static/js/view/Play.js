@@ -167,6 +167,14 @@ export default class extends AbstractView {
           const countdownContainer = document.querySelector('#countdown_container');
           countdownContainer.style.display = 'flex';
 
+          const $app = document.getElementById('app');
+
+          let responseMessage = {
+            type: 'set_board',
+            width: $app.offsetWidth / 2,
+            height: $app.offsetHeight / 1.2,
+          };
+          socket.send(JSON.stringify(responseMessage));
           let countdown = 3;
           countdownContainer.innerText = countdown;
           const countdownInterval = setInterval(() => {

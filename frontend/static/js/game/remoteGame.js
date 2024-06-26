@@ -131,8 +131,6 @@ export const remoteGame = {
     function gameStart() {
       let responseMessage = {
         type: 'start_game',
-        width: $canvas.width,
-        height: $canvas.height,
         running_user: false,
       };
       if (nickname === first_user) {

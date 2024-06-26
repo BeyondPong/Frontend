@@ -8,35 +8,7 @@ export const localGame = {
     while (root.childNodes.length > 0) {
       root.removeChild(root.firstChild);
     }
-    const $div = document.createElement('div');
-    $div.id = 'scoreBoard';
-    $div.style.display = 'flex';
-    $div.style.flexDirection = 'column';
 
-    const player1Container = document.createElement('div');
-    const player1Label = document.createElement('div');
-    player1Label.innerText = 'Player 1';
-    player1Label.style.whiteSpace = 'nowrap';
-    const player1Score = document.createElement('div');
-    player1Score.id = 'player1Score';
-    player1Score.style.display = 'inline';
-    player1Container.appendChild(player1Label);
-    player1Container.appendChild(player1Score);
-
-    const player2Container = document.createElement('div');
-    const player2Label = document.createElement('div');
-    player2Label.innerText = 'Player 2';
-    player2Label.style.whiteSpace = 'nowrap';
-    const player2Score = document.createElement('div');
-    player2Score.id = 'player2Score';
-    player2Score.style.display = 'inline';
-    player2Container.appendChild(player2Label);
-    player2Container.appendChild(player2Score);
-
-    $div.appendChild(player2Container);
-    $div.appendChild(player1Container);
-
-    root.appendChild($div);
     let container, renderer, camera, mainLight, scene, ball, paddle1, paddle2, field, running;
     let VIEW_ANGLE_INCREMENT = 5;
     let score = {
@@ -44,13 +16,45 @@ export const localGame = {
       player2: 0,
     };
 
+    function setScore() {
+      const $div = document.createElement('div');
+      $div.id = 'scoreBoard';
+      $div.style.display = 'flex';
+      $div.style.flexDirection = 'column';
+
+      const player1Container = document.createElement('div');
+      const player1Label = document.createElement('div');
+      player1Label.innerText = 'Player 1';
+      player1Label.style.whiteSpace = 'nowrap';
+      const player1Score = document.createElement('div');
+      player1Score.id = 'player1Score';
+      player1Score.style.display = 'inline';
+      player1Container.appendChild(player1Label);
+      player1Container.appendChild(player1Score);
+
+      const player2Container = document.createElement('div');
+      const player2Label = document.createElement('div');
+      player2Label.innerText = 'Player 2';
+      player2Label.style.whiteSpace = 'nowrap';
+      const player2Score = document.createElement('div');
+      player2Score.id = 'player2Score';
+      player2Score.style.display = 'inline';
+      player2Container.appendChild(player2Label);
+      player2Container.appendChild(player2Score);
+
+      $div.appendChild(player2Container);
+      $div.appendChild(player1Container);
+
+      root.appendChild($div);
+    }
+
     function updateDimensions() {
       const WIDTH = root.offsetWidth / 2;
       const HEIGHT = root.offsetHeight / 1.2;
-      const VIEW_ANGLE = WIDTH / 6;
+      const VIEW_ANGLE = 115;
       const ASPECT = WIDTH / HEIGHT;
       const NEAR = 0.1;
-      const FAR = WIDTH * 100;
+      const FAR = 10000;
       const FIELD_WIDTH = WIDTH * 2;
       const FIELD_LENGTH = HEIGHT * 3;
       const BALL_RADIUS = HEIGHT / 15;
@@ -136,7 +140,7 @@ export const localGame = {
       ballPos.z += ball.$velocity.z;
 
       let maxHeight = dimensions.HEIGHT / 3;
-      ballPos.y = -(((ballPos.z - 1) * (ballPos.z - 1)) / 5000) + maxHeight;
+      ballPos.y = -(((ballPos.z - 1) * (ballPos.z - 1)) / 8000) + maxHeight;
     }
 
     function isSideCollision() {
@@ -341,7 +345,7 @@ export const localGame = {
     }
 
     function reset() {
-      ball.position.set(0, 0, 0);
+      ball.position.set(0, dimensions.BALL_RADIUS, 0);
       ball.$velocity = null;
       paddle1.position.set(0, 0, dimensions.FIELD_LENGTH / 2);
       paddle2.position.set(0, 0, -dimensions.FIELD_LENGTH / 2);
@@ -382,6 +386,7 @@ export const localGame = {
       let ballGeometry = new THREE.SphereGeometry(dimensions.BALL_RADIUS, 16, 16);
       let ballMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff });
       ball = new THREE.Mesh(ballGeometry, ballMaterial);
+      ball.position.y = dimensions.BALL_RADIUS;
       scene.add(ball);
 
       let edgeGeometry = new THREE.EdgesGeometry(fieldGeometry);
@@ -431,6 +436,7 @@ export const localGame = {
       renderer.render(scene, camera);
     }
 
+    setScore();
     window.addEventListener('resize', onWindowResize, false);
     setRender();
   },
