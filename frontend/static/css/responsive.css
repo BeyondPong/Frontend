@@ -75,6 +75,21 @@
     font-size: 0.9em;
     border-radius: 0%;
     align-content: center;
+    width: 70%;
+  }
+
+  [data-toggle="tooltip"]::after {
+    font-size: 2vw;
+    min-width: 4rem;
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    padding: 0.5rem;
+    top: -20%;
+    bottom: 0;
+    color: var(--button-font-color);
+    font-weight: bold;
+    background-color: var(--profile-background);
   }
 
   .tournament_right {

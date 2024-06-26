@@ -151,7 +151,7 @@ export default class extends AbstractView {
       socket.onopen = (event) => {
         console.log('Game socket connected');
         if (mode === 'TOURNAMENT') {
-          this.tournamentNickNameModal(nickname, roomName);
+          this.tournamentNickNameModal(nickname, roomName, socket);
           loadingSpinner.style.display = 'none';
         } else {
           loadingSpinner.style.display = 'flex';
@@ -200,7 +200,7 @@ export default class extends AbstractView {
     await setupWebSocket(roomName, mode);
   }
 
-  async tournamentNickNameModal(realName, roomName) {
+  async tournamentNickNameModal(realName, roomName, socket) {
     const modalHtml = `
       <div class="tournament_container_flex">
         <div>
@@ -209,7 +209,7 @@ export default class extends AbstractView {
         </div>
         <div><button class="close_button check_button">CHECK</button></div>
       </div>
-      <div class="tournament_modal hidden">
+            <div class="tournament_modal hidden">
         <div class="tournament_modal_flex">
           <div>${words[registry.lang].tournament_nickname_error}</div>
           <div class="close_button tournament_button">
@@ -244,33 +244,15 @@ export default class extends AbstractView {
       }
     });
 
-    checkButton.addEventListener('click', async () => {
-      const nickName = inputBox.value;
-      const checkNickName = await postTournamentNickName(nickName, realName, roomName);
-      console.log(checkNickName);
-      if (checkNickName.valid === false) {
-        tournamentModal.classList.remove('hidden');
-        closeButton.addEventListener('click', () => {
-          console.log('close button');
-          tournamentModal.classList.add('hidden');
-        });
-        return;
-      }
-
-      const container = document.querySelector('.tournament_container_flex');
-      while (container.childNodes.length > 0) {
-        container.removeChild(container.firstChild);
-      }
-      const newDiv = document.createElement('div');
-      newDiv.classList.add('tournament_list');
-      const tableHTML = `
+    const tableHTML = `
         <div class="tournament_left">
           <div class="tournament_left_parent tournament_final">
             <div class="tournament_player_box">
               <div class="tournament_player">
-                final1
+                <img class="player_avatar" src="/static/assets/tournament_avatar.png" alt="tournament finalist avatar"/>
               </div>
-            <div class="tournament_player_name">avocado</div>
+            <div class="tournament_player_name" data-toggle="tooltip" data-placement="bottom" tooltip-title="">
+            </div>
            </div>
           </div>
           <div class="tournament_left_childrens">
@@ -279,9 +261,9 @@ export default class extends AbstractView {
                 <div class="tournament_left_parent remove-after">
                   <div class="tournament_player_box tournament_semi">
                     <div class="tournament_player">
-                      semi1
+                      <img class="player_avatar" src="#" alt="tournament semi finalist avatar"/>
                     </div>
-                    <div class="tournament_player_name">${checkNickName.nicknames[0].nickname}</div>
+                    <div class="tournament_player_name" data-toggle="tooltip" data-placement="bottom" tooltip-title=""></div>
                   </div>
                 </div> 
               </div>
@@ -291,9 +273,9 @@ export default class extends AbstractView {
                 <div class="tournament_left_parent remove-after">
                   <div class="tournament_player_box tournament_semi">
                     <div class="tournament_player">
-                      semi2
+                      <img class="player_avatar" src="#" alt="tournament semi finalist avatar"/>
                     </div>
-                    <div class="tournament_player_name">${checkNickName.nicknames[2] ? checkNickName.nicknames[2].nickname : ' '}</div>
+                    <div class="tournament_player_name" data-toggle="tooltip" data-placement="bottom" tooltip-title=""></div>
                   </div>
                 </div>
               </div>
@@ -304,9 +286,9 @@ export default class extends AbstractView {
           <div class="tournament_right_parent remove-after">
             <div class="tournament_player_box">
               <div class="tournament_player remove-after">
-                final2
+                <img class="player_avatar" src="/static/assets/tournament_avatar.png" alt="tournament finalist avatar"/>
               </div>
-              <div class="tournament_player_name">misukim</div>
+              <div class="tournament_player_name" data-toggle="tooltip" data-placement="bottom" tooltip-title=""></div>
             </div>
           </div>
           <div class="tournament_right_childrens">
@@ -315,9 +297,9 @@ export default class extends AbstractView {
                 <div class="tournament_right_parent remove-before">
                   <div class="tournament_player_box tournament_semi">
                     <div class="tournament_player">
-                      semi1
+                      <img class="player_avatar" src="#" alt="tournament semi finalist avatar"/>
                     </div>
-                    <div class="tournament_player_name">${checkNickName.nicknames[1] ? checkNickName.nicknames[1].nickname : ' '}</div>
+                    <div class="tournament_player_name" data-toggle="tooltip" data-placement="bottom" tooltip-title=""></div>
                   </div>
                 </div>
               </div>
@@ -327,9 +309,9 @@ export default class extends AbstractView {
                 <div class="tournament_right_parent remove-before">
                   <div class="tournament_player_box tournament_semi">
                     <div class="tournament_player">
-                      semi2
+                      <img class="player_avatar" src="#" alt="tournament semi finalist avatar"/>
                     </div>
-                    <div class="tournament_player_name">${checkNickName.nicknames[3] ? checkNickName.nicknames[3].nickname : ' '}</div>
+                    <div class="tournament_player_name" data-toggle="tooltip" data-placement="bottom" tooltip-title=""></div>
                   </div>
                 </div>
               </div>
@@ -337,10 +319,64 @@ export default class extends AbstractView {
           </div>
         </div>
       `;
-      newDiv.innerHTML = tableHTML;
-      container.replaceChildren(newDiv);
+
+    const checkNickName = ((nickname, realname, room_name, socket) => {
+      const message = {
+        type: 'check_nickname',
+        nickname: nickname,
+        realname: realname,
+        room_name: room_name,
+      };
+      socket.send(JSON.stringify(message));
     });
 
+    const isValidPlayer = function (valid, players) {
+      if (valid === true) {
+        const container = document.querySelector('.tournament_container_flex');
+        while (container.childNodes.length > 0) {
+          container.removeChild(container.firstChild);
+        }
+        const newDiv = document.createElement('div');
+        newDiv.classList.add('tournament_list');
+        newDiv.innerHTML = tableHTML;
+        container.replaceChildren(newDiv);
+
+        const tournamentSemiPlayers = Array.from(document.getElementsByClassName('tournament_semi'));
+        tournamentSemiPlayers.forEach((parentDiv, index) => {
+          const children = parentDiv.children;
+          const avatarDiv = children[0];
+          const nicknameDiv = children[1];
+          if (players[index]) {
+            nicknameDiv.classList.remove('no-tooltip');
+            avatarDiv.querySelector('img').src = `/static/assets/${players[index].profile_img}.png`;
+            nicknameDiv.textContent = players[index].nickname;
+            nicknameDiv.setAttribute('tooltip-title', `${players[index].win_cnt} ${words[registry.lang].win} ${players[index].lose_cnt} ${words[registry.lang].lose}`);
+          } else {
+            avatarDiv.querySelector('img').src = `/static/assets/tournament_avatar.png`;
+            nicknameDiv.textContent = "  ";
+            nicknameDiv.classList.add('no-tooltip');
+          }
+        })
+      } else {
+        tournamentModal.classList.remove('hidden');
+        closeButton.addEventListener('click', () => {
+          tournamentModal.classList.add('hidden');
+        });
+      }
+    }
+
+    checkButton.addEventListener('click', () => {
+      const nickName = inputBox.value;
+      checkNickName(nickName, realName, roomName, socket);
+      socket.onmessage = function (event) {
+        const data = JSON.parse(event.data);
+        if (data.valid !== undefined && data.valid === false) {
+          isValidPlayer(false, null);
+        } else if (data.type === 'nickname_valid') {
+          isValidPlayer(true, data.data.nicknames);
+        }
+      };
+    });
   }
 
   tournamentModal() {
