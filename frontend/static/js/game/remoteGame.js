@@ -14,7 +14,7 @@ export const remoteGame = {
     $canvas.width = $app.offsetWidth / 2;
     $canvas.height = $app.offsetHeight / 1.2;
     $app.appendChild($canvas);
-    let running = true;
+    let running = false;
     let grid = 15;
     let paddleWidth = grid * 6;
     let user = {
@@ -141,7 +141,11 @@ export const remoteGame = {
       socket.send(JSON.stringify(responseMessage));
     }
 
-    function settingGame(data) {
+    async function settingGame(data) {
+      if (running) {
+        return;
+      }
+      running = true;
       targetBall.x = data.ball_position.x;
       targetBall.y = data.ball_position.y;
 
@@ -193,12 +197,11 @@ export const remoteGame = {
       document.getElementById('player2Score').innerText = user.player2.score;
     }
 
-    function setSocket() {
+    async function setSocket() {
       socket.onmessage = function (event) {
         const data = JSON.parse(event.data);
-        // console.log(data);
         if (data.type === 'game_start') {
-          settingGame(data.data);
+          settingGame(data.data).then(animate());
         } else if (data.type == 'update_score') {
           gameStop();
           updateScore(data.data);
@@ -270,6 +273,5 @@ export const remoteGame = {
     addKeyboardEvent();
     setSocket();
     gameStart();
-    animate();
   },
 };
