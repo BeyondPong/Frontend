@@ -345,7 +345,6 @@ export default class extends AbstractView {
           const avatarDiv = children[0];
           const nicknameDiv = children[1];
           if (players[index]) {
-            console.log(players[index].nickname);
             nicknameDiv.classList.remove('no-tooltip');
             avatarDiv.querySelector('img').src = `/static/assets/${players[index].profile_img}.png`;
             nicknameDiv.textContent = players[index].nickname;
