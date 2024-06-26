@@ -18,20 +18,17 @@ export default class extends AbstractView {
         Language
       </button>
       <ul id="d_menu" class="dropdown-menu drmenu" aria-labelledby="dropdownMenuButton">
-        <li><a id="item1" class="dropdown-item drmenu ${
-          currentLang === 'ko' ? 'disabled' : ''
-        }" href="/" data-lang="ko">ko</a></li>
-        <li><a id="item2" class="dropdown-item drmenu ${
-          currentLang === 'en' ? 'disabled' : ''
-        }" href="/" data-lang="en">en</a></li>
-        <li><a id="item3" class="dropdown-item drmenu ${
-          currentLang === 'jp' ? 'disabled' : ''
-        }" href="/" data-lang="jp">jp</a></li>
+        <li><a id="item1" class="dropdown-item drmenu ${currentLang === 'ko' ? 'disabled' : ''
+      }" href="/" data-lang="ko">ko</a></li>
+        <li><a id="item2" class="dropdown-item drmenu ${currentLang === 'en' ? 'disabled' : ''
+      }" href="/" data-lang="en">en</a></li>
+        <li><a id="item3" class="dropdown-item drmenu ${currentLang === 'jp' ? 'disabled' : ''
+      }" href="/" data-lang="jp">jp</a></li>
       </ul>
     </div>
     <div class="fa_modal">
       <div id="gdpr" style="display: none">
-        <h2>${words[currentLang].title}</h2>
+        <h2 id="gdpr_underline">${words[currentLang].title}</h2>
         <p>${words[currentLang].content}</p>
         <ul>
           <li><strong>${words[currentLang].items[0]}</strong></li>
@@ -42,12 +39,13 @@ export default class extends AbstractView {
           <li><strong>${words[currentLang].items[5]}</strong></li>
           <li><strong>${words[currentLang].items[6]}</strong></li>
         </ul>
-        <p>${words[currentLang].agreement}</p>
+        <p id="gdpr_underline">${words[currentLang].agreement}</p>
         <button id="agreeBtn">${words[currentLang].button}</button>
       </div>
       <div class="modal_header">
-      <i id="lock_image" class="fa-solid fa-lock"></i>
-      <h2>2FA</h2>
+        <i id="lock_image" class="fa-solid fa-lock"></i>
+        <h2>Two-Factor Authentication</h2>
+        <h4>Receive a temporary 6-digit login code via email</h4>
       </div>
       <input class="email_input" type="email"
             id="email"
@@ -61,7 +59,7 @@ export default class extends AbstractView {
         <input type="text" id="fa_code_5" maxlength="1" class="fa_code_input" required>
         <input type="text" id="fa_code_6" maxlength="1" class="fa_code_input" required>
       </div>
-      <button id="checkBtn">CHECK</button>
+      <button id="checkBtn">SEND CODE</button>
     </div>
     `;
     return modalHtml;
