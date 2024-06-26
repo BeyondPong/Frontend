@@ -3,7 +3,8 @@ import registry from '../state/Registry.js';
 import { words } from '../state/Registry.js';
 import { localGame } from '../game/localGame.js';
 import { remoteGame } from '../game/remoteGame.js';
-import { getRoomName, getProfileData, postTournamentNickName } from '../api/api.js';
+import { getRoomName, getProfileData } from '../api/getAPI.js';
+import { postTournamentNickName } from '../api/postAPI.js';
 import { addBlurBackground, removeBlurBackground } from '../utility/blurBackGround.js';
 import WebSocketManager from '../state/WebSocketManager.js';
 
@@ -27,10 +28,12 @@ export default class extends AbstractView {
       </div>
       <nav class="play_nav">
         <a tabindex="0" class="nav__link" id="local_link">${words[registry.lang].local}</a>
-        <a tabindex="0" class="nav__link" id="remote_link" style="${isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
-      }">${words[registry.lang].remote}</a>
-        <a tabindex="0" class="nav__link" id="tournament_link" style="${isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
-      }">${words[registry.lang].tournament}</a>
+        <a tabindex="0" class="nav__link" id="remote_link" style="${
+          isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
+        }">${words[registry.lang].remote}</a>
+        <a tabindex="0" class="nav__link" id="tournament_link" style="${
+          isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
+        }">${words[registry.lang].tournament}</a>
       </nav>
     `;
   }
@@ -138,7 +141,7 @@ export default class extends AbstractView {
         console.log('ONLINE');
         removeBlurBackground();
         loadingSpinner.style.display = 'none';
-        this.remoteGame.init(socket, nickname, 'REMOTE', first_user);
+        remoteGame.init(socket, nickname, 'REMOTE', first_user);
       });
 
       window.addEventListener('offline', () => {
@@ -164,7 +167,9 @@ export default class extends AbstractView {
       socket.onerror = (event) => {
         console.error('Game socket error:', event);
         if (!WebSocketManager.isGameSocketConnecting) {
-          WebSocketManager.connectGameSocket(`ws://localhost:8000/ws/play/${mode}/${roomName}/${nickname}/?token=${token}`);
+          WebSocketManager.connectGameSocket(
+            `ws://localhost:8000/ws/play/${mode}/${roomName}/${nickname}/?token=${token}`,
+          );
           socket = WebSocketManager.returnGameSocket();
         }
       };
@@ -204,8 +209,9 @@ export default class extends AbstractView {
     const modalHtml = `
       <div class="tournament_container_flex">
         <div>
-          <input type="text" class="input_box" placeholder="${words[registry.lang].tournament_nickname_placeholder
-      }" maxlength="10"/>
+          <input type="text" class="input_box" placeholder="${
+            words[registry.lang].tournament_nickname_placeholder
+          }" maxlength="10"/>
         </div>
         <div><button class="close_button check_button">CHECK</button></div>
       </div>
@@ -265,7 +271,7 @@ export default class extends AbstractView {
                     </div>
                     <div class="tournament_player_name" data-toggle="tooltip" data-placement="bottom" tooltip-title=""></div>
                   </div>
-                </div> 
+                </div>
               </div>
             </div>
             <div class="tournament_left_child left_last_child">
@@ -320,7 +326,7 @@ export default class extends AbstractView {
         </div>
       `;
 
-    const checkNickName = ((nickname, realname, room_name, socket) => {
+    const checkNickName = (nickname, realname, room_name, socket) => {
       const message = {
         type: 'check_nickname',
         nickname: nickname,
@@ -328,7 +334,7 @@ export default class extends AbstractView {
         room_name: room_name,
       };
       socket.send(JSON.stringify(message));
-    });
+    };
 
     const isValidPlayer = function (valid, players) {
       if (valid === true) {
@@ -350,20 +356,25 @@ export default class extends AbstractView {
             nicknameDiv.classList.remove('no-tooltip');
             avatarDiv.querySelector('img').src = `/static/assets/${players[index].profile_img}.png`;
             nicknameDiv.textContent = players[index].nickname;
-            nicknameDiv.setAttribute('tooltip-title', `${players[index].win_cnt} ${words[registry.lang].win} ${players[index].lose_cnt} ${words[registry.lang].lose}`);
+            nicknameDiv.setAttribute(
+              'tooltip-title',
+              `${players[index].win_cnt} ${words[registry.lang].win} ${players[index].lose_cnt} ${
+                words[registry.lang].lose
+              }`,
+            );
           } else {
             avatarDiv.querySelector('img').src = `/static/assets/tournamentAvatar.png`;
             nicknameDiv.textContent = "  ";
             nicknameDiv.classList.add('no-tooltip');
           }
-        })
+        });
       } else {
         tournamentModal.classList.remove('hidden');
         closeButton.addEventListener('click', () => {
           tournamentModal.classList.add('hidden');
         });
       }
-    }
+    };
 
     checkButton.addEventListener('click', () => {
       const nickName = inputBox.value;

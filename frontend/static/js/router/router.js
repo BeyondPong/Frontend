@@ -9,7 +9,7 @@ import pathToRegex from '../utility/pathToRegex.js';
 import getParams from '../utility/getParams.js';
 import navigateTo from '../utility/navigateTo.js';
 import updateBackground from '../utility/updateBackground.js';
-import { postLoginCode } from '../api/api.js';
+import { postLoginCode } from '../api/postAPI.js';
 import { removeBlurBackground } from '../utility/blurBackGround.js';
 import { checkLogin } from '../utility/checkLogin.js';
 import { check2FAStatus } from '../utility/check2FA.js';

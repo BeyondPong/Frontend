@@ -1,4 +1,4 @@
-import { postGameResult } from '../api/api.js';
+import { postGameResult } from '../api/postAPI.js';
 import { addBlurBackground } from '../utility/blurBackGround.js';
 
 export const remoteGame = {
@@ -67,7 +67,7 @@ export const remoteGame = {
       if (data.winner === nickname) {
         $score.innerHTML = `${data.scores[nickname]} : ${data.scores[data.loser]}`;
       } else {
-        $score.innerHTML = `${data.scores[data.loser]} : ${data.scores[nickname]}`;
+        $score.innerHTML = `${data.scores[data.loser]} : ${data.scores[data.winner]}`;
       }
 
       const againButton = document.createElement('button');
@@ -86,11 +86,11 @@ export const remoteGame = {
       buttonContainer.appendChild(mainButton);
       document.getElementById('app').appendChild(buttonContainer);
       againButton.addEventListener('click', () => {
-        remoteGame.init(socket, nickname, gameMode);
+        window.location.href = '/play';
       });
       againButton.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
-          remoteGame.init(socket, nickname, gameMode);
+          window.location.href = '/play';
         }
       });
       mainButton.addEventListener('click', () => {
@@ -101,7 +101,6 @@ export const remoteGame = {
           window.location.href = '/';
         }
       });
-      $canvas.style.cursor = 'auto';
     }
 
     function render() {
@@ -123,21 +122,23 @@ export const remoteGame = {
       context.fillRect(0, 0, $canvas.width, grid);
       context.fillRect(0, $canvas.height - grid, $canvas.width, $canvas.height);
 
+      context.fillStyle = 'rgba(211,211,211,0.5)';
       for (let i = grid; i < $canvas.width - grid; i += grid * 2) {
         context.fillRect(i, $canvas.height / 2 - grid / 2, grid, grid);
       }
-      $canvas.style.cursor = 'none';
     }
 
     function gameStart() {
+      let responseMessage = {
+        type: 'start_game',
+        width: $canvas.width,
+        height: $canvas.height,
+        running_user: false,
+      };
       if (nickname === first_user) {
-        const responseMessage = {
-          type: 'start_game',
-          width: $canvas.width,
-          height: $canvas.height,
-        };
-        socket.send(JSON.stringify(responseMessage));
+        responseMessage.running_user = true;
       }
+      socket.send(JSON.stringify(responseMessage));
     }
 
     function settingGame(data) {
@@ -192,29 +193,26 @@ export const remoteGame = {
       document.getElementById('player2Score').innerText = user.player2.score;
     }
 
-    function restartGame() {
-      setTimeout(() => {
-        let responseMessage = {
-          type: 'restart_game',
-        };
-        socket.send(JSON.stringify(responseMessage));
-        running = true;
-      }, 2000);
-    }
-
     function setSocket() {
       socket.onmessage = function (event) {
         const data = JSON.parse(event.data);
+        // console.log(data);
         if (data.type === 'game_start') {
           settingGame(data.data);
         } else if (data.type == 'update_score') {
           gameStop();
           updateScore(data.data);
           running = true;
-          // restartGame();
         } else if (data.type == 'ball_position') {
           targetBall.x = data.data.x;
           targetBall.y = data.data.y;
+        } else if (data.type === 'game_restart') {
+          targetBall.x = data.data.ball_position.x;
+          targetBall.y = data.data.ball_position.y;
+          topPaddle.x = data.data.paddles[1].x;
+          topPaddle.y = data.data.paddles[1].y;
+          bottomPaddle.x = data.data.paddles[0].x;
+          bottomPaddle.y = data.data.paddles[0].y;
         } else if (data.type == 'end_game') {
           updateScore(data.data);
           gameEnd(data.data);

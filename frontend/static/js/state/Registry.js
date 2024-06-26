@@ -1,4 +1,4 @@
-import { patchLanguage } from '../api/api.js';
+import { patchLanguage } from '../api/patchAPI.js';
 
 export const getStoredLang = () => {
   return localStorage.getItem('lang') || 'en';
