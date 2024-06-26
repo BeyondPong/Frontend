@@ -33,8 +33,8 @@ export const localGame = {
     player2Container.appendChild(player2Label);
     player2Container.appendChild(player2Score);
 
-    $div.appendChild(player1Container);
     $div.appendChild(player2Container);
+    $div.appendChild(player1Container);
 
     root.appendChild($div);
     let container, renderer, camera, mainLight, scene, ball, paddle1, paddle2, field, running;
@@ -78,7 +78,7 @@ export const localGame = {
       let direction = Math.random() > 0.5 ? -1 : 1;
       ball.$velocity = {
         x: 0,
-        z: direction * 35,
+        z: direction * 25,
       };
       ball.$stopped = false;
     }
@@ -96,14 +96,20 @@ export const localGame = {
 
       if (isSideCollision()) {
         ball.$velocity.x *= -1;
+        ball.position.x =
+          ball.position.x < 0
+            ? -dimensions.FIELD_WIDTH / 2 + dimensions.BALL_RADIUS
+            : dimensions.FIELD_WIDTH / 2 - dimensions.BALL_RADIUS;
       }
 
       if (isPaddle1Collision()) {
         hitBallBack(paddle1);
+        ball.position.z = paddle1.position.z - dimensions.BALL_RADIUS - 1;
       }
 
       if (isPaddle2Collision()) {
         hitBallBack(paddle2);
+        ball.position.z = paddle2.position.z + dimensions.BALL_RADIUS + 1;
       }
 
       if (isPastPaddle1()) {

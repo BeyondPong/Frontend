@@ -4,13 +4,16 @@ import Login from '../view/Login.js';
 import Profile from '../view/Profile.js';
 import NotFound from '../view/NotFound.js';
 import NotLogin from '../view/NotLogin.js';
-import registry from '../state/Registry.js';
+import Fa from '../view/2FA.js';
 import pathToRegex from '../utility/pathToRegex.js';
 import getParams from '../utility/getParams.js';
 import navigateTo from '../utility/navigateTo.js';
 import updateBackground from '../utility/updateBackground.js';
-import { postLoginCode } from '../api/api.js';
+import { postLoginCode } from '../api/postAPI.js';
 import { removeBlurBackground } from '../utility/blurBackGround.js';
+import { checkLogin } from '../utility/checkLogin.js';
+import { check2FAStatus } from '../utility/check2FA.js';
+import WebSocketManager from '../state/WebSocketManager.js';
 
 export class Router {
   constructor() {
@@ -18,15 +21,17 @@ export class Router {
       { path: '/', view: Main },
       { path: '/login', view: Login },
       { path: '/logout', view: Main },
+      { path: '/login_code/', view: Main },
+      { path: '/2fa', view: Fa },
       { path: '/play', view: Play },
       { path: '/profile', view: Profile },
       { path: '/notlogin', view: NotLogin },
       { path: '/notfound', view: NotFound },
-      { path: '/login_code/', view: Main },
     ];
   }
 
   async route() {
+    WebSocketManager.closeGameSocket();
     let match = this.findMatch();
     if (!match || location.pathname === '/notfound') {
       match = this.handleNotFound();
@@ -69,6 +74,9 @@ export class Router {
       case '/login_code/':
         await this.handleAutorhizationCode();
         break;
+      case '/2fa':
+        await this.handle2FA(match);
+        break;
       case '/logout':
         await this.handleLogoutRoute(match);
         break;
@@ -88,8 +96,26 @@ export class Router {
     }
   }
 
+  async handle2FA(match) {
+    if (check2FAStatus() === true) {
+      window.location.href = '/';
+      return;
+    }
+    if (checkLogin() === false) {
+      window.location.href = '/notlogin';
+      return;
+    }
+    updateBackground('normal');
+    removeBlurBackground();
+    await this.render(match);
+    const viewInstance = new match.route.view(getParams(match));
+    viewInstance.addEvent();
+  }
+
   async handleLogoutRoute(match) {
+    WebSocketManager.closeFriendSocket();
     localStorage.removeItem('token');
+    localStorage.removeItem('2FA');
     window.location.href = '/';
     this.handleMainRoute(match);
   }
@@ -104,6 +130,16 @@ export class Router {
   }
 
   async handleMainRoute(match) {
+    if (checkLogin() === true) {
+      if (check2FAStatus() === false) {
+        window.location.href = '/2fa';
+        return;
+      }
+      const token = localStorage.getItem('2FA');
+      WebSocketManager.connectFriendSocket(`ws://localhost:8000/ws/member/login_room/?token=${token}`);
+    } else {
+      WebSocketManager.closeFriendSocket();
+    }
     const viewInstance = new match.route.view(getParams(match));
     await this.render(match);
     await viewInstance.onMounted();
@@ -113,8 +149,7 @@ export class Router {
 
   async handleLoginRoute() {
     if (localStorage.getItem('token') !== null) {
-      navigateTo('/');
-      updateBackground('normal');
+      window.location.href = '/';
     } else if (!localStorage.getItem('token')) {
       window.location.href =
         'https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-4540298f9d0123b1db55521edf596a7625a4deea7a1b957bf5dbe1d7dc2ec9ab&redirect_uri=http://localhost:5173/login_code/&response_type=code';
@@ -122,21 +157,28 @@ export class Router {
   }
 
   async handleProfileRoute(match) {
-    if (localStorage.getItem('token') === null) {
+    if (checkLogin() === false) {
       match = this.handleNotLogin();
       await this.render(match);
     } else {
+      if (check2FAStatus() === false) {
+        window.location.href = '/2fa';
+        return;
+      }
       await this.render(match);
       const viewInstance = new match.route.view(getParams(match));
       const navItems = Array.from(document.getElementsByClassName('profile_nav_item'));
       viewInstance.defaultTabs();
+      viewInstance.addEvent();
       navItems.forEach((item, index) => {
         item.addEventListener('click', (e) => {
           e.preventDefault();
           navItems.forEach((nav) => nav.querySelector('a').classList.remove('active_tab'));
-          e.target.closest('a').classList.add('active_tab');
-          const tabText = e.target.closest('a').textContent.trim();
-          viewInstance.moveTabs(tabText);
+          if (e.target.closest('a') !== null) {
+            e.target.closest('a').classList.add('active_tab');
+            const tabText = e.target.closest('a').textContent.trim();
+            viewInstance.moveTabs(tabText);
+          }
         });
       });
       updateBackground('normal');
@@ -145,6 +187,12 @@ export class Router {
   }
 
   async handlePlayRoute(match) {
+    if (checkLogin() === true) {
+      if (check2FAStatus() === false) {
+        window.location.href = '/2fa';
+        return;
+      }
+    }
     await this.render(match);
     const viewInstance = new match.route.view(getParams(match));
     const localLink = document.getElementById('local_link');

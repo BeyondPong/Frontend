@@ -4,9 +4,12 @@
 @import url(./error.css);
 @import url(./profile.css);
 @import url('./game.css');
+@import url('./2fa.css');
 
 :root {
   --disabled-background-color: #3130a1;
+  --button-font-color: #2148c0;
+  --button-hover-color: #0d2d8e;
   --disabled-button-background-color: grey;
   --item-color: white;
   --profile-color: #f6faf9;
