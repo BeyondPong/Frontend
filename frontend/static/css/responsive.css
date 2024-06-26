@@ -1,4 +1,4 @@
-@media screen and (max-width: 820px) {
+@media screen and (max-width: 890px) {
   #app {
     grid-template-rows: 1fr 3fr 0.5fr 0.5fr;
     grid-template-columns: 1fr;
@@ -78,7 +78,7 @@
     width: 70%;
   }
 
-  [data-toggle="tooltip"]::after {
+  [data-toggle='tooltip']::after {
     font-size: 2vw;
     min-width: 4rem;
     width: auto;
