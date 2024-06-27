@@ -4,18 +4,14 @@ import { words } from '../state/Registry.js';
 import { localGame } from '../game/localGame.js';
 import { remoteGame } from '../game/remoteGame.js';
 import { getRoomName, getProfileData } from '../api/getAPI.js';
-import { postTournamentNickName } from '../api/postAPI.js';
-import { addBlurBackground, removeBlurBackground } from '../utility/blurBackGround.js';
 import WebSocketManager from '../state/WebSocketManager.js';
-
 export default class extends AbstractView {
   constructor(params) {
     super(params);
+    this.nickname = '';
   }
-
   async getHtml() {
     const isLogin = localStorage.getItem('token') !== null;
-
     return `
       <header class="main_header">
         <a href="/" id="main_link" class="nav__link" data-link>Ping? Pong!</a>
@@ -37,7 +33,6 @@ export default class extends AbstractView {
       </nav>
     `;
   }
-
   async localModal() {
     const modalHtml = `
       <div class="modal_content play_modal">
@@ -87,7 +82,6 @@ export default class extends AbstractView {
       }
     });
   }
-
   async remoteModal() {
     const modalHtml = `
       <div class="modal_content play_modal">
@@ -120,25 +114,23 @@ export default class extends AbstractView {
       }
     });
   }
-
   async play(mode) {
     const getRoomNames = async (mode) => {
       const response = await getRoomName(mode);
       return response.room_name;
     };
-
     const setupWebSocket = async (roomName, mode) => {
       const data = await getProfileData();
-      const nickname = data.nickname;
+      this.nickname = data.nickname;
       const token = localStorage.getItem('2FA');
-      WebSocketManager.connectGameSocket(`ws://localhost:8000/ws/play/${mode}/${roomName}/${nickname}/?token=${token}`);
+      WebSocketManager.connectGameSocket(
+        `ws://localhost:8000/ws/play/${mode}/${roomName}/${this.nickname}/?token=${token}`,
+      );
       let socket = WebSocketManager.returnGameSocket();
-
       const loadingSpinner = document.getElementById('loading_spinner');
-
       socket.onopen = (event) => {
         if (mode === 'TOURNAMENT') {
-          this.tournamentNickNameModal(nickname, roomName, socket);
+          this.tournamentNickNameModal(this.nickname, roomName, socket);
           loadingSpinner.style.display = 'none';
         } else {
           loadingSpinner.style.display = 'flex';
@@ -147,26 +139,22 @@ export default class extends AbstractView {
       socket.onclose = (event) => {
         console.log('Game socket closed');
       };
-
       socket.onerror = (event) => {
         console.error('Game socket error:', event);
         if (!WebSocketManager.isGameSocketConnecting) {
           WebSocketManager.connectGameSocket(
-            `ws://localhost:8000/ws/play/${mode}/${roomName}/${nickname}/?token=${token}`,
+            `ws://localhost:8000/ws/play/${mode}/${roomName}/${this.nickname}/?token=${token}`,
           );
           socket = WebSocketManager.returnGameSocket();
         }
       };
-
       socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
         loadingSpinner.style.display = 'none';
         if (data.type === 'start_game') {
           const countdownContainer = document.querySelector('#countdown_container');
           countdownContainer.style.display = 'flex';
-
           const $app = document.getElementById('app');
-
           let responseMessage = {
             type: 'set_board',
             width: $app.offsetWidth / 2,
@@ -184,19 +172,16 @@ export default class extends AbstractView {
               countdownContainer.innerText = 'Go!';
               setTimeout(() => {
                 countdownContainer.style.display = 'none';
-                if (mode === 'REMOTE') remoteGame.init(socket, nickname, 'REMOTE');
-                else if (mode === 'TOURNAMENT') remoteGame.init(socket, nickname, 'TOURNAMENT');
+                remoteGame.init(socket, this.nickname, 'REMOTE');
               }, 1000);
             }
           }, 1000);
         }
       };
     };
-
     const roomName = await getRoomNames(mode);
     await setupWebSocket(roomName, mode);
   }
-
   async tournamentNickNameModal(realName, roomName, socket) {
     const modalHtml = `
       <div class="tournament_container_flex">
@@ -222,13 +207,11 @@ export default class extends AbstractView {
     newContainer.classList.add('tournament_container');
     newContainer.innerHTML = modalHtml;
     modalCotainer.appendChild(newContainer);
-
     const container = document.querySelector('.tournament_container');
     const checkButton = document.querySelector('.check_button');
     const inputBox = document.querySelector('.input_box');
     const tournamentModal = document.querySelector('.tournament_modal');
     const closeButton = document.querySelector('.tournament_button');
-
     container.classList.remove('hidden');
     checkButton.disabled = true;
     checkButton.classList.add('disabled_button');
@@ -241,7 +224,6 @@ export default class extends AbstractView {
         checkButton.classList.remove('disabled_button');
       }
     });
-
     const tableHTML = `
         <div class="tournament_left">
           <div class="tournament_left_parent tournament_final">
@@ -317,7 +299,6 @@ export default class extends AbstractView {
           </div>
         </div>
       `;
-
     const checkNickName = (nickname, realname, room_name, socket) => {
       const message = {
         type: 'check_nickname',
@@ -327,7 +308,6 @@ export default class extends AbstractView {
       };
       socket.send(JSON.stringify(message));
     };
-
     const isValidPlayer = function (valid, players) {
       if (valid === true) {
         const container = document.querySelector('.tournament_container_flex');
@@ -338,7 +318,6 @@ export default class extends AbstractView {
         newDiv.classList.add('tournament_list');
         newDiv.innerHTML = tableHTML;
         container.replaceChildren(newDiv);
-
         const tournamentSemiPlayers = Array.from(document.getElementsByClassName('tournament_semi'));
         tournamentSemiPlayers.forEach((parentDiv, index) => {
           const children = parentDiv.children;
@@ -367,10 +346,9 @@ export default class extends AbstractView {
         });
       }
     };
-
     checkButton.addEventListener('click', () => {
-      const nickName = inputBox.value;
-      checkNickName(nickName, realName, roomName, socket);
+      this.nickName = inputBox.value;
+      checkNickName(this.nickName, realName, roomName, socket);
       socket.onmessage = function (event) {
         const data = JSON.parse(event.data);
         if (data.valid !== undefined && data.valid === false) {
@@ -378,10 +356,37 @@ export default class extends AbstractView {
         } else if (data.type === 'nickname_valid') {
           isValidPlayer(true, data.data.nicknames);
         }
+        if (data.type === 'start_game') {
+          const loadingSpinner = document.getElementById('loading_spinner');
+          loadingSpinner.style.display = 'none';
+          const countdownContainer = document.querySelector('#countdown_container');
+          countdownContainer.style.display = 'flex';
+          const $app = document.getElementById('app');
+          let responseMessage = {
+            type: 'set_board',
+            width: $app.offsetWidth / 2,
+            height: $app.offsetHeight / 1.2,
+          };
+          socket.send(JSON.stringify(responseMessage));
+          let countdown = 3;
+          countdownContainer.innerText = countdown;
+          const countdownInterval = setInterval(() => {
+            countdown--;
+            if (countdown > 0) {
+              countdownContainer.innerText = countdown;
+            } else {
+              clearInterval(countdownInterval);
+              countdownContainer.innerText = 'Go!';
+              setTimeout(() => {
+                countdownContainer.style.display = 'none';
+                remoteGame.init(socket, this.nickname, 'TOURNAMENT');
+              }, 1000);
+            }
+          }, 1000);
+        }
       };
     });
   }
-
   tournamentModal() {
     const modalHtml = `
       <div class="modal_content play_modal">
@@ -402,13 +407,11 @@ export default class extends AbstractView {
   `;
     this.showModal(modalHtml);
     const startButton = document.querySelector('#start_button');
-
     startButton.addEventListener('click', (e) => {
       e.target.style.display = 'none';
       this.deleteModal();
       this.play('TOURNAMENT');
     });
-
     startButton.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         e.target.style.display = 'none';
@@ -417,7 +420,6 @@ export default class extends AbstractView {
       }
     });
   }
-
   async showStartButton() {
     const startButton = document.createElement('a');
     startButton.id = 'start_button';
@@ -438,7 +440,6 @@ export default class extends AbstractView {
       }
     });
   }
-
   async showModal(modalHtml) {
     const modalContainer = document.createElement('section');
     modalContainer.classList.add('modal_container');
@@ -447,7 +448,6 @@ export default class extends AbstractView {
     mainHeader.insertAdjacentElement('afterend', modalContainer);
     await this.showStartButton();
   }
-
   deleteModal() {
     const modal = document.querySelector('.play_modal');
     modal.style.display = 'none';
