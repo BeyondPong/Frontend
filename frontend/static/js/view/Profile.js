@@ -21,14 +21,10 @@ export default class extends AbstractView {
               <a href="/play" id="play_link" class="nav__link" data-link>${words[registry.lang].play}</a>
               <a href="/profile" id="profile_link" class="nav__link" data-link style="pointer-events: none; color: grey; text-decoration: none;">${words[registry.lang].profile
       }</a>
-              <a href="/profile" id="profile_link" class="nav__link" data-link style="pointer-events: none; color: grey; text-decoration: none;">${words[registry.lang].profile
-      }</a>
               </nav>
               <section class="modal_container">
                 <div class="modal_content profile_modal">
                   <ul class="profile_nav">
-                    <li class="profile_nav_item"><a href="#" class="information">${words[registry.lang].information
-      }</a></li>
                     <li class="profile_nav_item"><a href="#" class="information">${words[registry.lang].information
       }</a></li>
                     <li class="profile_nav_item"><a href="#" class="history">${words[registry.lang].history}</a></li>
@@ -275,8 +271,6 @@ export default class extends AbstractView {
               <div tabindex="0" class="profile_status_save hidden" id="status_save"><button><i class="fa-solid fa-check"></i></button></div>
               </div>
             </div>
-            <span class="profile_count">${data.win_cnt}${words[registry.lang].win} ${data.lose_cnt}${words[registry.lang].lose
-          } </span>
             <span class="profile_count">${data.win_cnt}${words[registry.lang].win} ${data.lose_cnt}${words[registry.lang].lose
           } </span>
           <section class="profile_img_modal hidden">
@@ -529,8 +523,6 @@ export default class extends AbstractView {
         <div class="form_container">
           <form action="#" class="form_box">
             <div class="input_container">
-              <input type="search" id="search_input" placeholder='${words[registry.lang].friend_search_placeholder
-        }' required>
               <input type="search" id="search_input" placeholder='${words[registry.lang].friend_search_placeholder
         }' required>
             </div>
