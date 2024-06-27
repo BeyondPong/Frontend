@@ -8,7 +8,7 @@ export default class extends AbstractView {
 
   async getHtml() {
     const currentLang = registry.lang;
-    const isLoggedIn = localStorage.getItem('token') !== null;
+    const isLogin = localStorage.getItem('token') !== null;
 
     return `
       <header class="main_header">
@@ -32,11 +32,13 @@ export default class extends AbstractView {
         </div>
       </header>
       <nav id="nav_links">
-        <a href="${isLoggedIn ? '/logout' : '/login'}" id="${
-      isLoggedIn ? 'logout_link' : 'login_link'
-    }" class="nav__link" data-link>${isLoggedIn ? words[currentLang].logout : words[currentLang].login}</a>
+        <a href="${isLogin ? '/logout' : '/login'}" id="${
+      isLogin ? 'logout_link' : 'login_link'
+    }" class="nav__link" data-link>${isLogin ? words[currentLang].logout : words[currentLang].login}</a>
         <a href="/play" id="play_link" class="nav__link" data-link>${words[currentLang].play}</a>
-        <a href="/profile" id="profile_link" class="nav__link" data-link>${words[currentLang].profile}</a>
+        <a href="/profile" id="profile_link" class="nav__link" style="${
+          isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
+        }" data-link>${words[currentLang].profile}</a>
       </nav>
     `;
   }
