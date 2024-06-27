@@ -260,10 +260,18 @@ export default class extends AbstractView {
           avatarModal.classList.add('hidden');
         });
         imgSaveButton.addEventListener('click', async () => {
-          const imgData = await patchAvatar(imgId);
+          if (imgId === undefined) {
+            profileImage.style.backgroundImage = `url(/static/assets/${currentAvatarId}.png)`;
+            imgId = currentAvatarId;
+          } else if (currentAvatarId === imgId) {
+            profileImage.style.backgroundImage = `url(/static/assets/${imgId}.png)`;
+            currentAvatarId = imgId;
+          } else {
+            await patchAvatar(imgId);
+            profileImage.style.backgroundImage = `url(/static/assets/${imgId}.png)`;
+            currentAvatarId = imgId;
+          }
           avatarModal.classList.add('hidden');
-          profileImage.style.backgroundImage = `url(/static/assets/${imgId}.png)`;
-          currentAvatarId = imgId;
         });
 
         avatarEditButton.addEventListener('click', () => {
@@ -281,9 +289,6 @@ export default class extends AbstractView {
               img.style.border = '4px solid var(--profile-background)';
               imgId = img.getAttribute('data-img-id');
             });
-            if (imgId === undefined) {
-              imgId = currentAvatarId;
-            }
             img.addEventListener('mouseenter', () => {
               img.style.transform = 'scale(1.1)';
             });
