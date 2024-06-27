@@ -49,7 +49,7 @@ export const postLoginCode2FA = async (code) => {
   }
 };
 
-export const postLogin2FA = async (email) => {
+export const postLogin2FA = async () => {
   try {
     const response = await fetch('http://localhost:8000/login/two_fa/request/', {
       method: 'POST',
@@ -57,7 +57,6 @@ export const postLogin2FA = async (email) => {
         Authorization: 'Bearer' + ' ' + localStorage.getItem('token'),
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email: email }),
     });
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
