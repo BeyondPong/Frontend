@@ -21,10 +21,14 @@ export default class extends AbstractView {
               <a href="/play" id="play_link" class="nav__link" data-link>${words[registry.lang].play}</a>
               <a href="/profile" id="profile_link" class="nav__link" data-link style="pointer-events: none; color: grey; text-decoration: none;">${words[registry.lang].profile
       }</a>
+              <a href="/profile" id="profile_link" class="nav__link" data-link style="pointer-events: none; color: grey; text-decoration: none;">${words[registry.lang].profile
+      }</a>
               </nav>
               <section class="modal_container">
                 <div class="modal_content profile_modal">
                   <ul class="profile_nav">
+                    <li class="profile_nav_item"><a href="#" class="information">${words[registry.lang].information
+      }</a></li>
                     <li class="profile_nav_item"><a href="#" class="information">${words[registry.lang].information
       }</a></li>
                     <li class="profile_nav_item"><a href="#" class="history">${words[registry.lang].history}</a></li>
@@ -175,6 +179,8 @@ export default class extends AbstractView {
         if (user.is_friend) {
           resultHTML += `<div class="disabled_friend_button friend_add_button"><button class="add_button disabled_button" disabled data-user-id="${user.id
             }">${words[registry.lang].friend_add_button}</button></div>`;
+          resultHTML += `<div class="disabled_friend_button friend_add_button"><button class="add_button disabled_button" disabled data-user-id="${user.id
+            }">${words[registry.lang].friend_add_button}</button></div>`;
         } else {
           resultHTML += `<div tabindex="0" class="friend_button friend_add_button"><button class="add_button" data-user-id="${user.id
             }">${words[registry.lang].friend_add_button}</button></div>`;
@@ -271,6 +277,8 @@ export default class extends AbstractView {
             </div>
             <span class="profile_count">${data.win_cnt}${words[registry.lang].win} ${data.lose_cnt}${words[registry.lang].lose
           } </span>
+            <span class="profile_count">${data.win_cnt}${words[registry.lang].win} ${data.lose_cnt}${words[registry.lang].lose
+          } </span>
           <section class="profile_img_modal hidden">
             <div class="profile_img_modal_flex">
               <div class="profile_img_set">
@@ -308,6 +316,17 @@ export default class extends AbstractView {
         });
 
         imgSaveButton.addEventListener('click', async () => {
+          if (imgId === undefined) {
+            profileImage.style.backgroundImage = `url(/static/assets/${currentAvatarId}.png)`;
+            imgId = currentAvatarId;
+          } else if (currentAvatarId === imgId) {
+            profileImage.style.backgroundImage = `url(/static/assets/${imgId}.png)`;
+            currentAvatarId = imgId;
+          } else {
+            await patchAvatar(imgId);
+            profileImage.style.backgroundImage = `url(/static/assets/${imgId}.png)`;
+            currentAvatarId = imgId;
+          }
           if (imgId === undefined) {
             profileImage.style.backgroundImage = `url(/static/assets/${currentAvatarId}.png)`;
             imgId = currentAvatarId;
@@ -510,6 +529,8 @@ export default class extends AbstractView {
         <div class="form_container">
           <form action="#" class="form_box">
             <div class="input_container">
+              <input type="search" id="search_input" placeholder='${words[registry.lang].friend_search_placeholder
+        }' required>
               <input type="search" id="search_input" placeholder='${words[registry.lang].friend_search_placeholder
         }' required>
             </div>
