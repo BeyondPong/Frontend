@@ -8,12 +8,8 @@ export const remoteGame = {
     const $app = document.getElementById('app');
     const $canvas = document.createElement('canvas');
     const context = $canvas.getContext('2d');
-    $canvas.width = $app.offsetWidth / 2;
-    $canvas.height = $app.offsetHeight / 1.2;
-    $app.appendChild($canvas);
     let running = false;
     let grid = 15;
-    let paddleWidth = grid * 6;
     let role = false;
     let user = {
       player1: { name: 'player1', score: 0 },
@@ -21,22 +17,22 @@ export const remoteGame = {
     };
 
     let topPaddle = {
-      x: $canvas.width / 2 - paddleWidth / 2,
-      y: grid * 2,
-      width: paddleWidth,
-      height: grid,
+      x: 0,
+      y: 0,
+      width: 0,
+      height: 0,
       name: '',
     };
     let bottomPaddle = {
-      x: $canvas.width / 2 - paddleWidth / 2,
-      y: $canvas.height - grid * 3,
-      width: paddleWidth,
-      height: grid,
+      x: 0,
+      y: 0,
+      width: 0,
+      height: 0,
       name: '',
     };
     let ball = {
-      x: $canvas.width / 2,
-      y: $canvas.height / 2,
+      x: 0,
+      y: 0,
       width: grid,
       height: grid,
     };
@@ -142,6 +138,7 @@ export const remoteGame = {
       while (root.childNodes.length > 0) {
         root.removeChild(root.firstChild);
       }
+      $app.appendChild($canvas);
       data.players.forEach((player) => {
         if (player === nickname) {
           role = true;
@@ -149,6 +146,8 @@ export const remoteGame = {
       });
       addKeyboardEvent();
       running = true;
+      $canvas.width = data.game_width;
+      $canvas.height = data.game_height;
       targetBall.x = data.ball_position.x;
       targetBall.y = data.ball_position.y;
 
@@ -219,7 +218,6 @@ export const remoteGame = {
     async function setSocket() {
       socket.onmessage = function (event) {
         const data = JSON.parse(event.data);
-
         switch (data.type) {
           case 'game_start':
             handleGameStart(data.data);
