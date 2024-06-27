@@ -9,6 +9,7 @@ export default class extends AbstractView {
   constructor(params) {
     super(params);
     this.nickname = '';
+    this.realname = '';
   }
   async getHtml() {
     const isLogin = localStorage.getItem('token') !== null;
@@ -121,16 +122,16 @@ export default class extends AbstractView {
     };
     const setupWebSocket = async (roomName, mode) => {
       const data = await getProfileData();
-      this.nickname = data.nickname;
+      this.realname = data.nickname;
       const token = localStorage.getItem('2FA');
       WebSocketManager.connectGameSocket(
-        `ws://localhost:8000/ws/play/${mode}/${roomName}/${this.nickname}/?token=${token}`,
+        `ws://localhost:8000/ws/play/${mode}/${roomName}/${this.realname}/?token=${token}`,
       );
       let socket = WebSocketManager.returnGameSocket();
       const loadingSpinner = document.getElementById('loading_spinner');
       socket.onopen = (event) => {
         if (mode === 'TOURNAMENT') {
-          this.tournamentNickNameModal(this.nickname, roomName, socket);
+          this.tournamentNickNameModal(this.realname, roomName, socket);
           loadingSpinner.style.display = 'none';
         } else {
           loadingSpinner.style.display = 'flex';
@@ -172,7 +173,7 @@ export default class extends AbstractView {
               countdownContainer.innerText = 'Go!';
               setTimeout(() => {
                 countdownContainer.style.display = 'none';
-                remoteGame.init(socket, this.nickname, 'REMOTE');
+                remoteGame.init(socket, this.realname, 'REMOTE');
               }, 1000);
             }
           }, 1000);
@@ -299,6 +300,7 @@ export default class extends AbstractView {
           </div>
         </div>
       `;
+    const self = this;
     const checkNickName = (nickname, realname, room_name, socket) => {
       const message = {
         type: 'check_nickname',
@@ -347,8 +349,8 @@ export default class extends AbstractView {
       }
     };
     checkButton.addEventListener('click', () => {
-      this.nickName = inputBox.value;
-      checkNickName(this.nickName, realName, roomName, socket);
+      self.nickname = inputBox.value;
+      checkNickName(self.nickname, realName, roomName, socket);
       socket.onmessage = function (event) {
         const data = JSON.parse(event.data);
         if (data.valid !== undefined && data.valid === false) {
@@ -379,7 +381,7 @@ export default class extends AbstractView {
               countdownContainer.innerText = 'Go!';
               setTimeout(() => {
                 countdownContainer.style.display = 'none';
-                remoteGame.init(socket, this.nickname, 'TOURNAMENT');
+                remoteGame.init(socket, self.nickname, 'TOURNAMENT');
               }, 1000);
             }
           }, 1000);

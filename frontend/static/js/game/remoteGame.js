@@ -151,10 +151,10 @@ export const remoteGame = {
       targetBall.x = data.ball_position.x;
       targetBall.y = data.ball_position.y;
 
-      user.player1.name = data.paddles[0].nickname;
-      bottomPaddle.name = data.paddles[0].nickname;
-      user.player2.name = data.paddles[1].nickname;
-      topPaddle.name = data.paddles[1].nickname;
+      user.player1.name = data.players[0];
+      bottomPaddle.name = data.players[0];
+      user.player2.name = data.players[1];
+      topPaddle.name = data.players[1];
       topPaddle.x = data.paddles[1].x;
       topPaddle.y = data.paddles[1].y;
       topPaddle.width = data.paddles[1].width;
