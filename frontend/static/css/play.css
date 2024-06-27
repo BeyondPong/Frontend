@@ -203,6 +203,13 @@
   opacity: 1
 }
 
+[data-toggle="tooltip"]:hover::after,
+[data-toggle="tooltip"]:hover::before,
+.show-tooltip::after,
+.show-tooltip::before {
+  opacity: 1;
+}
+
 .no-tooltip[data-toggle="tooltip"]:hover::before,
 .no-tooltip[data-toggle="tooltip"]:hover::after {
   opacity: 0;
