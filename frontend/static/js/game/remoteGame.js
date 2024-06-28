@@ -4,8 +4,7 @@ import { addBlurBackground } from '../utility/blurBackGround.js';
 export const remoteGame = {
   async init(socket, nickname, gameMode) {
     addBlurBackground();
-    const root = document.getElementById('app');
-    const $app = document.getElementById('app');
+    let root = document.getElementById('app');
     const $canvas = document.createElement('canvas');
     const context = $canvas.getContext('2d');
     let running = false;
@@ -51,6 +50,7 @@ export const remoteGame = {
     }
 
     async function gameEnd(data) {
+      console.log(data);
       role = false;
       removeKeyboardEvent();
       if (gameMode === 'REMOTE') await postGameResult(gameMode, user);
@@ -66,6 +66,10 @@ export const remoteGame = {
         $score.innerHTML = `${data.scores[data.loser]} : ${data.scores[data.winner]}`;
       }
 
+      const buttonContainer = document.createElement('div');
+      buttonContainer.classList.add('remote_buttonContainer');
+      buttonContainer.appendChild($score);
+      buttonContainer.appendChild($win);
       if (data.is_final) {
         const againButton = document.createElement('button');
         againButton.classList.add('gameButton');
@@ -75,13 +79,8 @@ export const remoteGame = {
         mainButton.classList.add('gameButton');
         mainButton.innerHTML = 'Main';
         mainButton.setAttribute('tabindex', '0');
-        const buttonContainer = document.createElement('div');
-        buttonContainer.classList.add('remote_buttonContainer');
-        buttonContainer.appendChild($score);
-        buttonContainer.appendChild($win);
         buttonContainer.appendChild(againButton);
         buttonContainer.appendChild(mainButton);
-        document.getElementById('app').appendChild(buttonContainer);
         againButton.addEventListener('click', () => {
           window.location.href = '/play';
         });
@@ -99,6 +98,19 @@ export const remoteGame = {
           }
         });
       }
+      document.getElementById('app').appendChild(buttonContainer);
+      const canvasRect = $canvas.getBoundingClientRect();
+      buttonContainer.style.top = `${canvasRect.top + canvasRect.height / 2}px`;
+      buttonContainer.style.left = `${canvasRect.left + canvasRect.width / 2}px`;
+    }
+
+    function clearScreen() {
+      const children = Array.from(root.children);
+      children.forEach((child) => {
+        if (child.tagName !== 'CANVAS') {
+          root.removeChild(child);
+        }
+      });
     }
 
     function render() {
@@ -131,22 +143,20 @@ export const remoteGame = {
         type: 'start_game',
       };
       socket.send(JSON.stringify(responseMessage));
-      console.log('game_Start');
     }
 
     async function settingGame(data) {
-      if (running) {
-        return;
-      }
+      root = document.getElementById('app');
       while (root.childNodes.length > 0) {
         root.removeChild(root.firstChild);
       }
-      $app.appendChild($canvas);
+      root.appendChild($canvas);
       data.players.forEach((player) => {
         if (player === nickname) {
           role = true;
         }
       });
+      console.log(data);
       addKeyboardEvent();
       running = true;
       $canvas.width = data.game_width;
@@ -276,6 +286,7 @@ export const remoteGame = {
 
     async function handleNextRound() {
       setTimeout(() => {
+        clearScreen();
         gameStart();
         running = true;
         animate();
