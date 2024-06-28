@@ -3,6 +3,7 @@ import { addBlurBackground } from '../utility/blurBackGround.js';
 
 export const remoteGame = {
   async init(socket, nickname, gameMode) {
+    let gameNumber = 0;
     addBlurBackground();
     let root = document.getElementById('app');
     const $canvas = document.createElement('canvas');
@@ -157,7 +158,6 @@ export const remoteGame = {
           role = true;
         }
       });
-      console.log(data);
       addKeyboardEvent();
       running = true;
       $canvas.width = data.game_width;
@@ -270,6 +270,7 @@ export const remoteGame = {
     }
 
     async function handleGameStart(data) {
+      gameNumber++;
       await settingGame(data);
       animate();
     }
@@ -285,13 +286,32 @@ export const remoteGame = {
       targetBall.y = data.y;
     }
 
-    async function handleNextRound() {
+    function renderFinal() {
+      const $finalRound = document.createElement('div');
+      $finalRound.id = 'finalRoundContainer';
+      $finalRound.innerText = 'Final Round';
+      root.appendChild($finalRound);
       setTimeout(() => {
+        clearScreen();
+        root.removeChild($finalRound);
         clearScreen();
         gameStart();
         running = true;
         animate();
-      }, 3000);
+      }, 4000);
+    }
+
+    async function handleNextRound() {
+      if (gameNumber === 2) {
+        renderFinal();
+      } else {
+        setTimeout(() => {
+          clearScreen();
+          gameStart();
+          running = true;
+          animate();
+        }, 3000);
+      }
     }
 
     function handleGameRestart(data) {
@@ -301,6 +321,7 @@ export const remoteGame = {
       topPaddle.y = data.paddles[1].y;
       bottomPaddle.x = data.paddles[0].x;
       bottomPaddle.y = data.paddles[0].y;
+      render();
     }
 
     function handleEndGame(data) {
