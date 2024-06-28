@@ -442,28 +442,63 @@
   }
 }
 
-/* CSS */
 #finalRoundContainer {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
   font-size: 3em;
-  animation: slideDown 1s forwards, fadeOut 1s 2s forwards;
+  color: white;
+  z-index: 1000;
 }
 
-@keyframes slideDown {
+#finalRoundTop,
+#finalRoundBottom {
+  position: absolute;
+  width: 100%;
+  height: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 5rem;
+  overflow: hidden;
+}
+
+#finalRoundTop {
+  top: 0;
+  background: rgba(0, 0, 0, 0.8);
+  clip-path: inset(0 0 50% 0);
+  animation: slideTop 1s forwards, fadeOut 1s 2s forwards;
+}
+
+#finalRoundBottom {
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  clip-path: inset(50% 0 0 0);
+  animation: slideBottom 1s forwards, fadeOut 1s 2s forwards;
+}
+
+@keyframes slideTop {
   0% {
-    clip-path: inset(0 0 50% 0);
+    transform: translateY(-100%);
   }
   100% {
-    clip-path: inset(50% 0 0 0);
+    transform: translateY(50%);
+  }
+}
+
+@keyframes slideBottom {
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(-50%);
   }
 }
 
