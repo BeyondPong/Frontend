@@ -2,43 +2,37 @@ import { postGameResult } from '../api/postAPI.js';
 import { addBlurBackground } from '../utility/blurBackGround.js';
 
 export const remoteGame = {
-  async init(socket, nickname, gameMode, first_user) {
+  async init(socket, nickname, gameMode) {
     addBlurBackground();
     const root = document.getElementById('app');
-    while (root.childNodes.length > 0) {
-      root.removeChild(root.firstChild);
-    }
     const $app = document.getElementById('app');
     const $canvas = document.createElement('canvas');
     const context = $canvas.getContext('2d');
-    $canvas.width = $app.offsetWidth / 2;
-    $canvas.height = $app.offsetHeight / 1.2;
-    $app.appendChild($canvas);
-    let running = true;
+    let running = false;
     let grid = 15;
-    let paddleWidth = grid * 6;
+    let role = false;
     let user = {
       player1: { name: 'player1', score: 0 },
       player2: { name: 'player2', score: 0 },
     };
 
     let topPaddle = {
-      x: $canvas.width / 2 - paddleWidth / 2,
-      y: grid * 2,
-      width: paddleWidth,
-      height: grid,
+      x: 0,
+      y: 0,
+      width: 0,
+      height: 0,
       name: '',
     };
     let bottomPaddle = {
-      x: $canvas.width / 2 - paddleWidth / 2,
-      y: $canvas.height - grid * 3,
-      width: paddleWidth,
-      height: grid,
+      x: 0,
+      y: 0,
+      width: 0,
+      height: 0,
       name: '',
     };
     let ball = {
-      x: $canvas.width / 2,
-      y: $canvas.height / 2,
+      x: 0,
+      y: 0,
       width: grid,
       height: grid,
     };
@@ -57,6 +51,8 @@ export const remoteGame = {
     }
 
     async function gameEnd(data) {
+      role = false;
+      removeKeyboardEvent();
       await postGameResult(gameMode, user);
       const $win = document.createElement('div');
       $win.classList.add('win');
@@ -131,24 +127,34 @@ export const remoteGame = {
     function gameStart() {
       let responseMessage = {
         type: 'start_game',
-        width: $canvas.width,
-        height: $canvas.height,
-        running_user: false,
       };
-      if (nickname === first_user) {
-        responseMessage.running_user = true;
-      }
       socket.send(JSON.stringify(responseMessage));
     }
 
-    function settingGame(data) {
+    async function settingGame(data) {
+      if (running) {
+        return;
+      }
+      while (root.childNodes.length > 0) {
+        root.removeChild(root.firstChild);
+      }
+      $app.appendChild($canvas);
+      data.players.forEach((player) => {
+        if (player === nickname) {
+          role = true;
+        }
+      });
+      addKeyboardEvent();
+      running = true;
+      $canvas.width = data.game_width;
+      $canvas.height = data.game_height;
       targetBall.x = data.ball_position.x;
       targetBall.y = data.ball_position.y;
 
-      user.player1.name = data.paddles[0].nickname;
-      bottomPaddle.name = data.paddles[0].nickname;
-      user.player2.name = data.paddles[1].nickname;
-      topPaddle.name = data.paddles[1].nickname;
+      user.player1.name = data.players[0];
+      bottomPaddle.name = data.players[0];
+      user.player2.name = data.players[1];
+      topPaddle.name = data.players[1];
       topPaddle.x = data.paddles[1].x;
       topPaddle.y = data.paddles[1].y;
       topPaddle.width = data.paddles[1].width;
@@ -193,41 +199,98 @@ export const remoteGame = {
       document.getElementById('player2Score').innerText = user.player2.score;
     }
 
-    function setSocket() {
+    function waitNextGame() {
+      running = false;
+      const $wait = document.createElement('div');
+      $wait.classList.add('loading_spinner');
+
+      const spinner = document.createElement('div');
+      spinner.classList.add('spinner');
+
+      const waitText = document.createElement('p');
+      waitText.innerText = 'Wait for next game...';
+
+      $wait.appendChild(spinner);
+      $wait.appendChild(waitText);
+      root.appendChild($wait);
+    }
+
+    async function setSocket() {
       socket.onmessage = function (event) {
         const data = JSON.parse(event.data);
-        // console.log(data);
-        if (data.type === 'game_start') {
-          settingGame(data.data);
-        } else if (data.type == 'update_score') {
-          gameStop();
-          updateScore(data.data);
-          running = true;
-        } else if (data.type == 'ball_position') {
-          targetBall.x = data.data.x;
-          targetBall.y = data.data.y;
-        } else if (data.type === 'game_restart') {
-          targetBall.x = data.data.ball_position.x;
-          targetBall.y = data.data.ball_position.y;
-          topPaddle.x = data.data.paddles[1].x;
-          topPaddle.y = data.data.paddles[1].y;
-          bottomPaddle.x = data.data.paddles[0].x;
-          bottomPaddle.y = data.data.paddles[0].y;
-        } else if (data.type == 'end_game') {
-          updateScore(data.data);
-          gameEnd(data.data);
-        } else if (data.type == 'paddle_position') {
-          data.data.forEach((paddleData) => {
-            if (paddleData.nickname === topPaddle.name) {
-              topPaddle.x = paddleData.x;
-              topPaddle.y = paddleData.y;
-            } else if (paddleData.nickname === bottomPaddle.name) {
-              bottomPaddle.x = paddleData.x;
-              bottomPaddle.y = paddleData.y;
-            }
-          });
+        switch (data.type) {
+          case 'game_start':
+            handleGameStart(data.data);
+            break;
+          case 'update_score':
+            handleUpdateScore(data.data);
+            break;
+          case 'ball_position':
+            handleBallPosition(data.data);
+            break;
+          case 'next_round':
+            handleNextRound(data.data);
+            break;
+          case 'game_restart':
+            handleGameRestart(data.data);
+            break;
+          case 'end_game':
+            handleEndGame(data.data);
+            break;
+          case 'paddle_position':
+            handlePaddlePosition(data.data);
+            break;
         }
       };
+    }
+
+    async function handleGameStart(data) {
+      await settingGame(data);
+      animate();
+    }
+
+    function handleUpdateScore(data) {
+      gameStop();
+      updateScore(data);
+      running = true;
+    }
+
+    function handleBallPosition(data) {
+      targetBall.x = data.x;
+      targetBall.y = data.y;
+    }
+
+    async function handleNextRound(data) {
+      waitNextGame();
+      gameStart();
+      animate();
+    }
+
+    function handleGameRestart(data) {
+      targetBall.x = data.ball_position.x;
+      targetBall.y = data.ball_position.y;
+      topPaddle.x = data.paddles[1].x;
+      topPaddle.y = data.paddles[1].y;
+      bottomPaddle.x = data.paddles[0].x;
+      bottomPaddle.y = data.paddles[0].y;
+    }
+
+    function handleEndGame(data) {
+      updateScore(data);
+      gameEnd(data);
+      waitNextGame();
+    }
+
+    function handlePaddlePosition(data) {
+      data.forEach((paddleData) => {
+        if (paddleData.nickname === topPaddle.name) {
+          topPaddle.x = paddleData.x;
+          topPaddle.y = paddleData.y;
+        } else if (paddleData.nickname === bottomPaddle.name) {
+          bottomPaddle.x = paddleData.x;
+          bottomPaddle.y = paddleData.y;
+        }
+      });
     }
 
     function animate() {
@@ -240,36 +303,47 @@ export const remoteGame = {
     }
 
     function addKeyboardEvent() {
-      document.addEventListener('keydown', function (e) {
-        let responseMessage = {};
-        if (e.code === 'ArrowLeft') {
-          e.preventDefault();
-          responseMessage = {
-            type: 'move_paddle',
-            paddle: nickname,
-            direction: 'left',
-          };
-          socket.send(JSON.stringify(responseMessage));
-        } else if (e.code === 'ArrowRight') {
-          e.preventDefault();
-          responseMessage = {
-            type: 'move_paddle',
-            paddle: nickname,
-            direction: 'right',
-          };
-          socket.send(JSON.stringify(responseMessage));
-        }
-      });
-      document.addEventListener('keyup', function (e) {
-        if (e.key == 'ArrowUp' || e.key == 'ArrowDown') {
-          e.preventDefault();
-        }
-      });
+      if (role === true) {
+        document.addEventListener('keydown', keydownHandler);
+        document.addEventListener('keyup', keyupHandler);
+      }
     }
 
-    addKeyboardEvent();
+    function removeKeyboardEvent() {
+      if (role === true) {
+        document.removeEventListener('keydown', keydownHandler);
+        document.removeEventListener('keyup', keyupHandler);
+      }
+    }
+
+    function keydownHandler(e) {
+      let responseMessage = {};
+      if (e.code === 'ArrowLeft') {
+        e.preventDefault();
+        responseMessage = {
+          type: 'move_paddle',
+          paddle: nickname,
+          direction: 'left',
+        };
+        socket.send(JSON.stringify(responseMessage));
+      } else if (e.code === 'ArrowRight') {
+        e.preventDefault();
+        responseMessage = {
+          type: 'move_paddle',
+          paddle: nickname,
+          direction: 'right',
+        };
+        socket.send(JSON.stringify(responseMessage));
+      }
+    }
+
+    function keyupHandler(e) {
+      if (e.key == 'ArrowUp' || e.key == 'ArrowDown') {
+        e.preventDefault();
+      }
+    }
+
     setSocket();
     gameStart();
-    animate();
   },
 };

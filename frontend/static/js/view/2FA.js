@@ -31,7 +31,7 @@ export default class extends AbstractView {
     </div>
     <div class="fa_modal">
       <div id="gdpr" style="display: none">
-        <h2>${words[currentLang].title}</h2>
+        <h2 id="gdpr_underline">${words[currentLang].title}</h2>
         <p>${words[currentLang].content}</p>
         <ul>
           <li><strong>${words[currentLang].items[0]}</strong></li>
@@ -42,18 +42,17 @@ export default class extends AbstractView {
           <li><strong>${words[currentLang].items[5]}</strong></li>
           <li><strong>${words[currentLang].items[6]}</strong></li>
         </ul>
-        <p>${words[currentLang].agreement}</p>
+        <p id="gdpr_underline">${words[currentLang].agreement}</p>
         <button id="agreeBtn">${words[currentLang].button}</button>
       </div>
       <div class="modal_header">
-      <i id="lock_image" class="fa-solid fa-lock"></i>
-      <h2>2FA</h2>
-      </div>
-      <input class="email_input" type="email"
-            id="email"
-            placeholder="ex@gmail.com or ex@naver.com"
-            required>
-      <div id="fa_code_container" class="fa_code_container" style="display:none;">
+        <i id="lock_image" class="fa-solid fa-lock"></i>
+        <h2>Two-Factor Authentication</h2>
+        <h4>Receive a temporary 6-digit login code via email</h4>
+        <p id="user_email"></p>
+        <button id="sendBtn">SEND</button>
+        </div>
+      <div id="fa_code_container" class="fa_code_container">
         <input type="text" id="fa_code_1" maxlength="1" class="fa_code_input" required>
         <input type="text" id="fa_code_2" maxlength="1" class="fa_code_input" required>
         <input type="text" id="fa_code_3" maxlength="1" class="fa_code_input" required>
@@ -61,7 +60,7 @@ export default class extends AbstractView {
         <input type="text" id="fa_code_5" maxlength="1" class="fa_code_input" required>
         <input type="text" id="fa_code_6" maxlength="1" class="fa_code_input" required>
       </div>
-      <button id="checkBtn">CHECK</button>
+      <button id="checkBtn">VERIFY</button>
     </div>
     `;
     return modalHtml;
@@ -87,8 +86,22 @@ export default class extends AbstractView {
   }
 
   async onMounted() {
+    const sendBtn = document.getElementById('sendBtn');
     const dropdownToggle = document.getElementById('dropdownMenuButton');
     const dropdownMenu = document.querySelector('.dropdown-menu');
+
+    sendBtn.addEventListener('click', async (e) => {
+      if (sendBtn.innerText === 'SEND') {
+        sendBtn.innerText = 'RESEND';
+      }
+      const response = await postLogin2FA();
+    });
+
+    sendBtn.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        sendBtn.click();
+      }
+    });
 
     dropdownToggle.addEventListener('click', () => {
       dropdownMenu.classList.toggle('show');
@@ -109,16 +122,6 @@ export default class extends AbstractView {
   }
 
   async checkCode() {
-    const emailInput = document.getElementById('email');
-    const faCodeContainer = document.getElementById('fa_code_container');
-
-    emailInput.style.display = 'none';
-
-    faCodeContainer.style.display = 'flex';
-
-    const checkBtn = document.getElementById('checkBtn');
-    checkBtn.disabled = false;
-    checkBtn.textContent = 'VERIFY';
     let tryCount = 0;
     checkBtn.addEventListener('click', async (e) => {
       const faCodeInputs = document.querySelectorAll('.fa_code_input');
@@ -139,25 +142,22 @@ export default class extends AbstractView {
     });
   }
 
-  async checkEmail(email) {
-    const emailPattern = /.+@(gmail\.com|naver\.com)$/;
-    if (emailPattern.test(email)) {
-      await postLogin2FA(email);
-      await this.checkCode();
-    } else {
-      alert('Invalid email address use gmail.com or naver.com only');
-    }
-  }
-
   async addEvent() {
     addBlurBackground();
     this.onMounted();
     const gdpr = document.getElementById('gdpr');
-    const email = document.getElementById('email');
     const check = document.getElementById('checkBtn');
     const faCodeInputs = document.querySelectorAll('.fa_code_input');
+    const user_email_p = document.getElementById('user_email');
 
     const registration = await getRegistration();
+    let user_email = registration.email;
+    if (user_email === null) {
+      localStorage.clear();
+      alert('You have to register email on Intranet');
+      window.location.href = '/';
+    }
+    user_email_p.textContent = `Email: ${user_email}`;
     if (registration.status === 'new_user') {
       gdpr.style.display = 'grid';
     }
@@ -171,26 +171,23 @@ export default class extends AbstractView {
       }
     });
 
-    email.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        check.click();
-      }
-    });
-
-    check.addEventListener('click', (e) => {
-      if (email.style.display !== 'none') {
-        this.checkEmail(email.value);
-        check.disabled = true;
-      }
-    });
-
     faCodeInputs.forEach((input, index) => {
       input.addEventListener('input', (e) => {
         if (input.value.length >= 1 && index < faCodeInputs.length - 1) {
           faCodeInputs[index + 1].focus();
         }
       });
+      input.addEventListener('paste', (e) => {
+        e.preventDefault();
+        const pasteData = e.clipboardData.getData('text').slice(0, 6);
+        faCodeInputs.forEach((input, idx) => {
+          input.value = pasteData[idx] || '';
+        });
+      });
       input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          check.click();
+        }
         if (e.key === 'Backspace' && input.value.length === 1) {
           input.value = '';
         } else if (e.key === 'Backspace' && input.value.length === 0 && index > 0) {
@@ -202,5 +199,6 @@ export default class extends AbstractView {
         }
       });
     });
+    this.checkCode();
   }
 }

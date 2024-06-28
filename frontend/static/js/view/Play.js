@@ -4,18 +4,15 @@ import { words } from '../state/Registry.js';
 import { localGame } from '../game/localGame.js';
 import { remoteGame } from '../game/remoteGame.js';
 import { getRoomName, getProfileData } from '../api/getAPI.js';
-import { postTournamentNickName } from '../api/postAPI.js';
-import { addBlurBackground, removeBlurBackground } from '../utility/blurBackGround.js';
 import WebSocketManager from '../state/WebSocketManager.js';
-
 export default class extends AbstractView {
   constructor(params) {
     super(params);
+    this.nickname = '';
+    this.realname = '';
   }
-
   async getHtml() {
     const isLogin = localStorage.getItem('token') !== null;
-
     return `
       <header class="main_header">
         <a href="/" id="main_link" class="nav__link" data-link>Ping? Pong!</a>
@@ -28,16 +25,13 @@ export default class extends AbstractView {
       </div>
       <nav class="play_nav">
         <a tabindex="0" class="nav__link" id="local_link">${words[registry.lang].local}</a>
-        <a tabindex="0" class="nav__link" id="remote_link" style="${
-          isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
-        }">${words[registry.lang].remote}</a>
-        <a tabindex="0" class="nav__link" id="tournament_link" style="${
-          isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
-        }">${words[registry.lang].tournament}</a>
+        <a tabindex="0" class="nav__link" id="remote_link" style="${isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
+      }">${words[registry.lang].remote}</a>
+        <a tabindex="0" class="nav__link" id="tournament_link" style="${isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
+      }">${words[registry.lang].tournament}</a>
       </nav>
     `;
   }
-
   async localModal() {
     const modalHtml = `
       <div class="modal_content play_modal">
@@ -87,7 +81,6 @@ export default class extends AbstractView {
       }
     });
   }
-
   async remoteModal() {
     const modalHtml = `
       <div class="modal_content play_modal">
@@ -120,41 +113,23 @@ export default class extends AbstractView {
       }
     });
   }
-
   async play(mode) {
     const getRoomNames = async (mode) => {
       const response = await getRoomName(mode);
       return response.room_name;
     };
-
     const setupWebSocket = async (roomName, mode) => {
       const data = await getProfileData();
-      const nickname = data.nickname;
+      this.realname = data.nickname;
       const token = localStorage.getItem('2FA');
-      WebSocketManager.connectGameSocket(`ws://localhost:8000/ws/play/${mode}/${roomName}/${nickname}/?token=${token}`);
+      WebSocketManager.connectGameSocket(
+        `ws://localhost:8000/ws/play/${mode}/${roomName}/${this.realname}/?token=${token}`,
+      );
       let socket = WebSocketManager.returnGameSocket();
-      let first_user;
-
       const loadingSpinner = document.getElementById('loading_spinner');
-
-      window.addEventListener('online', () => {
-        console.log('ONLINE');
-        removeBlurBackground();
-        loadingSpinner.style.display = 'none';
-        remoteGame.init(socket, nickname, 'REMOTE', first_user);
-      });
-
-      window.addEventListener('offline', () => {
-        console.log('OFFLINE');
-        addBlurBackground();
-        loadingSpinner.innerText = 'No Internet Connection';
-        loadingSpinner.style.display = 'flex';
-      });
-
       socket.onopen = (event) => {
-        console.log('Game socket connected');
         if (mode === 'TOURNAMENT') {
-          this.tournamentNickNameModal(nickname, roomName, socket);
+          this.tournamentNickNameModal(this.realname, roomName, socket);
           loadingSpinner.style.display = 'none';
         } else {
           loadingSpinner.style.display = 'flex';
@@ -163,25 +138,28 @@ export default class extends AbstractView {
       socket.onclose = (event) => {
         console.log('Game socket closed');
       };
-
       socket.onerror = (event) => {
         console.error('Game socket error:', event);
         if (!WebSocketManager.isGameSocketConnecting) {
           WebSocketManager.connectGameSocket(
-            `ws://localhost:8000/ws/play/${mode}/${roomName}/${nickname}/?token=${token}`,
+            `ws://localhost:8000/ws/play/${mode}/${roomName}/${this.nickname}/?token=${token}`,
           );
           socket = WebSocketManager.returnGameSocket();
         }
       };
-
       socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
         loadingSpinner.style.display = 'none';
         if (data.type === 'start_game') {
-          first_user = data.data.first_user;
           const countdownContainer = document.querySelector('#countdown_container');
           countdownContainer.style.display = 'flex';
-
+          const $app = document.getElementById('app');
+          let responseMessage = {
+            type: 'set_board',
+            width: $app.offsetWidth / 2,
+            height: $app.offsetHeight / 1.2,
+          };
+          socket.send(JSON.stringify(responseMessage));
           let countdown = 3;
           countdownContainer.innerText = countdown;
           const countdownInterval = setInterval(() => {
@@ -193,27 +171,24 @@ export default class extends AbstractView {
               countdownContainer.innerText = 'Go!';
               setTimeout(() => {
                 countdownContainer.style.display = 'none';
-                remoteGame.init(socket, nickname, 'REMOTE', first_user);
+                remoteGame.init(socket, this.realname, 'REMOTE');
               }, 1000);
             }
           }, 1000);
         }
       };
     };
-
     const roomName = await getRoomNames(mode);
     await setupWebSocket(roomName, mode);
   }
-
   async tournamentNickNameModal(realName, roomName, socket) {
     const modalHtml = `
       <div class="tournament_container_flex">
         <div>
-          <input type="text" class="input_box" placeholder="${
-            words[registry.lang].tournament_nickname_placeholder
-          }" maxlength="10"/>
+          <input tabindex="0" type="text" class="input_box" placeholder="${words[registry.lang].tournament_nickname_placeholder
+      }" maxlength="10"/>
         </div>
-        <div><button class="close_button check_button">CHECK</button></div>
+        <div class="div_check_button" tabindex="0"><button class="close_button check_button">CHECK</button></div>
       </div>
             <div class="tournament_modal hidden">
         <div class="tournament_modal_flex">
@@ -230,13 +205,12 @@ export default class extends AbstractView {
     newContainer.classList.add('tournament_container');
     newContainer.innerHTML = modalHtml;
     modalCotainer.appendChild(newContainer);
-
     const container = document.querySelector('.tournament_container');
     const checkButton = document.querySelector('.check_button');
+    const divCheckButton = document.querySelector('.div_check_button');
     const inputBox = document.querySelector('.input_box');
     const tournamentModal = document.querySelector('.tournament_modal');
     const closeButton = document.querySelector('.tournament_button');
-
     container.classList.remove('hidden');
     checkButton.disabled = true;
     checkButton.classList.add('disabled_button');
@@ -249,7 +223,6 @@ export default class extends AbstractView {
         checkButton.classList.remove('disabled_button');
       }
     });
-
     const tableHTML = `
         <div class="tournament_left">
           <div class="tournament_left_parent tournament_final">
@@ -257,7 +230,7 @@ export default class extends AbstractView {
               <div class="tournament_player">
                 <img class="player_avatar" src="/static/assets/tournamentFinalAvatar.png" alt="tournament finalist avatar"/>
               </div>
-            <div class="tournament_player_name" data-toggle="tooltip" data-placement="bottom" tooltip-title="">
+            <div tabindex="0" class="tournament_player_name" data-toggle="tooltip" data-placement="bottom" tooltip-title="">
             </div>
            </div>
           </div>
@@ -269,7 +242,7 @@ export default class extends AbstractView {
                     <div class="tournament_player">
                       <img class="player_avatar" src="#" alt="tournament semi finalist avatar"/>
                     </div>
-                    <div class="tournament_player_name" data-toggle="tooltip" data-placement="bottom" tooltip-title=""></div>
+                    <div tabindex="0" class="tournament_player_name" data-toggle="tooltip" data-placement="bottom" tooltip-title=""></div>
                   </div>
                 </div>
               </div>
@@ -326,6 +299,8 @@ export default class extends AbstractView {
         </div>
       `;
 
+const self = this;
+
     const checkNickName = (nickname, realname, room_name, socket) => {
       const message = {
         type: 'check_nickname',
@@ -335,7 +310,6 @@ export default class extends AbstractView {
       };
       socket.send(JSON.stringify(message));
     };
-
     const isValidPlayer = function (valid, players) {
       if (valid === true) {
         const container = document.querySelector('.tournament_container_flex');
@@ -346,7 +320,6 @@ export default class extends AbstractView {
         newDiv.classList.add('tournament_list');
         newDiv.innerHTML = tableHTML;
         container.replaceChildren(newDiv);
-
         const tournamentSemiPlayers = Array.from(document.getElementsByClassName('tournament_semi'));
         tournamentSemiPlayers.forEach((parentDiv, index) => {
           const children = parentDiv.children;
@@ -358,13 +331,24 @@ export default class extends AbstractView {
             nicknameDiv.textContent = players[index].nickname;
             nicknameDiv.setAttribute(
               'tooltip-title',
-              `${players[index].win_cnt} ${words[registry.lang].win} ${players[index].lose_cnt} ${
-                words[registry.lang].lose
+              `${players[index].win_cnt} ${words[registry.lang].win} ${players[index].lose_cnt} ${words[registry.lang].lose
               }`,
             );
+            nicknameDiv.addEventListener('keydown', (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                nicknameDiv.classList.add('show-tooltip');
+              }
+            });
+            nicknameDiv.addEventListener('keyup', (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                nicknameDiv.classList.remove('show-tooltip');
+              }
+            });
           } else {
             avatarDiv.querySelector('img').src = `/static/assets/tournamentAvatar.png`;
-            nicknameDiv.textContent = "  ";
+            nicknameDiv.textContent = '  ';
             nicknameDiv.classList.add('no-tooltip');
           }
         });
@@ -375,10 +359,9 @@ export default class extends AbstractView {
         });
       }
     };
-
     checkButton.addEventListener('click', () => {
-      const nickName = inputBox.value;
-      checkNickName(nickName, realName, roomName, socket);
+      self.nickname = inputBox.value;
+      checkNickName(self.nickname, realName, roomName, socket);
       socket.onmessage = function (event) {
         const data = JSON.parse(event.data);
         if (data.valid !== undefined && data.valid === false) {
@@ -386,10 +369,79 @@ export default class extends AbstractView {
         } else if (data.type === 'nickname_valid') {
           isValidPlayer(true, data.data.nicknames);
         }
+        if (data.type === 'start_game') {
+          const loadingSpinner = document.getElementById('loading_spinner');
+          loadingSpinner.style.display = 'none';
+          const countdownContainer = document.querySelector('#countdown_container');
+          countdownContainer.style.display = 'flex';
+          const $app = document.getElementById('app');
+          let responseMessage = {
+            type: 'set_board',
+            width: $app.offsetWidth / 2,
+            height: $app.offsetHeight / 1.2,
+          };
+          socket.send(JSON.stringify(responseMessage));
+          let countdown = 3;
+          countdownContainer.innerText = countdown;
+          const countdownInterval = setInterval(() => {
+            countdown--;
+            if (countdown > 0) {
+              countdownContainer.innerText = countdown;
+            } else {
+              clearInterval(countdownInterval);
+              countdownContainer.innerText = 'Go!';
+              setTimeout(() => {
+                countdownContainer.style.display = 'none';
+                remoteGame.init(socket, self.nickname, 'TOURNAMENT');
+              }, 1000);
+            }
+          }, 1000);
+        }
       };
     });
+    divCheckButton.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        this.nickName = inputBox.value;
+        checkNickName(this.nickName, realName, roomName, socket);
+        socket.onmessage = function (event) {
+          const data = JSON.parse(event.data);
+          if (data.valid !== undefined && data.valid === false) {
+            isValidPlayer(false, null);
+          } else if (data.type === 'nickname_valid') {
+            isValidPlayer(true, data.data.nicknames);
+          }
+          if (data.type === 'start_game') {
+            const loadingSpinner = document.getElementById('loading_spinner');
+            loadingSpinner.style.display = 'none';
+            const countdownContainer = document.querySelector('#countdown_container');
+            countdownContainer.style.display = 'flex';
+            const $app = document.getElementById('app');
+            let responseMessage = {
+              type: 'set_board',
+              width: $app.offsetWidth / 2,
+              height: $app.offsetHeight / 1.2,
+            };
+            socket.send(JSON.stringify(responseMessage));
+            let countdown = 3;
+            countdownContainer.innerText = countdown;
+            const countdownInterval = setInterval(() => {
+              countdown--;
+              if (countdown > 0) {
+                countdownContainer.innerText = countdown;
+              } else {
+                clearInterval(countdownInterval);
+                countdownContainer.innerText = 'Go!';
+                setTimeout(() => {
+                  countdownContainer.style.display = 'none';
+                  remoteGame.init(socket, this.nickname, 'TOURNAMENT');
+                }, 1000);
+              }
+            }, 1000);
+          }
+        };
+      }
+    });
   }
-
   tournamentModal() {
     const modalHtml = `
       <div class="modal_content play_modal">
@@ -410,13 +462,11 @@ export default class extends AbstractView {
   `;
     this.showModal(modalHtml);
     const startButton = document.querySelector('#start_button');
-
     startButton.addEventListener('click', (e) => {
       e.target.style.display = 'none';
       this.deleteModal();
       this.play('TOURNAMENT');
     });
-
     startButton.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         e.target.style.display = 'none';
@@ -425,7 +475,6 @@ export default class extends AbstractView {
       }
     });
   }
-
   async showStartButton() {
     const startButton = document.createElement('a');
     startButton.id = 'start_button';
@@ -446,7 +495,6 @@ export default class extends AbstractView {
       }
     });
   }
-
   async showModal(modalHtml) {
     const modalContainer = document.createElement('section');
     modalContainer.classList.add('modal_container');
@@ -455,7 +503,6 @@ export default class extends AbstractView {
     mainHeader.insertAdjacentElement('afterend', modalContainer);
     await this.showStartButton();
   }
-
   deleteModal() {
     const modal = document.querySelector('.play_modal');
     modal.style.display = 'none';
