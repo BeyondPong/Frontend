@@ -53,7 +53,7 @@ export const remoteGame = {
     async function gameEnd(data) {
       role = false;
       removeKeyboardEvent();
-      await postGameResult(gameMode, user);
+      if (gameMode === 'REMOTE') await postGameResult(gameMode, user);
       const $win = document.createElement('div');
       $win.classList.add('win');
       $win.innerHTML = `${data.winner} wins!!!`;
@@ -66,37 +66,39 @@ export const remoteGame = {
         $score.innerHTML = `${data.scores[data.loser]} : ${data.scores[data.winner]}`;
       }
 
-      const againButton = document.createElement('button');
-      againButton.classList.add('gameButton');
-      againButton.innerHTML = 'Play Again';
-      againButton.setAttribute('tabindex', '0');
-      const mainButton = document.createElement('button');
-      mainButton.classList.add('gameButton');
-      mainButton.innerHTML = 'Main';
-      mainButton.setAttribute('tabindex', '0');
-      const buttonContainer = document.createElement('div');
-      buttonContainer.classList.add('remote_buttonContainer');
-      buttonContainer.appendChild($score);
-      buttonContainer.appendChild($win);
-      buttonContainer.appendChild(againButton);
-      buttonContainer.appendChild(mainButton);
-      document.getElementById('app').appendChild(buttonContainer);
-      againButton.addEventListener('click', () => {
-        window.location.href = '/play';
-      });
-      againButton.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
+      if (data.is_final) {
+        const againButton = document.createElement('button');
+        againButton.classList.add('gameButton');
+        againButton.innerHTML = 'Play Again';
+        againButton.setAttribute('tabindex', '0');
+        const mainButton = document.createElement('button');
+        mainButton.classList.add('gameButton');
+        mainButton.innerHTML = 'Main';
+        mainButton.setAttribute('tabindex', '0');
+        const buttonContainer = document.createElement('div');
+        buttonContainer.classList.add('remote_buttonContainer');
+        buttonContainer.appendChild($score);
+        buttonContainer.appendChild($win);
+        buttonContainer.appendChild(againButton);
+        buttonContainer.appendChild(mainButton);
+        document.getElementById('app').appendChild(buttonContainer);
+        againButton.addEventListener('click', () => {
           window.location.href = '/play';
-        }
-      });
-      mainButton.addEventListener('click', () => {
-        window.location.href = '/';
-      });
-      mainButton.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
+        });
+        againButton.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter') {
+            window.location.href = '/play';
+          }
+        });
+        mainButton.addEventListener('click', () => {
           window.location.href = '/';
-        }
-      });
+        });
+        mainButton.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter') {
+            window.location.href = '/';
+          }
+        });
+      }
     }
 
     function render() {
@@ -129,6 +131,7 @@ export const remoteGame = {
         type: 'start_game',
       };
       socket.send(JSON.stringify(responseMessage));
+      console.log('game_Start');
     }
 
     async function settingGame(data) {
@@ -169,8 +172,6 @@ export const remoteGame = {
 
       const $div = document.createElement('div');
       $div.id = 'scoreBoard';
-      $div.style.display = 'flex';
-      $div.style.flexDirection = 'column';
 
       const player1Container = document.createElement('div');
       const player1Label = document.createElement('div');
@@ -197,6 +198,11 @@ export const remoteGame = {
       root.appendChild($div);
       document.getElementById('player1Score').innerText = user.player1.score;
       document.getElementById('player2Score').innerText = user.player2.score;
+      const canvasRect = $canvas.getBoundingClientRect();
+      $div.style.position = 'absolute';
+      $div.style.top = `${canvasRect.top}px`;
+      $div.style.left = `${canvasRect.right + 20}px`;
+      $div.style.height = `${canvasRect.height}px`;
     }
 
     function waitNextGame() {
@@ -213,11 +219,19 @@ export const remoteGame = {
       $wait.appendChild(spinner);
       $wait.appendChild(waitText);
       root.appendChild($wait);
+
+      const canvasRect = $canvas.getBoundingClientRect();
+      $wait.style.position = 'absolute';
+      $wait.style.color = 'white';
+      $wait.style.top = `${canvasRect.top + canvasRect.height / 2}px`;
+      $wait.style.left = `${canvasRect.left + canvasRect.width / 2}px`;
+      $wait.style.transform = 'translate(-50%, -50%)';
     }
 
     async function setSocket() {
       socket.onmessage = function (event) {
         const data = JSON.parse(event.data);
+        console.log(data.type);
         switch (data.type) {
           case 'game_start':
             handleGameStart(data.data);
@@ -229,7 +243,7 @@ export const remoteGame = {
             handleBallPosition(data.data);
             break;
           case 'next_round':
-            handleNextRound(data.data);
+            handleNextRound();
             break;
           case 'game_restart':
             handleGameRestart(data.data);
@@ -260,10 +274,12 @@ export const remoteGame = {
       targetBall.y = data.y;
     }
 
-    async function handleNextRound(data) {
-      waitNextGame();
-      gameStart();
-      animate();
+    async function handleNextRound() {
+      setTimeout(() => {
+        gameStart();
+        running = true;
+        animate();
+      }, 3000);
     }
 
     function handleGameRestart(data) {
@@ -338,7 +354,7 @@ export const remoteGame = {
     }
 
     function keyupHandler(e) {
-      if (e.key == 'ArrowUp' || e.key == 'ArrowDown') {
+      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
         e.preventDefault();
       }
     }
