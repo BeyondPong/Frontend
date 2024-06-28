@@ -147,6 +147,13 @@ export const remoteGame = {
       socket.send(JSON.stringify(responseMessage));
     }
 
+    function sendIsFinal() {
+      let responseMessage = {
+        type: 'final_game',
+      };
+      socket.send(JSON.stringify(responseMessage));
+    }
+
     async function settingGame(data) {
       root = document.getElementById('app');
       while (root.childNodes.length > 0) {
@@ -265,6 +272,9 @@ export const remoteGame = {
           case 'paddle_position':
             handlePaddlePosition(data.data);
             break;
+          case 'final_round':
+            renderFinal();
+            break;
         }
       };
     }
@@ -287,13 +297,23 @@ export const remoteGame = {
     }
 
     function renderFinal() {
-      const $finalRound = document.createElement('div');
-      $finalRound.id = 'finalRoundContainer';
-      $finalRound.innerText = 'Final Round';
-      root.appendChild($finalRound);
+      const $finalRoundContainer = document.createElement('div');
+      $finalRoundContainer.id = 'finalRoundContainer';
+
+      const $finalRoundTop = document.createElement('div');
+      $finalRoundTop.id = 'finalRoundTop';
+      $finalRoundTop.innerText = 'Final Round';
+
+      const $finalRoundBottom = document.createElement('div');
+      $finalRoundBottom.id = 'finalRoundBottom';
+      $finalRoundBottom.innerText = 'Final Round';
+
+      $finalRoundContainer.appendChild($finalRoundTop);
+      $finalRoundContainer.appendChild($finalRoundBottom);
+      root.appendChild($finalRoundContainer);
+
       setTimeout(() => {
-        clearScreen();
-        root.removeChild($finalRound);
+        root.removeChild($finalRoundContainer);
         clearScreen();
         gameStart();
         running = true;
@@ -302,16 +322,12 @@ export const remoteGame = {
     }
 
     async function handleNextRound() {
-      if (gameNumber === 2) {
-        renderFinal();
-      } else {
-        setTimeout(() => {
-          clearScreen();
-          gameStart();
-          running = true;
-          animate();
-        }, 3000);
-      }
+      setTimeout(() => {
+        clearScreen();
+        gameStart();
+        running = true;
+        animate();
+      }, 3000);
     }
 
     function handleGameRestart(data) {
@@ -327,6 +343,7 @@ export const remoteGame = {
     function handleEndGame(data) {
       updateScore(data);
       gameEnd(data);
+      sendIsFinal();
     }
 
     function handlePaddlePosition(data) {
