@@ -26,10 +26,9 @@ canvas {
   align-items: center;
   gap: 10px;
   position: absolute;
-  top: 35%;
-  left: 50%;
   transform: translate(-50%, -50%);
   width: 50%;
+  background-color: rgba(0, 0, 0, 0.5);
   white-space: nowrap;
 }
 
