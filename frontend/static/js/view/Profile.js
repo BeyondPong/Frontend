@@ -426,11 +426,6 @@ export default class extends AbstractView {
               saveButton.querySelector('button').style.color = 'var(--profile-background)';
               saveButton.querySelector('button').disabled = false;
             }
-            // if (input.value.length > 20) {
-            //   input.disabled = true;
-            // } else {
-            //   input.disabled = false;
-            // }
           });
         });
 
@@ -467,7 +462,6 @@ export default class extends AbstractView {
         });
 
         saveButton.addEventListener('click', async () => {
-          console.log("save button with CLICK");
           if (input.value !== message.textContent) {
             const data = await patchStatusMessage(input.value);
           }
@@ -480,7 +474,6 @@ export default class extends AbstractView {
         });
         saveButton.addEventListener('keydown', async (e) => {
           if (e.key === 'Enter') {
-            console.log("save button with ENTER");
             if (input.value !== message.textContent) {
               const data = await patchStatusMessage(input.value);
             }
