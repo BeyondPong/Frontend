@@ -407,10 +407,11 @@
   background-color: rgba(0, 0, 0, 0.9);
   border-radius: 3%;
   position: absolute;
-  padding: 2rem 4rem;
+  padding: 2rem 2rem;
   margin-left: 0;
   margin-top: 6rem;
   box-shadow: 0 0 2px 2px rgba(253, 252, 252, 0.327);
+  line-break: loose;
 }
 
 .friend_add_modal_flex {

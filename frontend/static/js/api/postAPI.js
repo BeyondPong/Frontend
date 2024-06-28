@@ -44,8 +44,8 @@ export const postLoginCode2FA = async (code) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    alert('Failed to get 2FA code: ', error);
-    return null;
+    console.log('Failed to 2FA code: ', error);
+    // return null;
   }
 };
 

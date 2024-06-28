@@ -18,15 +18,12 @@ export default class extends AbstractView {
         Language
       </button>
       <ul id="d_menu" class="dropdown-menu drmenu" aria-labelledby="dropdownMenuButton">
-        <li><a id="item1" class="dropdown-item drmenu ${
-          currentLang === 'ko' ? 'disabled' : ''
-        }" href="/" data-lang="ko">ko</a></li>
-        <li><a id="item2" class="dropdown-item drmenu ${
-          currentLang === 'en' ? 'disabled' : ''
-        }" href="/" data-lang="en">en</a></li>
-        <li><a id="item3" class="dropdown-item drmenu ${
-          currentLang === 'jp' ? 'disabled' : ''
-        }" href="/" data-lang="jp">jp</a></li>
+        <li><a id="item1" class="dropdown-item drmenu ${currentLang === 'ko' ? 'disabled' : ''
+      }" href="/" data-lang="ko">ko</a></li>
+        <li><a id="item2" class="dropdown-item drmenu ${currentLang === 'en' ? 'disabled' : ''
+      }" href="/" data-lang="en">en</a></li>
+        <li><a id="item3" class="dropdown-item drmenu ${currentLang === 'jp' ? 'disabled' : ''
+      }" href="/" data-lang="jp">jp</a></li>
       </ul>
     </div>
     <div class="fa_modal">
@@ -47,20 +44,33 @@ export default class extends AbstractView {
       </div>
       <div class="modal_header">
         <i id="lock_image" class="fa-solid fa-lock"></i>
-        <h2>Two-Factor Authentication</h2>
-        <h4>Receive a temporary 6-digit login code via email</h4>
-        <p id="user_email"></p>
-        <button id="sendBtn">SEND</button>
+        <h2>${words[currentLang].twofactor_title}</h2>
+        <h4>${words[currentLang].twofactor_subtitle}</h4>
+        <h5>${words[currentLang].twofactor_subtitle2}</h5>
+        <div class="email_container_flex">
+          <div><p id="user_email"></p></div>
+          <div tabindex="0" id="emailSendBtnBox"><button id="emailSendBtn"><i class="fa-solid fa-paper-plane"></i><span>${words[currentLang].email_send_button}</span></button></div>
         </div>
-      <div id="fa_code_container" class="fa_code_container">
-        <input type="text" id="fa_code_1" maxlength="1" class="fa_code_input" required>
-        <input type="text" id="fa_code_2" maxlength="1" class="fa_code_input" required>
-        <input type="text" id="fa_code_3" maxlength="1" class="fa_code_input" required>
-        <input type="text" id="fa_code_4" maxlength="1" class="fa_code_input" required>
-        <input type="text" id="fa_code_5" maxlength="1" class="fa_code_input" required>
-        <input type="text" id="fa_code_6" maxlength="1" class="fa_code_input" required>
       </div>
-      <button id="checkBtn">VERIFY</button>
+      <div class="fa_code_container_box">
+        <div id="fa_code_container" class="fa_code_container">
+          <input type="text" id="fa_code_1" maxlength="1" class="fa_code_input" required>
+          <input type="text" id="fa_code_2" maxlength="1" class="fa_code_input" required>
+          <input type="text" id="fa_code_3" maxlength="1" class="fa_code_input" required>
+          <input type="text" id="fa_code_4" maxlength="1" class="fa_code_input" required>
+          <input type="text" id="fa_code_5" maxlength="1" class="fa_code_input" required>
+          <input type="text" id="fa_code_6" maxlength="1" class="fa_code_input" required>
+        </div>
+        <div class="timer_container"><p id="timer"></p></div>
+        <div class="codeVerifyBtnDiv" tabindex="0"><button id="codeVerifyBtn">${words[currentLang].code_verify_button}</button></div>
+      </div>
+          <section class="friend_add_modal hidden">
+      <div class="friend_add_modal_flex">
+        <div><span class="friend_add_modal_message"><span></div>
+        <div tabindex="0" class="close_button" tabindex="0"><button>${words[registry.lang].confirm_button
+      }</button></div>
+      </div>
+    </section>
     </div>
     `;
     return modalHtml;
@@ -85,15 +95,39 @@ export default class extends AbstractView {
     button.textContent = words[currentLang].button;
   }
 
+  updateTimer(timeLeft) {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    document.getElementById('timer').textContent = `${words[registry.lang].remain_time} ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  }
+
   async onMounted() {
-    const sendBtn = document.getElementById('sendBtn');
+    const sendBtn = document.getElementById('emailSendBtnBox');
+    const faCodeBox = document.querySelector('.fa_code_container_box');
     const dropdownToggle = document.getElementById('dropdownMenuButton');
     const dropdownMenu = document.querySelector('.dropdown-menu');
-
+    const timerDiv = document.getElementById('timer');
+    faCodeBox.style.display = 'none';
+    const span = sendBtn.querySelector('span');
+    let timer;
     sendBtn.addEventListener('click', async (e) => {
-      if (sendBtn.innerText === 'SEND') {
-        sendBtn.innerText = 'RESEND';
+      if (span.innerText === `${words[registry.lang].email_send_button}`) {
+        span.innerText = `${words[registry.lang].email_resend_button}`;
+        faCodeBox.style.display = 'block';
       }
+      if (timer) {
+        clearInterval(timer);
+      }
+      let timeLeft = 180;
+      this.updateTimer(timeLeft);
+      timer = setInterval(() => {
+        timeLeft -= 1;
+        this.updateTimer(timeLeft);
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          timerDiv.textContent = 'Time Remaining';
+        }
+      }, 1000);
       const response = await postLogin2FA();
     });
 
@@ -117,26 +151,55 @@ export default class extends AbstractView {
         const newLang = event.target.dataset.lang;
         changeLanguage(newLang);
         await this.updateGdprContent();
+        if (timer) {
+          clearInterval(timer);
+        }
       });
     });
   }
 
   async checkCode() {
-    let tryCount = 0;
+    const checkBtn = document.querySelector('.codeVerifyBtnDiv');
+    const errorModal = document.querySelector('.friend_add_modal');
+    const errorModalButton = document.querySelector('.close_button');
+
+    errorModalButton.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        errorModalButton.click();
+      }
+    })
+    errorModalButton.addEventListener('click', () => {
+      errorModal.classList.add('hidden')
+    })
+
+    checkBtn.addEventListener('keydown', async (e) => {
+      const faCodeInputs = document.querySelectorAll('.fa_code_input');
+      const faCode = Array.from(faCodeInputs)
+        .map((input) => input.value)
+        .join('');
+      if (e.key === 'Enter' && (faCode.length !== undefined && faCode.length >= 6)) {
+        checkBtn.click();
+      }
+    })
     checkBtn.addEventListener('click', async (e) => {
       const faCodeInputs = document.querySelectorAll('.fa_code_input');
       const faCode = Array.from(faCodeInputs)
         .map((input) => input.value)
         .join('');
+      if (faCode.length < 6 || faCode.length === undefined || faCode === undefined) {
+        errorModal.classList.remove('hidden');
+        errorModal.querySelector('span').textContent = words[registry.lang].twofactor_error_code;
+        return;
+      }
       const response = await postLoginCode2FA(faCode);
       if (response) {
-        window.localStorage.setItem('2FA', response.token);
-        window.location.href = '/';
-      } else {
-        tryCount += 1;
-        if (tryCount === 3) {
-          alert('Rewrite your email to get 2FA code');
+        if (response.token) {
+          window.localStorage.setItem('2FA', response.token);
           window.location.href = '/';
+        } else {
+          errorModal.classList.remove('hidden');
+          errorModal.querySelector('span').textContent = words[registry.lang].twofactor_error_code;
+          return;
         }
       }
     });
@@ -146,18 +209,29 @@ export default class extends AbstractView {
     addBlurBackground();
     this.onMounted();
     const gdpr = document.getElementById('gdpr');
-    const check = document.getElementById('checkBtn');
     const faCodeInputs = document.querySelectorAll('.fa_code_input');
     const user_email_p = document.getElementById('user_email');
-
+    const errorModal = document.querySelector('.friend_add_modal');
+    const errorModalButton = document.querySelector('.close_button');
     const registration = await getRegistration();
+
+    errorModalButton.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        errorModalButton.click();
+      }
+    })
+    errorModalButton.addEventListener('click', () => {
+      errorModal.classList.add('hidden');
+    })
+
     let user_email = registration.email;
     if (user_email === null) {
       localStorage.clear();
-      alert('You have to register email on Intranet');
+      errorModal.classList.remove('hidden');
+      errorModal.querySelector('span').textContent = words[registry.lang].twofactor_error_email;
       window.location.href = '/';
     }
-    user_email_p.textContent = `Email: ${user_email}`;
+    user_email_p.textContent = `${words[registry.lang].your_email} ${user_email}`;
     if (registration.status === 'new_user') {
       gdpr.style.display = 'grid';
     }
