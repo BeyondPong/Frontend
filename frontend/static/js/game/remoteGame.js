@@ -262,7 +262,7 @@ export const remoteGame = {
 
     async function handleNextRound(data) {
       waitNextGame();
-      await settingGame(data);
+      gameStart();
       animate();
     }
 
