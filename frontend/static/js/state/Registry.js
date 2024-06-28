@@ -78,6 +78,7 @@ export const words = {
     twofactor_error_email: 'You have to register email on Intranet',
     twofactor_error_code: 'The code you entered is incorrect. Please try again.',
     remain_time: 'Time Remaining',
+    remain_time_over: 'The login code expired. Please press resend button.',
   },
   ko: {
     play: '플레이',
@@ -137,6 +138,7 @@ export const words = {
     twofactor_error_email: '인트라에 등록된 이메일이 없습니다.',
     twofactor_error_code: '잘못된 코드입니다. 다시 시도해 주세요.',
     remain_time: '남은 시간',
+    remain_time_over: '인증코드가 만료되었습니다. 재전송 버튼을 눌러주세요.',
   },
   jp: {
     play: 'プレー',
@@ -197,6 +199,7 @@ export const words = {
     twofactor_error_email: 'イントラネットでメールを登録する必要があります',
     twofactor_error_code: '入力されたコードが正しくありません。もう一度お試しください。',
     remain_time: '残り時間',
+    remain_time_over: 'ログインコードの有効期限が切れました。再送信ボタンを押してください。',
   },
 };
 

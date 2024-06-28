@@ -125,7 +125,7 @@ export default class extends AbstractView {
         this.updateTimer(timeLeft);
         if (timeLeft <= 0) {
           clearInterval(timer);
-          timerDiv.textContent = 'Time Remaining';
+          timerDiv.textContent = `${words[registry.lang].remain_time_over}`;
         }
       }, 1000);
       const response = await postLogin2FA();
