@@ -12,15 +12,11 @@ canvas {
 #scoreBoard {
   text-align: center;
   display: flex;
-  position: absolute;
   flex-direction: column;
+  justify-content: space-between;
   color: white;
-  justify-content: center;
   left: calc(25% + 50% + 20px);
   font-size: calc(1em + 1vw);
-  transform: translateX(0);
-  gap: 50%;
-  height: 100%;
 }
 
 .remote_buttonContainer {
