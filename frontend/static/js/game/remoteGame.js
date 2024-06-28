@@ -50,7 +50,6 @@ export const remoteGame = {
     }
 
     async function gameEnd(data) {
-      console.log(data);
       role = false;
       removeKeyboardEvent();
       if (gameMode === 'REMOTE') await postGameResult(gameMode, user);
@@ -97,10 +96,12 @@ export const remoteGame = {
             window.location.href = '/';
           }
         });
+      } else {
+        waitNextGame();
       }
       document.getElementById('app').appendChild(buttonContainer);
       const canvasRect = $canvas.getBoundingClientRect();
-      buttonContainer.style.top = `${canvasRect.top + canvasRect.height / 2}px`;
+      buttonContainer.style.top = `${canvasRect.top + canvasRect.height / 4}px`;
       buttonContainer.style.left = `${canvasRect.left + canvasRect.width / 2}px`;
     }
 
@@ -305,7 +306,6 @@ export const remoteGame = {
     function handleEndGame(data) {
       updateScore(data);
       gameEnd(data);
-      waitNextGame();
     }
 
     function handlePaddlePosition(data) {
