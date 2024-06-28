@@ -92,6 +92,7 @@ export default class extends AbstractView {
       }
     }
     if (target) {
+      target = target.querySelector('button');
       const userId = target.getAttribute('data-user-id');
       deleteFriend(userId).then(() => {
         target.classList.add('disabled_button');
