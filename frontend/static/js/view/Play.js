@@ -25,10 +25,12 @@ export default class extends AbstractView {
       </div>
       <nav class="play_nav">
         <a tabindex="0" class="nav__link" id="local_link">${words[registry.lang].local}</a>
-        <a tabindex="0" class="nav__link" id="remote_link" style="${isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
-      }">${words[registry.lang].remote}</a>
-        <a tabindex="0" class="nav__link" id="tournament_link" style="${isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
-      }">${words[registry.lang].tournament}</a>
+        <a tabindex="0" class="nav__link" id="remote_link" style="${
+          isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
+        }">${words[registry.lang].remote}</a>
+        <a tabindex="0" class="nav__link" id="tournament_link" style="${
+          isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
+        }">${words[registry.lang].tournament}</a>
       </nav>
     `;
   }
@@ -185,8 +187,9 @@ export default class extends AbstractView {
     const modalHtml = `
       <div class="tournament_container_flex">
         <div>
-          <input tabindex="0" type="text" class="input_box" placeholder="${words[registry.lang].tournament_nickname_placeholder
-      }" maxlength="10"/>
+          <input tabindex="0" type="text" class="input_box" placeholder="${
+            words[registry.lang].tournament_nickname_placeholder
+          }" maxlength="10"/>
         </div>
         <div class="div_check_button" tabindex="0"><button class="close_button check_button">CHECK</button></div>
       </div>
@@ -299,7 +302,7 @@ export default class extends AbstractView {
         </div>
       `;
 
-const self = this;
+    const self = this;
 
     const checkNickName = (nickname, realname, room_name, socket) => {
       const message = {
@@ -331,7 +334,8 @@ const self = this;
             nicknameDiv.textContent = players[index].nickname;
             nicknameDiv.setAttribute(
               'tooltip-title',
-              `${players[index].win_cnt} ${words[registry.lang].win} ${players[index].lose_cnt} ${words[registry.lang].lose
+              `${players[index].win_cnt} ${words[registry.lang].win} ${players[index].lose_cnt} ${
+                words[registry.lang].lose
               }`,
             );
             nicknameDiv.addEventListener('keydown', (e) => {
@@ -439,6 +443,11 @@ const self = this;
             }, 1000);
           }
         };
+      }
+    });
+    inputBox.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        checkButton.click();
       }
     });
   }
