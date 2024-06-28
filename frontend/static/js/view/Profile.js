@@ -109,6 +109,16 @@ export default class extends AbstractView {
     friendResultBox.innerHTML = '';
     const data = await getFriendsData();
     if (data) {
+      if (data.length === 0) {
+        const friendHTML = `
+        <div class="no_friend_title">${words[registry.lang].no_friend_title}</div>
+        <div class="no_friend_subtitle">${words[registry.lang].no_friend_subtitle}</div>
+      `;
+        const friendDiv = document.createElement('div');
+        friendDiv.classList.add('no_friend');
+        friendDiv.innerHTML = friendHTML;
+        friendResultBox.appendChild(friendDiv);
+      }
       data.forEach((friend) => {
         const friendDiv = document.createElement('div');
         friendDiv.classList.add('friend');
