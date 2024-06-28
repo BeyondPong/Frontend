@@ -19,8 +19,6 @@ export const localGame = {
     function setScore() {
       const $div = document.createElement('div');
       $div.id = 'scoreBoard';
-      $div.style.display = 'flex';
-      $div.style.flexDirection = 'column';
 
       const player1Container = document.createElement('div');
       const player1Label = document.createElement('div');
@@ -46,6 +44,8 @@ export const localGame = {
       $div.appendChild(player1Container);
 
       root.appendChild($div);
+
+      $div.style.position = 'absolute';
     }
 
     function updateDimensions() {
@@ -360,7 +360,7 @@ export const localGame = {
     }
 
     let edge;
-    function setRender() {
+    async function setRender() {
       container = document.getElementById('app');
       renderer = new THREE.WebGLRenderer();
       renderer.setSize(dimensions.WIDTH, dimensions.HEIGHT);
@@ -436,8 +436,19 @@ export const localGame = {
       renderer.render(scene, camera);
     }
 
+    function updateScoreBoardPosition() {
+      const canvasRect = renderer.domElement.getBoundingClientRect();
+      const scoreBoard = document.getElementById('scoreBoard');
+      scoreBoard.style.top = `${canvasRect.top}px`;
+      scoreBoard.style.left = `${canvasRect.right + 20}px`;
+      scoreBoard.style.height = `${canvasRect.height}px`;
+    }
+
     setScore();
-    window.addEventListener('resize', onWindowResize, false);
-    setRender();
+    setRender().then(() => {
+      window.addEventListener('resize', onWindowResize, false);
+      updateScoreBoardPosition();
+      window.addEventListener('resize', updateScoreBoardPosition, false);
+    });
   },
 };
