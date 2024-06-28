@@ -428,6 +428,24 @@
 
 /* friends */
 
+.no_friend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--profile-color);
+  flex-direction: column;
+}
+
+.no_friend_title {
+  font-size: calc(1vw + 1vh + 0.5vmin);
+  font-weight: bold;
+}
+
+.no_friend_subtitle {
+  font-size: calc(0.5vw + 1vh + 0.5vmin);
+  font-weight: lighter;
+}
+
 .friends_result_container {
   padding: 0.5rem;
   max-height: 27vw;

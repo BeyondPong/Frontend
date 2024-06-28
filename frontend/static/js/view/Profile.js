@@ -92,6 +92,7 @@ export default class extends AbstractView {
       }
     }
     if (target) {
+      target = target.querySelector('button');
       const userId = target.getAttribute('data-user-id');
       deleteFriend(userId).then(() => {
         target.classList.add('disabled_button');
@@ -108,6 +109,16 @@ export default class extends AbstractView {
     friendResultBox.innerHTML = '';
     const data = await getFriendsData();
     if (data) {
+      if (data.length === 0) {
+        const friendHTML = `
+        <div class="no_friend_title">${words[registry.lang].no_friend_title}</div>
+        <div class="no_friend_subtitle">${words[registry.lang].no_friend_subtitle}</div>
+      `;
+        const friendDiv = document.createElement('div');
+        friendDiv.classList.add('no_friend');
+        friendDiv.innerHTML = friendHTML;
+        friendResultBox.appendChild(friendDiv);
+      }
       data.forEach((friend) => {
         const friendDiv = document.createElement('div');
         friendDiv.classList.add('friend');
@@ -198,6 +209,7 @@ export default class extends AbstractView {
           }
         }
         if (target) {
+          target = target.querySelector('button');
           const userId = target.getAttribute('data-user-id');
           const user = matchFriends.users.find((u) => u.id === parseInt(userId));
           if (user && user.is_friend === false) {
@@ -414,11 +426,6 @@ export default class extends AbstractView {
               saveButton.querySelector('button').style.color = 'var(--profile-background)';
               saveButton.querySelector('button').disabled = false;
             }
-            // if (input.value.length > 20) {
-            //   input.disabled = true;
-            // } else {
-            //   input.disabled = false;
-            // }
           });
         });
 
@@ -455,7 +462,6 @@ export default class extends AbstractView {
         });
 
         saveButton.addEventListener('click', async () => {
-          console.log("save button with CLICK");
           if (input.value !== message.textContent) {
             const data = await patchStatusMessage(input.value);
           }
@@ -468,7 +474,6 @@ export default class extends AbstractView {
         });
         saveButton.addEventListener('keydown', async (e) => {
           if (e.key === 'Enter') {
-            console.log("save button with ENTER");
             if (input.value !== message.textContent) {
               const data = await patchStatusMessage(input.value);
             }
