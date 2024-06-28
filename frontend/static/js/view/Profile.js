@@ -198,6 +198,7 @@ export default class extends AbstractView {
           }
         }
         if (target) {
+          target = target.querySelector('button');
           const userId = target.getAttribute('data-user-id');
           const user = matchFriends.users.find((u) => u.id === parseInt(userId));
           if (user && user.is_friend === false) {
