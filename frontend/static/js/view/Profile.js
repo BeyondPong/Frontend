@@ -79,31 +79,6 @@ export default class extends AbstractView {
     }
   }
 
-  handleDelete(e) {
-    let target;
-    if (e.type === 'click') {
-      target = e.target;
-    } else if (e.type === 'keydown') {
-      if (e.key === 'Enter') {
-        target = e.target.querySelector('button');
-        e.preventDefault();
-      } else {
-        return;
-      }
-    }
-    if (target) {
-      target = target.querySelector('button');
-      const userId = target.getAttribute('data-user-id');
-      deleteFriend(userId).then(() => {
-        target.classList.add('disabled_button');
-        target.disabled = true;
-        const parent = target.parentElement;
-        parent.classList.add('disabled_button');
-        target.disabled = true;
-      });
-    }
-  }
-
   async showFriendsResult() {
     const friendResultBox = document.querySelector('.friends_result_box');
     friendResultBox.innerHTML = '';
@@ -130,16 +105,56 @@ export default class extends AbstractView {
             <div class="friend_image" style="background-image: url(/static/assets/${friend.profile_img}.png);"></div>
             <div class="friend_name">${friend.nickname}</div>
             <div class="friend_message">${friend.status_msg}</div>
-            <div tabindex="0" class="friend_button delete_button"><button class="#" data-user-id=${friend.id}>${words[registry.lang].friend_delete_button
+            <div tabindex="0" class="friend_button"><button class="delete_button friendButton" data-user-id=${friend.id}>${words[registry.lang].friend_delete_button
           }</button></div>
         `;
         friendDiv.innerHTML = friendHTML;
         friendResultBox.appendChild(friendDiv);
       });
+
+      const deleteButtonsTab = Array.from(document.getElementsByClassName('friend_button'));
+      deleteButtonsTab.forEach((deleteButtons) => {
+        deleteButtons.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            const button = e.target.querySelector('button');
+            if (button) {
+              const userId = button.getAttribute('data-user-id');
+              deleteFriend(userId).then(() => {
+                button.classList.add('disabled_button');
+                button.disabled = true;
+                const parent = button.parentElement;
+                parent.classList.add('disabled_button');
+                button.disabled = true;
+              });
+            }
+          }
+        });
+      })
+
       const deleteButtons = Array.from(document.getElementsByClassName('delete_button'));
       deleteButtons.forEach((button) => {
-        button.addEventListener('click', this.handleDelete);
-        button.addEventListener('keydown', this.handleDelete);
+        button.addEventListener('click', function (e) {
+          const userId = e.target.getAttribute('data-user-id');
+          deleteFriend(userId).then(() => {
+            e.target.classList.add('disabled_button');
+            e.target.disabled = true;
+            const parent = e.target.parentElement;
+            parent.classList.add('disabled_button');
+            e.target.disabled = true;
+          });
+        });
+        button.addEventListener("keypress", function (e) {
+          if (e.key === 'Enter') {
+            const userId = e.target.getAttribute('data-user-id');
+            deleteFriend(userId).then(() => {
+              e.target.classList.add('disabled_button');
+              e.target.disabled = true;
+              const parent = e.target.parentElement;
+              parent.classList.add('disabled_button');
+              e.target.disabled = true;
+            });
+          }
+        });
       });
     }
   }
@@ -184,51 +199,72 @@ export default class extends AbstractView {
           <div class="friend_message">${user.status_msg}</div>
         `;
         if (user.is_friend) {
-          resultHTML += `<div class="disabled_friend_button friend_add_button"><button class="add_button disabled_button" disabled data-user-id="${user.id
-            }">${words[registry.lang].friend_add_button}</button></div>`;
-          resultHTML += `<div class="disabled_friend_button friend_add_button"><button class="add_button disabled_button" disabled data-user-id="${user.id
+          resultHTML += `<div class="disabled_friend_button friend_add_button"><button class="add_button friendButton disabled_button" disabled data-user-id="${user.id
             }">${words[registry.lang].friend_add_button}</button></div>`;
         } else {
-          resultHTML += `<div tabindex="0" class="friend_button friend_add_button"><button class="add_button" data-user-id="${user.id
+          resultHTML += `<div tabindex="0" class="friend_add_button"><button tabindex="0" class="add_button friendButton" data-user-id="${user.id
             }">${words[registry.lang].friend_add_button}</button></div>`;
         }
         friendElement.innerHTML = resultHTML;
         searchResultBox.appendChild(friendElement);
       });
 
-      function handleFriendAction(e) {
-        let target;
-        if (e.type === 'click') {
-          target = e.target;
-        } else if (e.type === 'keydown') {
+      const addButtonsTab = Array.from(document.getElementsByClassName('friend_add_button'));
+      addButtonsTab.forEach((buttonTab) => {
+        buttonTab.addEventListener('keydown', (e) => {
           if (e.key === 'Enter') {
-            target = e.target.querySelector('button');
-            e.preventDefault();
-          } else {
-            return;
+            const button = e.target.querySelector('button');
+            if (button) {
+              const userId = button.getAttribute('data-user-id');
+              const user = matchFriends.users.find((u) => u.id === parseInt(userId));
+              if (user && user.is_friend === false) {
+                postAddFriend(userId).then(() => {
+                  friendModal.classList.remove('hidden');
+                  friendModal.querySelector('span').textContent = `${words[registry.lang].friend_message_success}`;
+                  button.style.cursor = 'not-allowed';
+                  button.style.backgroundColor = 'grey';
+                  button.disabled = true;
+                  button.parentNode.classList.add('disabled_friend_button');
+                });
+              }
+            }
           }
-        }
-        if (target) {
-          target = target.querySelector('button');
-          const userId = target.getAttribute('data-user-id');
+        })
+      })
+
+
+      const buttons = Array.from(document.getElementsByClassName('add_button'));
+      buttons.forEach((button) => {
+        button.addEventListener('click', (e) => {
+          const userId = e.target.getAttribute('data-user-id');
           const user = matchFriends.users.find((u) => u.id === parseInt(userId));
           if (user && user.is_friend === false) {
             postAddFriend(userId).then(() => {
               friendModal.classList.remove('hidden');
               friendModal.querySelector('span').textContent = `${words[registry.lang].friend_message_success}`;
-              target.style.cursor = 'not-allowed';
-              target.style.backgroundColor = 'grey';
-              target.disabled = true;
-              target.parentNode.classList.add('disabled_friend_button');
+              e.target.style.cursor = 'not-allowed';
+              e.target.style.backgroundColor = 'grey';
+              e.target.disabled = true;
+              e.target.parentNode.classList.add('disabled_friend_button');
             });
           }
-        }
-      };
-
-      const buttons = Array.from(document.getElementsByClassName('friend_add_button'));
-      buttons.forEach((button) => {
-        button.addEventListener('click', handleFriendAction);
-        button.addEventListener('keydown', handleFriendAction);
+        });
+        button.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            const userId = e.target.getAttribute('data-user-id');
+            const user = matchFriends.users.find((u) => u.id === parseInt(userId));
+            if (user && user.is_friend === false) {
+              postAddFriend(userId).then(() => {
+                friendModal.classList.remove('hidden');
+                friendModal.querySelector('span').textContent = `${words[registry.lang].friend_message_success}`;
+                e.target.style.cursor = 'not-allowed';
+                e.target.style.backgroundColor = 'grey';
+                e.target.disabled = true;
+                e.target.parentNode.classList.add('disabled_friend_button');
+              });
+            }
+          }
+        });
       });
     };
 
@@ -419,7 +455,6 @@ export default class extends AbstractView {
               saveButton.querySelector('button').style.cursor = 'not-allowed';
               saveButton.querySelector('button').style.color = 'var(--disabled-button-background-color)';
               saveButton.querySelector('button').disabled = true;
-              console.log('button disable');
             } else {
               input.style.borderBottomColor = 'var(--profile-background)';
               saveButton.querySelector('button').style.cursor = 'pointer';
@@ -445,18 +480,12 @@ export default class extends AbstractView {
                 saveButton.querySelector('button').style.cursor = 'not-allowed';
                 saveButton.querySelector('button').style.color = 'var(--disabled-button-background-color)';
                 saveButton.querySelector('button').disabled = true;
-                console.log('button disable');
               } else {
                 input.style.borderBottomColor = 'var(--profile-background)';
                 saveButton.querySelector('button').style.cursor = 'pointer';
                 saveButton.querySelector('button').style.color = 'var(--profile-background)';
                 saveButton.querySelector('button').disabled = false;
               }
-              // if (input.value.length > 20) {
-              //   input.disabled = true;
-              // } else {
-              //   input.disabled = false;
-              // }
             });
           }
         });
