@@ -138,7 +138,12 @@ export default class extends AbstractView {
         }
       };
       socket.onclose = (event) => {
-        console.log('Game socket closed');
+        if (!WebSocketManager.isGameSocketConnecting) {
+          WebSocketManager.connectGameSocket(
+            `ws://localhost:8000/ws/play/${mode}/${roomName}/${this.nickname}/?token=${token}`,
+          );
+          socket = WebSocketManager.returnGameSocket();
+        }
       };
       socket.onerror = (event) => {
         console.error('Game socket error:', event);
