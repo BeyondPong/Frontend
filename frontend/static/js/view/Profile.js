@@ -82,7 +82,19 @@ export default class extends AbstractView {
       const reduceText = document.querySelector('.reduce');
       const plusText = document.querySelector('.plus');
       const percentageText = document.querySelector('.text_size');
+      const reduceTextDiv = document.getElementById('reduceTextSize');
+      const plusTextDiv = document.getElementById('plusTextSize');
 
+      reduceTextDiv.addEventListener('keypress', (e) => {
+        if ((e.key === 'Enter' && reduceText) || e.key === 'click') {
+          reduceText.click();
+        }
+      });
+      plusTextDiv.addEventListener('keypress', (e) => {
+        if ((e.key === 'Enter' && plusText) || e.key === 'click') {
+          plusText.click();
+        }
+      })
       reduceText.addEventListener('click', () => {
         containerFontSize = Math.max(0.5, containerFontSize - 0.1);
         tableContainer.style.fontSize = containerFontSize + 'rem';
@@ -540,9 +552,9 @@ export default class extends AbstractView {
       container.classList.add('history_container');
       const historyHTML = `
         <div class="text_size_buttons">
-          <div tabindex="0"><button class="text_size_button reduce"><i class="fa-solid fa-minus"></i></button></div>
+          <div tabindex="0" id="reduceTextSize"><button class="text_size_button reduce"><i class="fa-solid fa-minus"></i></button></div>
           <button class="text_size">100%</button>
-          <div tabindex="0"><button class="text_size_button plus"><i class="fa-solid fa-plus"></i></button></div>
+          <div tabindex="0" id="plusTextSize"><button class="text_size_button plus"><i class="fa-solid fa-plus"></i></button></div>
         </div>
         <div class="table_box">
           <table class="table_container">
