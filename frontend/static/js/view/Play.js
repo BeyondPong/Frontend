@@ -217,6 +217,7 @@ export default class extends AbstractView {
     container.classList.remove('hidden');
     checkButton.disabled = true;
     checkButton.classList.add('disabled_button');
+    inputBox.focus();
     inputBox.addEventListener('input', () => {
       if (inputBox.value.length < 2 || inputBox.value.length > 10) {
         checkButton.disabled = true;
@@ -363,91 +364,67 @@ export default class extends AbstractView {
         });
       }
     };
+    const handleSocketMessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.valid !== undefined || data.valid === false) {
+        isValidPlayer(false, null);
+      } else if (data.type === 'nickname_valid') {
+        isValidPlayer(true, data.data.nicknames);
+      } else if (data.type === 'start_game') {
+        const loadingSpinner = document.getElementById('loading_spinner');
+        loadingSpinner.style.display = 'none';
+        const countdownContainer = document.querySelector('#countdown_container');
+        countdownContainer.style.display = 'flex';
+        const $app = document.getElementById('app');
+        let responseMessage = {
+          type: 'set_board',
+          width: $app.offsetWidth / 2,
+          height: $app.offsetHeight / 1.2,
+        };
+        socket.send(JSON.stringify(responseMessage));
+        let countdown = 3;
+        countdownContainer.innerText = countdown;
+        const countdownInterval = setInterval(() => {
+          countdown--;
+          if (countdown > 0) {
+            countdownContainer.innerText = countdown;
+          } else {
+            clearInterval(countdownInterval);
+            countdownContainer.innerText = 'Go!';
+            setTimeout(() => {
+              countdownContainer.style.display = 'none';
+              remoteGame.init(socket, self.nickname, 'TOURNAMENT');
+            }, 1000);
+          }
+        }, 1000);
+      }
+    };
+
+    socket.addEventListener('message', handleSocketMessage);
+
     checkButton.addEventListener('click', () => {
       self.nickname = inputBox.value;
       checkNickName(self.nickname, realName, roomName, socket);
-      socket.onmessage = function (event) {
-        const data = JSON.parse(event.data);
-        if (data.valid !== undefined && data.valid === false) {
-          isValidPlayer(false, null);
-        } else if (data.type === 'nickname_valid') {
-          isValidPlayer(true, data.data.nicknames);
-        }
-        if (data.type === 'start_game') {
-          const loadingSpinner = document.getElementById('loading_spinner');
-          loadingSpinner.style.display = 'none';
-          const countdownContainer = document.querySelector('#countdown_container');
-          countdownContainer.style.display = 'flex';
-          const $app = document.getElementById('app');
-          let responseMessage = {
-            type: 'set_board',
-            width: $app.offsetWidth / 2,
-            height: $app.offsetHeight / 1.2,
-          };
-          socket.send(JSON.stringify(responseMessage));
-          let countdown = 3;
-          countdownContainer.innerText = countdown;
-          const countdownInterval = setInterval(() => {
-            countdown--;
-            if (countdown > 0) {
-              countdownContainer.innerText = countdown;
-            } else {
-              clearInterval(countdownInterval);
-              countdownContainer.innerText = 'Go!';
-              setTimeout(() => {
-                countdownContainer.style.display = 'none';
-                remoteGame.init(socket, self.nickname, 'TOURNAMENT');
-              }, 1000);
-            }
-          }, 1000);
-        }
-      };
     });
+
     divCheckButton.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
-        this.nickName = inputBox.value;
-        checkNickName(this.nickName, realName, roomName, socket);
-        socket.onmessage = function (event) {
-          const data = JSON.parse(event.data);
-          if (data.valid !== undefined && data.valid === false) {
-            isValidPlayer(false, null);
-          } else if (data.type === 'nickname_valid') {
-            isValidPlayer(true, data.data.nicknames);
-          }
-          if (data.type === 'start_game') {
-            const loadingSpinner = document.getElementById('loading_spinner');
-            loadingSpinner.style.display = 'none';
-            const countdownContainer = document.querySelector('#countdown_container');
-            countdownContainer.style.display = 'flex';
-            const $app = document.getElementById('app');
-            let responseMessage = {
-              type: 'set_board',
-              width: $app.offsetWidth / 2,
-              height: $app.offsetHeight / 1.2,
-            };
-            socket.send(JSON.stringify(responseMessage));
-            let countdown = 3;
-            countdownContainer.innerText = countdown;
-            const countdownInterval = setInterval(() => {
-              countdown--;
-              if (countdown > 0) {
-                countdownContainer.innerText = countdown;
-              } else {
-                clearInterval(countdownInterval);
-                countdownContainer.innerText = 'Go!';
-                setTimeout(() => {
-                  countdownContainer.style.display = 'none';
-                  remoteGame.init(socket, this.nickname, 'TOURNAMENT');
-                }, 1000);
-              }
-            }, 1000);
-          }
-        };
+        e.preventDefault();
+        self.nickname = inputBox.value;
+        checkNickName(self.nickname, realName, roomName, socket);
       }
     });
-    inputBox.addEventListener('keydown', (e) => {
+
+    inputBox.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
+        e.preventDefault();
         checkButton.click();
+      }
+    });
+
+    divCheckButton.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.stopPropagation();
       }
     });
   }
