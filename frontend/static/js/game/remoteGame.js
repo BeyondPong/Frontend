@@ -22,7 +22,6 @@ export const remoteGame = {
       width: 0,
       height: 0,
       name: '',
-      color: '',
     };
     let bottomPaddle = {
       x: 0,
@@ -30,7 +29,6 @@ export const remoteGame = {
       width: 0,
       height: 0,
       name: '',
-      color: '',
     };
     let ball = {
       x: 0,
@@ -123,9 +121,9 @@ export const remoteGame = {
       context.fillStyle = 'blue';
       context.fillRect(0, 0, $canvas.width, $canvas.height);
 
-      context.fillStyle = topPaddle.color;
+      context.fillStyle = 'darkgreen';
       context.fillRect(topPaddle.x, topPaddle.y, topPaddle.width, topPaddle.height);
-      context.fillStyle = bottomPaddle.color;
+      context.fillStyle = 'red';
       context.fillRect(bottomPaddle.x, bottomPaddle.y, bottomPaddle.width, bottomPaddle.height);
 
       context.fillStyle = 'lightgrey';
@@ -177,10 +175,8 @@ export const remoteGame = {
 
       user.player1.name = data.players[0];
       bottomPaddle.name = data.players[0];
-      bottomPaddle.color = data.paddles[0].color;
       user.player2.name = data.players[1];
       topPaddle.name = data.players[1];
-      topPaddle.color = data.paddles[1].color;
 
       data.paddles.forEach((item) => {
         if (item.nickname === user.player1.name) {
