@@ -362,7 +362,6 @@
   border-radius: 50%;
   border: 2px solid #fff;
   padding: 1rem;
-  /* background-image: url(https://cdn.intra.42.fr/users/22a150a2b718bb79bbe204dc8e4a4ae7/misukim.jpg); */
 }
 
 .friend_name {
@@ -377,12 +376,21 @@
 }
 
 .friend_button {
-  padding: 0.2rem 1rem;
+  width: 10%;
+}
+
+.friendButton {
+  width: 100%;
+  line-height: 2rem;
   background-color: var(--profile-background);
   border-radius: 5px;
   color: var(--black-color);
   cursor: pointer;
   font-weight: bold;
+}
+
+.friend_add_button {
+  width: 10%;
 }
 
 .disabled_button {
@@ -391,7 +399,6 @@
 }
 
 .disabled_friend_button {
-  padding: 0.2rem 1rem;
   border-radius: 5px;
   font-weight: bold;
   background-color: var(--disabled-button-background-color);
