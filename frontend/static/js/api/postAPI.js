@@ -1,14 +1,16 @@
+const getToken = (key) => encodeURIComponent(localStorage.getItem(key));
+
 export const postGameResult = async (gameMode, userInfo) => {
   try {
-    let user1 = userInfo.player1.name;
-    let user2 = userInfo.player2.name;
-    let user1_score = userInfo.player1.score;
-    let user2_score = userInfo.player2.score;
+    const user1 = encodeURIComponent(userInfo.player1.name);
+    const user2 = encodeURIComponent(userInfo.player2.name);
+    const user1_score = encodeURIComponent(userInfo.player1.score);
+    const user2_score = encodeURIComponent(userInfo.player2.score);
     const response = await fetch('http://localhost:8000/play/result/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer' + ' ' + localStorage.getItem('2FA'),
+        Authorization: `Bearer ${getToken('2FA')}`,
       },
       body: JSON.stringify({
         game_type: gameMode,
@@ -33,7 +35,7 @@ export const postLoginCode2FA = async (code) => {
     const response = await fetch('http://localhost:8000/login/two_fa/verify/', {
       method: 'POST',
       headers: {
-        Authorization: 'Bearer' + ' ' + localStorage.getItem('token'),
+        Authorization: `Bearer ${getToken('token')}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ verification_code: code }),
@@ -44,8 +46,7 @@ export const postLoginCode2FA = async (code) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.log('Failed to 2FA code: ', error);
-    // return null;
+    console.log('Failed to verify 2FA code: ', error);
   }
 };
 
@@ -54,7 +55,7 @@ export const postLogin2FA = async () => {
     const response = await fetch('http://localhost:8000/login/two_fa/request/', {
       method: 'POST',
       headers: {
-        Authorization: 'Bearer' + ' ' + localStorage.getItem('token'),
+        Authorization: `Bearer ${getToken('token')}`,
         'Content-Type': 'application/json',
       },
     });
@@ -71,11 +72,11 @@ export const postLogin2FA = async () => {
 
 export const postTournamentNickName = async (nickName, realName, roomName) => {
   try {
-    const response = await fetch(`http://localhost:8000/play/nickname/`, {
+    const response = await fetch('http://localhost:8000/play/nickname/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer' + ' ' + localStorage.getItem('2FA'),
+        Authorization: `Bearer ${getToken('2FA')}`,
       },
       body: JSON.stringify({ nickname: nickName, realname: realName, room_name: roomName }),
     });
@@ -91,11 +92,12 @@ export const postTournamentNickName = async (nickName, realName, roomName) => {
 
 export const postAddFriend = async (userId) => {
   try {
-    const response = await fetch(`http://localhost:8000/profile/search/${userId}/`, {
+    const encodedUserId = encodeURIComponent(userId);
+    const response = await fetch(`http://localhost:8000/profile/search/${encodedUserId}/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer' + ' ' + localStorage.getItem('2FA'),
+        Authorization: `Bearer ${getToken('2FA')}`,
       },
     });
     if (!response.ok) {
@@ -110,11 +112,11 @@ export const postAddFriend = async (userId) => {
 
 export const postLoginCode = async (code) => {
   try {
-    const response = await fetch(`http://localhost:8000/login/oauth/`, {
+    const response = await fetch('http://localhost:8000/login/oauth/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer' + ' ' + localStorage.getItem('2FA'),
+        Authorization: `Bearer ${getToken('2FA')}`,
       },
       body: JSON.stringify({ code: code }),
     });
