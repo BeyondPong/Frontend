@@ -214,7 +214,7 @@ export default class extends AbstractView {
     const errorModal = document.querySelector('.friend_add_modal');
     const errorModalButton = document.querySelector('.close_button');
     const registration = await getRegistration();
-
+    const checkBtn = document.querySelector('.codeVerifyBtnDiv');
     errorModalButton.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         errorModalButton.click();
@@ -260,7 +260,7 @@ export default class extends AbstractView {
       });
       input.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
-          check.click();
+          checkBtn.click();
         }
         if (e.key === 'Backspace' && input.value.length === 1) {
           input.value = '';
