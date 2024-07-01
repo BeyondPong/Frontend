@@ -22,6 +22,7 @@ export const remoteGame = {
       width: 0,
       height: 0,
       name: '',
+      color: '',
     };
     let bottomPaddle = {
       x: 0,
@@ -29,6 +30,7 @@ export const remoteGame = {
       width: 0,
       height: 0,
       name: '',
+      color: '',
     };
     let ball = {
       x: 0,
@@ -121,8 +123,9 @@ export const remoteGame = {
       context.fillStyle = 'blue';
       context.fillRect(0, 0, $canvas.width, $canvas.height);
 
-      context.fillStyle = 'white';
+      context.fillStyle = topPaddle.color;
       context.fillRect(topPaddle.x, topPaddle.y, topPaddle.width, topPaddle.height);
+      context.fillStyle = bottomPaddle.color;
       context.fillRect(bottomPaddle.x, bottomPaddle.y, bottomPaddle.width, bottomPaddle.height);
 
       context.fillStyle = 'lightgrey';
@@ -174,16 +177,25 @@ export const remoteGame = {
 
       user.player1.name = data.players[0];
       bottomPaddle.name = data.players[0];
+      bottomPaddle.color = data.paddles[0].color;
       user.player2.name = data.players[1];
       topPaddle.name = data.players[1];
-      topPaddle.x = data.paddles[1].x;
-      topPaddle.y = data.paddles[1].y;
-      topPaddle.width = data.paddles[1].width;
-      topPaddle.height = data.paddles[1].height;
-      bottomPaddle.x = data.paddles[0].x;
-      bottomPaddle.y = data.paddles[0].y;
-      bottomPaddle.width = data.paddles[0].width;
-      bottomPaddle.height = data.paddles[0].height;
+      topPaddle.color = data.paddles[1].color;
+
+      data.paddles.forEach((item) => {
+        if (item.nickname === user.player1.name) {
+          bottomPaddle.x = item.x;
+          bottomPaddle.y = item.y;
+          bottomPaddle.width = item.width;
+          bottomPaddle.height = item.height;
+        }
+        if (item.nickname === user.player2.name) {
+          topPaddle.x = item.x;
+          topPaddle.y = item.y;
+          topPaddle.width = item.width;
+          topPaddle.height = item.height;
+        }
+      });
 
       user.player1.score = data.scores[user.player1.name];
       user.player2.score = data.scores[user.player2.name];
