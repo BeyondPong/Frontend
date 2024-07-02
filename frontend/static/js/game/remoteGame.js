@@ -7,7 +7,7 @@ export const remoteGame = {
     let root = document.getElementById('app');
     const $canvas = document.createElement('canvas');
     const context = $canvas.getContext('2d');
-    let is_game_end = false;
+    // let is_game_end = false;
     let running = false;
     let grid = 15;
     let role = false;
@@ -51,8 +51,8 @@ export const remoteGame = {
     }
 
     async function gameEnd(data) {
-      if (is_game_end) return;
-      is_game_end = true;
+      // if (is_game_end) return;
+      // is_game_end = true;
       role = false;
       removeKeyboardEvent();
       if (gameMode === 'REMOTE') await postGameResult(gameMode, user);
