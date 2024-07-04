@@ -125,7 +125,7 @@ export default class extends AbstractView {
       this.realname = data.nickname;
       const token = localStorage.getItem('2FA');
       WebSocketManager.connectGameSocket(
-        `ws://localhost:8000/ws/play/${mode}/${roomName}/${this.realname}/?token=${token}`,
+        `${import.meta.env.VITE_WS}/play/${mode}/${roomName}/${this.realname}/?token=${token}`,
       );
       let socket = WebSocketManager.returnGameSocket();
       const loadingSpinner = document.getElementById('loading_spinner');
@@ -140,7 +140,7 @@ export default class extends AbstractView {
       socket.onclose = (event) => {
         if (!WebSocketManager.isGameSocketConnecting) {
           WebSocketManager.connectGameSocket(
-            `ws://localhost:8000/ws/play/${mode}/${roomName}/${this.nickname}/?token=${token}`,
+            `${import.meta.env.VITE_WS}/play/${mode}/${roomName}/${this.nickname}/?token=${token}`,
           );
           socket = WebSocketManager.returnGameSocket();
         }
@@ -149,7 +149,7 @@ export default class extends AbstractView {
         console.error('Game socket error:', event);
         if (!WebSocketManager.isGameSocketConnecting) {
           WebSocketManager.connectGameSocket(
-            `ws://localhost:8000/ws/play/${mode}/${roomName}/${this.nickname}/?token=${token}`,
+            `${import.meta.env.VITE_WS}/play/${mode}/${roomName}/${this.nickname}/?token=${token}`,
           );
           socket = WebSocketManager.returnGameSocket();
         }
@@ -322,13 +322,13 @@ export default class extends AbstractView {
     const isValidPlayer = function (valid, players) {
       if (valid === true) {
         const container = document.querySelector('.tournament_container_flex');
-        while (container.childNodes.length > 0) {
+        while (container && container.childNodes.length > 0) {
           container.removeChild(container.firstChild);
         }
         const newDiv = document.createElement('div');
         newDiv.classList.add('tournament_list');
         newDiv.innerHTML = tableHTML;
-        container.replaceChildren(newDiv);
+        if (container) container.replaceChildren(newDiv);
         const tournamentSemiPlayers = Array.from(document.getElementsByClassName('tournament_semi'));
         tournamentSemiPlayers.forEach((parentDiv, index) => {
           const children = parentDiv.children;

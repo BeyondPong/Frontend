@@ -1,8 +1,9 @@
+const API = import.meta.env.VITE_API_URL;
 const getToken = (key) => encodeURIComponent(localStorage.getItem(key));
 
 export const patchStatusMessage = async (message) => {
   try {
-    const response = await fetch('http://localhost:8000/profile/information/message/', {
+    const response = await fetch(`${API}/profile/information/message/`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -22,7 +23,7 @@ export const patchStatusMessage = async (message) => {
 
 export const patchAvatar = async (imgId) => {
   try {
-    const response = await fetch('http://localhost:8000/profile/information/photo/', {
+    const response = await fetch(`${API}/profile/information/photo/`, {
       method: 'PATCH',
       headers: {
         Authorization: `Bearer ${getToken('2FA')}`,
@@ -42,7 +43,7 @@ export const patchAvatar = async (imgId) => {
 
 export const patchLanguage = async (lang) => {
   try {
-    const response = await fetch('http://localhost:8000/profile/language/', {
+    const response = await fetch(`${API}/profile/language/`, {
       method: 'PATCH',
       headers: {
         Authorization: `Bearer ${getToken('2FA')}`,

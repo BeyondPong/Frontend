@@ -1,8 +1,9 @@
+const API = import.meta.env.VITE_API_URL;
 const getToken = (key) => encodeURIComponent(localStorage.getItem(key));
 
 export const getRegistration = async () => {
   try {
-    const response = await fetch('http://localhost:8000/login/registration/', {
+    const response = await fetch(`${API}/login/registration/`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${getToken('token')}`,
@@ -21,7 +22,7 @@ export const getRegistration = async () => {
 export const getRoomName = async (mode) => {
   try {
     const encodedMode = encodeURIComponent(mode);
-    const response = await fetch(`http://localhost:8000/play/room/?mode=${encodedMode}`, {
+    const response = await fetch(`${API}/play/room/?mode=${encodedMode}`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${getToken('2FA')}`,
@@ -39,7 +40,7 @@ export const getRoomName = async (mode) => {
 
 export const getProfileData = async () => {
   try {
-    const response = await fetch('http://localhost:8000/profile/information/', {
+    const response = await fetch(`${API}/profile/information/`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${getToken('2FA')}`,
@@ -57,7 +58,7 @@ export const getProfileData = async () => {
 
 export const getHistoryData = async () => {
   try {
-    const response = await fetch('http://localhost:8000/profile/history/', {
+    const response = await fetch(`${API}/profile/history/`, {
       headers: {
         Authorization: `Bearer ${getToken('2FA')}`,
       },
@@ -74,7 +75,7 @@ export const getHistoryData = async () => {
 
 export const getFriendsData = async () => {
   try {
-    const response = await fetch('http://localhost:8000/profile/friends/', {
+    const response = await fetch(`${API}/profile/friends/`, {
       headers: {
         Authorization: `Bearer ${getToken('2FA')}`,
       },
@@ -92,7 +93,7 @@ export const getFriendsData = async () => {
 export const getSearchResultData = async (userId) => {
   try {
     const encodedUserId = encodeURIComponent(userId);
-    const response = await fetch(`http://localhost:8000/profile/search/?nickname=${encodedUserId}`, {
+    const response = await fetch(`${API}/profile/search/?nickname=${encodedUserId}`, {
       headers: {
         Authorization: `Bearer ${getToken('2FA')}`,
       },

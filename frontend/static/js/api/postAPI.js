@@ -1,3 +1,4 @@
+const API = import.meta.env.VITE_API_URL;
 const getToken = (key) => encodeURIComponent(localStorage.getItem(key));
 
 export const postGameResult = async (gameMode, userInfo) => {
@@ -6,7 +7,7 @@ export const postGameResult = async (gameMode, userInfo) => {
     const user2 = encodeURIComponent(userInfo.player2.name);
     const user1_score = encodeURIComponent(userInfo.player1.score);
     const user2_score = encodeURIComponent(userInfo.player2.score);
-    const response = await fetch('http://localhost:8000/play/result/', {
+    const response = await fetch(`${API}/play/result/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -32,7 +33,7 @@ export const postGameResult = async (gameMode, userInfo) => {
 
 export const postLoginCode2FA = async (code) => {
   try {
-    const response = await fetch('http://localhost:8000/login/two_fa/verify/', {
+    const response = await fetch(`${API}/login/two_fa/verify/`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${getToken('token')}`,
@@ -52,7 +53,7 @@ export const postLoginCode2FA = async (code) => {
 
 export const postLogin2FA = async () => {
   try {
-    const response = await fetch('http://localhost:8000/login/two_fa/request/', {
+    const response = await fetch(`${API}/login/two_fa/request/`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${getToken('token')}`,
@@ -72,7 +73,7 @@ export const postLogin2FA = async () => {
 
 export const postTournamentNickName = async (nickName, realName, roomName) => {
   try {
-    const response = await fetch('http://localhost:8000/play/nickname/', {
+    const response = await fetch(`${API}/play/nickname/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -93,7 +94,7 @@ export const postTournamentNickName = async (nickName, realName, roomName) => {
 export const postAddFriend = async (userId) => {
   try {
     const encodedUserId = encodeURIComponent(userId);
-    const response = await fetch(`http://localhost:8000/profile/search/${encodedUserId}/`, {
+    const response = await fetch(`${API}/profile/search/${encodedUserId}/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -112,7 +113,7 @@ export const postAddFriend = async (userId) => {
 
 export const postLoginCode = async (code) => {
   try {
-    const response = await fetch('http://localhost:8000/login/oauth/', {
+    const response = await fetch(`${API}/login/oauth/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

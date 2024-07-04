@@ -7,7 +7,6 @@ export const remoteGame = {
     let root = document.getElementById('app');
     const $canvas = document.createElement('canvas');
     const context = $canvas.getContext('2d');
-    // let is_game_end = false;
     let running = false;
     let grid = 15;
     let role = false;
@@ -39,6 +38,22 @@ export const remoteGame = {
 
     let targetBall = { x: ball.x, y: ball.y };
 
+    function gameStart() {
+      let responseMessage = {
+        type: 'start_game',
+      };
+      if (socket.readyState === 1) {
+        socket.send(JSON.stringify(responseMessage));
+      }
+    }
+
+    function sendIsFinal() {
+      let responseMessage = {
+        type: 'final_game',
+      };
+      socket.send(JSON.stringify(responseMessage));
+    }
+
     function updateScore(data) {
       user.player1.score = data.scores[user.player1.name] ?? user.player1.score;
       user.player2.score = data.scores[user.player2.name] ?? user.player2.score;
@@ -51,8 +66,6 @@ export const remoteGame = {
     }
 
     async function gameEnd(data) {
-      // if (is_game_end) return;
-      // is_game_end = true;
       role = false;
       removeKeyboardEvent();
       if (gameMode === 'REMOTE') await postGameResult(gameMode, user);
@@ -108,15 +121,6 @@ export const remoteGame = {
       buttonContainer.style.left = `${canvasRect.left + canvasRect.width / 2}px`;
     }
 
-    function clearScreen() {
-      const children = Array.from(root.children);
-      children.forEach((child) => {
-        if (child.tagName !== 'CANVAS') {
-          root.removeChild(child);
-        }
-      });
-    }
-
     function render() {
       context.clearRect(0, 0, $canvas.width, $canvas.height);
 
@@ -143,59 +147,13 @@ export const remoteGame = {
       }
     }
 
-    function gameStart() {
-      let responseMessage = {
-        type: 'start_game',
-      };
-      if (socket.readyState === 1) {
-        socket.send(JSON.stringify(responseMessage));
-      }
-    }
-
-    function sendIsFinal() {
-      let responseMessage = {
-        type: 'final_game',
-      };
-      socket.send(JSON.stringify(responseMessage));
-    }
-
-    function onlyOnePlayer() {
-      const $div = document.createElement('div');
-      $div.id = 'scoreBoard';
-      $div.innerText = 'Other player has Left the game';
-      const buttonContainer = document.createElement('div');
-      buttonContainer.classList.add('remote_buttonContainer');
-      buttonContainer.appendChild($score);
-      buttonContainer.appendChild($win);
-      const againButton = document.createElement('button');
-      againButton.classList.add('gameButton');
-      againButton.innerHTML = 'Play Again';
-      againButton.setAttribute('tabindex', '0');
-      const mainButton = document.createElement('button');
-      mainButton.classList.add('gameButton');
-      mainButton.innerHTML = 'Main';
-      mainButton.setAttribute('tabindex', '0');
-      buttonContainer.appendChild(againButton);
-      buttonContainer.appendChild(mainButton);
-      againButton.addEventListener('click', () => {
-        window.location.href = '/play';
-      });
-      againButton.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
-          window.location.href = '/play';
+    function clearScreen() {
+      const children = Array.from(root.children);
+      children.forEach((child) => {
+        if (child.tagName !== 'CANVAS') {
+          root.removeChild(child);
         }
       });
-      mainButton.addEventListener('click', () => {
-        window.location.href = '/';
-      });
-      mainButton.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
-          window.location.href = '/';
-        }
-      });
-      root.appendChild($div);
-      root.appendChild(buttonContainer);
-      render();
     }
 
     async function settingGame(data) {
@@ -278,6 +236,43 @@ export const remoteGame = {
       $div.style.height = `${canvasRect.height}px`;
     }
 
+    function onlyOnePlayer() {
+      const $div = document.createElement('div');
+      $div.id = 'scoreBoard';
+      $div.innerText = 'Other player has Left the game';
+      const buttonContainer = document.createElement('div');
+      buttonContainer.classList.add('remote_buttonContainer');
+      const againButton = document.createElement('button');
+      againButton.classList.add('gameButton');
+      againButton.innerHTML = 'Play Again';
+      againButton.setAttribute('tabindex', '0');
+      const mainButton = document.createElement('button');
+      mainButton.classList.add('gameButton');
+      mainButton.innerHTML = 'Main';
+      mainButton.setAttribute('tabindex', '0');
+      buttonContainer.appendChild(againButton);
+      buttonContainer.appendChild(mainButton);
+      againButton.addEventListener('click', () => {
+        window.location.href = '/play';
+      });
+      againButton.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          window.location.href = '/play';
+        }
+      });
+      mainButton.addEventListener('click', () => {
+        window.location.href = '/';
+      });
+      mainButton.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          window.location.href = '/';
+        }
+      });
+      root.appendChild($div);
+      root.appendChild(buttonContainer);
+      render();
+    }
+
     function waitNextGame() {
       running = false;
       const $wait = document.createElement('div');
@@ -301,9 +296,35 @@ export const remoteGame = {
       $wait.style.transform = 'translate(-50%, -50%)';
     }
 
+    function renderFinal() {
+      const $finalRoundContainer = document.createElement('div');
+      $finalRoundContainer.id = 'finalRoundContainer';
+
+      const $finalRoundTop = document.createElement('div');
+      $finalRoundTop.id = 'finalRoundTop';
+      $finalRoundTop.innerText = 'Final Round';
+
+      const $finalRoundBottom = document.createElement('div');
+      $finalRoundBottom.id = 'finalRoundBottom';
+      $finalRoundBottom.innerText = 'Final Round';
+
+      $finalRoundContainer.appendChild($finalRoundTop);
+      $finalRoundContainer.appendChild($finalRoundBottom);
+      root.appendChild($finalRoundContainer);
+
+      setTimeout(() => {
+        root.removeChild($finalRoundContainer);
+        clearScreen();
+        gameStart();
+        running = true;
+        animate();
+      }, 4000);
+    }
+
     async function setSocket() {
       socket.onmessage = function (event) {
         const data = JSON.parse(event.data);
+        console.log(data.type);
         switch (data.type) {
           case 'game_start':
             handleGameStart(data.data);
@@ -347,31 +368,6 @@ export const remoteGame = {
     function handleBallPosition(data) {
       targetBall.x = data.x;
       targetBall.y = data.y;
-    }
-
-    function renderFinal() {
-      const $finalRoundContainer = document.createElement('div');
-      $finalRoundContainer.id = 'finalRoundContainer';
-
-      const $finalRoundTop = document.createElement('div');
-      $finalRoundTop.id = 'finalRoundTop';
-      $finalRoundTop.innerText = 'Final Round';
-
-      const $finalRoundBottom = document.createElement('div');
-      $finalRoundBottom.id = 'finalRoundBottom';
-      $finalRoundBottom.innerText = 'Final Round';
-
-      $finalRoundContainer.appendChild($finalRoundTop);
-      $finalRoundContainer.appendChild($finalRoundBottom);
-      root.appendChild($finalRoundContainer);
-
-      setTimeout(() => {
-        root.removeChild($finalRoundContainer);
-        clearScreen();
-        gameStart();
-        running = true;
-        animate();
-      }, 4000);
     }
 
     async function handleNextRound() {
