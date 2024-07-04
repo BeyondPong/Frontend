@@ -3,6 +3,7 @@ import { addBlurBackground } from '../utility/blurBackGround.js';
 
 export const remoteGame = {
   async init(socket, nickname, gameMode) {
+    console.log(socket, nickname, gameMode);
     addBlurBackground();
     let root = document.getElementById('app');
     const $canvas = document.createElement('canvas');
@@ -10,6 +11,7 @@ export const remoteGame = {
     let running = false;
     let grid = 15;
     let role = false;
+    let isSend = false;
     let user = {
       player1: { name: 'player1', score: 0 },
       player2: { name: 'player2', score: 0 },
@@ -45,6 +47,13 @@ export const remoteGame = {
       if (socket.readyState === 1) {
         socket.send(JSON.stringify(responseMessage));
       }
+    }
+
+    function resend() {
+      let responseMessage = {
+        type: 'resend',
+      };
+      socket.send(JSON.stringify(responseMessage));
     }
 
     function sendIsFinal() {
@@ -252,6 +261,11 @@ export const remoteGame = {
       mainButton.setAttribute('tabindex', '0');
       buttonContainer.appendChild(againButton);
       buttonContainer.appendChild(mainButton);
+      buttonContainer.style.display = 'flex';
+      buttonContainer.style.position = 'absolute';
+      buttonContainer.style.top = '50%';
+      buttonContainer.style.left = '50%';
+      buttonContainer.style.transform = 'translate(-50%, -50%)';
       againButton.addEventListener('click', () => {
         window.location.href = '/play';
       });
@@ -354,6 +368,7 @@ export const remoteGame = {
     }
 
     async function handleGameStart(data) {
+      isSend = true;
       await settingGame(data);
       animate();
     }
@@ -365,6 +380,10 @@ export const remoteGame = {
     }
 
     function handleBallPosition(data) {
+      if (resend === false) {
+        resend();
+        isSend = true;
+      }
       targetBall.x = data.x;
       targetBall.y = data.y;
     }
