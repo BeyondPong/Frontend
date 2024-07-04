@@ -324,7 +324,6 @@ export const remoteGame = {
     async function setSocket() {
       socket.onmessage = function (event) {
         const data = JSON.parse(event.data);
-        console.log(data.type);
         switch (data.type) {
           case 'game_start':
             handleGameStart(data.data);

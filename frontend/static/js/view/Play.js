@@ -189,6 +189,8 @@ export default class extends AbstractView {
     await setupWebSocket(roomName, mode);
   }
   async tournamentNickNameModal(realName, roomName, socket) {
+    socket.onmessage = null;
+
     const modalHtml = `
       <div class="tournament_container_flex">
         <div>
