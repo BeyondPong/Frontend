@@ -14,6 +14,7 @@ import { removeBlurBackground } from '../utility/blurBackGround.js';
 import { checkLogin } from '../utility/checkLogin.js';
 import { check2FAStatus } from '../utility/check2FA.js';
 import WebSocketManager from '../state/WebSocketManager.js';
+import { env } from '../utility/env.js';
 
 export class Router {
   constructor() {
@@ -48,24 +49,6 @@ export class Router {
       .find((potentialMatch) => potentialMatch.result !== null);
   }
 
-  handleNotFound() {
-    navigateTo('/notfound');
-    updateBackground('error');
-    return {
-      route: this.routes.find((r) => r.path === '/notfound'),
-      result: [location.pathname],
-    };
-  }
-
-  handleNotLogin() {
-    navigateTo('/notlogin');
-    updateBackground('error');
-    return {
-      route: this.routes.find((r) => r.path === '/notlogin'),
-      result: [location.pathname],
-    };
-  }
-
   async handleRouteChange(match) {
     switch (match.route.path) {
       case '/login':
@@ -94,6 +77,24 @@ export class Router {
         await this.render(match);
         break;
     }
+  }
+
+  handleNotFound() {
+    navigateTo('/notfound');
+    updateBackground('error');
+    return {
+      route: this.routes.find((r) => r.path === '/notfound'),
+      result: [location.pathname],
+    };
+  }
+
+  handleNotLogin() {
+    navigateTo('/notlogin');
+    updateBackground('error');
+    return {
+      route: this.routes.find((r) => r.path === '/notlogin'),
+      result: [location.pathname],
+    };
   }
 
   async handle2FA(match) {
@@ -136,7 +137,7 @@ export class Router {
         return;
       }
       const token = localStorage.getItem('2FA');
-      WebSocketManager.connectFriendSocket(`ws://localhost:8000/ws/member/login_room/?token=${token}`);
+      WebSocketManager.connectFriendSocket(`${env.WS}/member/login_room/?token=${token}`);
     } else {
       WebSocketManager.closeFriendSocket();
     }
@@ -151,8 +152,7 @@ export class Router {
     if (localStorage.getItem('token') !== null) {
       window.location.href = '/';
     } else if (!localStorage.getItem('token')) {
-      window.location.href =
-        'https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-4540298f9d0123b1db55521edf596a7625a4deea7a1b957bf5dbe1d7dc2ec9ab&redirect_uri=http://localhost:5173/login_code/&response_type=code';
+      window.location.href = env.LOGIN_REDIRECT_URL;
     }
   }
 

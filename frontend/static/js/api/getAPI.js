@@ -1,9 +1,14 @@
+import { env } from '../utility/env';
+
+const API = env.API_URL;
+const getToken = (key) => encodeURIComponent(localStorage.getItem(key));
+
 export const getRegistration = async () => {
   try {
-    const response = await fetch('http://localhost:8000/login/registration/', {
+    const response = await fetch(`${API}/login/registration/`, {
       method: 'GET',
       headers: {
-        Authorization: 'Bearer' + ' ' + localStorage.getItem('token'),
+        Authorization: `Bearer ${getToken('token')}`,
       },
     });
     if (!response.ok) {
@@ -18,10 +23,11 @@ export const getRegistration = async () => {
 
 export const getRoomName = async (mode) => {
   try {
-    const response = await fetch(`http://localhost:8000/play/room/?mode=${mode}`, {
+    const encodedMode = encodeURIComponent(mode);
+    const response = await fetch(`${API}/play/room/?mode=${encodedMode}`, {
       method: 'GET',
       headers: {
-        Authorization: 'Bearer' + ' ' + localStorage.getItem('2FA'),
+        Authorization: `Bearer ${getToken('2FA')}`,
       },
     });
     if (!response.ok) {
@@ -36,10 +42,10 @@ export const getRoomName = async (mode) => {
 
 export const getProfileData = async () => {
   try {
-    const response = await fetch('http://localhost:8000/profile/information/', {
+    const response = await fetch(`${API}/profile/information/`, {
       method: 'GET',
       headers: {
-        Authorization: 'Bearer' + ' ' + localStorage.getItem('2FA'),
+        Authorization: `Bearer ${getToken('2FA')}`,
       },
     });
     if (!response.ok) {
@@ -54,9 +60,9 @@ export const getProfileData = async () => {
 
 export const getHistoryData = async () => {
   try {
-    const response = await fetch('http://localhost:8000/profile/history/', {
+    const response = await fetch(`${API}/profile/history/`, {
       headers: {
-        Authorization: 'Bearer' + ' ' + localStorage.getItem('2FA'),
+        Authorization: `Bearer ${getToken('2FA')}`,
       },
     });
     if (!response.ok) {
@@ -71,9 +77,9 @@ export const getHistoryData = async () => {
 
 export const getFriendsData = async () => {
   try {
-    const response = await fetch('http://localhost:8000/profile/friends/', {
+    const response = await fetch(`${API}/profile/friends/`, {
       headers: {
-        Authorization: 'Bearer' + ' ' + localStorage.getItem('2FA'),
+        Authorization: `Bearer ${getToken('2FA')}`,
       },
     });
     if (!response.ok) {
@@ -88,9 +94,10 @@ export const getFriendsData = async () => {
 
 export const getSearchResultData = async (userId) => {
   try {
-    const response = await fetch(`http://localhost:8000/profile/search/?nickname=${userId}`, {
+    const encodedUserId = encodeURIComponent(userId);
+    const response = await fetch(`${API}/profile/search/?nickname=${encodedUserId}`, {
       headers: {
-        Authorization: 'Bearer' + ' ' + localStorage.getItem('2FA'),
+        Authorization: `Bearer ${getToken('2FA')}`,
       },
     });
     if (!response.ok) {

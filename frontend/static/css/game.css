@@ -1,7 +1,8 @@
 canvas {
   position: absolute;
-  top: 10%;
-  left: 25%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .win {
@@ -12,15 +13,11 @@ canvas {
 #scoreBoard {
   text-align: center;
   display: flex;
-  position: absolute;
   flex-direction: column;
+  justify-content: space-between;
   color: white;
-  justify-content: center;
   left: calc(25% + 50% + 20px);
   font-size: calc(1em + 1vw);
-  transform: translateX(0);
-  gap: 50%;
-  height: 100%;
 }
 
 .remote_buttonContainer {
@@ -30,10 +27,9 @@ canvas {
   align-items: center;
   gap: 10px;
   position: absolute;
-  top: 35%;
-  left: 50%;
   transform: translate(-50%, -50%);
   width: 50%;
+  background-color: rgba(0, 0, 0, 0.5);
   white-space: nowrap;
 }
 

@@ -258,6 +258,25 @@
 
 /* history */
 
+.text_size_buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.text_size {
+  color: var(--profile-color);
+}
+
+.text_size_button {
+  color: var(--profile-color);
+}
+
+.text_size_button:hover {
+  color: var(--black-color);
+}
+
 .table_container {
   table-layout: fixed;
   width: 100%;
@@ -362,7 +381,6 @@
   border-radius: 50%;
   border: 2px solid #fff;
   padding: 1rem;
-  /* background-image: url(https://cdn.intra.42.fr/users/22a150a2b718bb79bbe204dc8e4a4ae7/misukim.jpg); */
 }
 
 .friend_name {
@@ -377,12 +395,21 @@
 }
 
 .friend_button {
-  padding: 0.2rem 1rem;
+  width: 10%;
+}
+
+.friendButton {
+  width: 100%;
+  line-height: 2rem;
   background-color: var(--profile-background);
   border-radius: 5px;
   color: var(--black-color);
   cursor: pointer;
   font-weight: bold;
+}
+
+.friend_add_button {
+  width: 10%;
 }
 
 .disabled_button {
@@ -391,7 +418,6 @@
 }
 
 .disabled_friend_button {
-  padding: 0.2rem 1rem;
   border-radius: 5px;
   font-weight: bold;
   background-color: var(--disabled-button-background-color);
@@ -407,10 +433,11 @@
   background-color: rgba(0, 0, 0, 0.9);
   border-radius: 3%;
   position: absolute;
-  padding: 2rem 4rem;
+  padding: 2rem 2rem;
   margin-left: 0;
   margin-top: 6rem;
   box-shadow: 0 0 2px 2px rgba(253, 252, 252, 0.327);
+  line-break: loose;
 }
 
 .friend_add_modal_flex {
@@ -426,6 +453,24 @@
 }
 
 /* friends */
+
+.no_friend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--profile-color);
+  flex-direction: column;
+}
+
+.no_friend_title {
+  font-size: calc(1vw + 1vh + 0.5vmin);
+  font-weight: bold;
+}
+
+.no_friend_subtitle {
+  font-size: calc(0.5vw + 1vh + 0.5vmin);
+  font-weight: lighter;
+}
 
 .friends_result_container {
   padding: 0.5rem;

@@ -1,10 +1,15 @@
+import { env } from '../utility/env';
+
+const API = env.API_URL;
+const getToken = (key) => encodeURIComponent(localStorage.getItem(key));
+
 export const patchStatusMessage = async (message) => {
   try {
-    const response = await fetch('http://localhost:8000/profile/information/message/', {
+    const response = await fetch(`${API}/profile/information/message/`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer' + ' ' + localStorage.getItem('2FA'),
+        Authorization: `Bearer ${getToken('2FA')}`,
       },
       body: JSON.stringify({ status_msg: message }),
     });
@@ -20,13 +25,13 @@ export const patchStatusMessage = async (message) => {
 
 export const patchAvatar = async (imgId) => {
   try {
-    const response = await fetch('http://localhost:8000/profile/information/photo/', {
+    const response = await fetch(`${API}/profile/information/photo/`, {
       method: 'PATCH',
       headers: {
-        Authorization: 'Bearer' + ' ' + localStorage.getItem('2FA'),
+        Authorization: `Bearer ${getToken('2FA')}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ profile_img: imgId }),
+      body: JSON.stringify({ profile_img: encodeURIComponent(imgId) }),
     });
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
@@ -40,13 +45,13 @@ export const patchAvatar = async (imgId) => {
 
 export const patchLanguage = async (lang) => {
   try {
-    const response = await fetch('http://localhost:8000/profile/language/', {
+    const response = await fetch(`${API}/profile/language/`, {
       method: 'PATCH',
       headers: {
-        Authorization: 'Bearer' + ' ' + localStorage.getItem('2FA'),
+        Authorization: `Bearer ${getToken('2FA')}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ language: lang }),
+      body: JSON.stringify({ language: encodeURIComponent(lang) }),
     });
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);

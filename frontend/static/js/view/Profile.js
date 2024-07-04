@@ -76,29 +76,36 @@ export default class extends AbstractView {
         tr.innerHTML = historyHTML;
         tableBody.appendChild(tr);
       });
-    }
-  }
+      const initialFontSize = 1;
+      let containerFontSize = initialFontSize;
+      const tableContainer = document.querySelector('.table_container');
+      const reduceText = document.querySelector('.reduce');
+      const plusText = document.querySelector('.plus');
+      const percentageText = document.querySelector('.text_size');
+      const reduceTextDiv = document.getElementById('reduceTextSize');
+      const plusTextDiv = document.getElementById('plusTextSize');
 
-  handleDelete(e) {
-    let target;
-    if (e.type === 'click') {
-      target = e.target;
-    } else if (e.type === 'keydown') {
-      if (e.key === 'Enter') {
-        target = e.target.querySelector('button');
-        e.preventDefault();
-      } else {
-        return;
-      }
-    }
-    if (target) {
-      const userId = target.getAttribute('data-user-id');
-      deleteFriend(userId).then(() => {
-        target.classList.add('disabled_button');
-        target.disabled = true;
-        const parent = target.parentElement;
-        parent.classList.add('disabled_button');
-        target.disabled = true;
+      reduceTextDiv.addEventListener('keypress', (e) => {
+        if ((e.key === 'Enter' && reduceText) || e.key === 'click') {
+          reduceText.click();
+        }
+      });
+      plusTextDiv.addEventListener('keypress', (e) => {
+        if ((e.key === 'Enter' && plusText) || e.key === 'click') {
+          plusText.click();
+        }
+      })
+      reduceText.addEventListener('click', () => {
+        containerFontSize = Math.max(0.5, containerFontSize - 0.1);
+        tableContainer.style.fontSize = containerFontSize + 'rem';
+        const percentage = (containerFontSize / initialFontSize) * 100;
+        percentageText.textContent = `${percentage.toFixed(0)}%`;
+      });
+      plusText.addEventListener('click', () => {
+        containerFontSize = Math.min(2, containerFontSize + 0.1);
+        tableContainer.style.fontSize = containerFontSize + 'rem';
+        const percentage = (containerFontSize / initialFontSize) * 100;
+        percentageText.textContent = `${percentage.toFixed(0)}%`;
       });
     }
   }
@@ -108,6 +115,16 @@ export default class extends AbstractView {
     friendResultBox.innerHTML = '';
     const data = await getFriendsData();
     if (data) {
+      if (data.length === 0) {
+        const friendHTML = `
+        <div class="no_friend_title">${words[registry.lang].no_friend_title}</div>
+        <div class="no_friend_subtitle">${words[registry.lang].no_friend_subtitle}</div>
+      `;
+        const friendDiv = document.createElement('div');
+        friendDiv.classList.add('no_friend');
+        friendDiv.innerHTML = friendHTML;
+        friendResultBox.appendChild(friendDiv);
+      }
       data.forEach((friend) => {
         const friendDiv = document.createElement('div');
         friendDiv.classList.add('friend');
@@ -119,16 +136,56 @@ export default class extends AbstractView {
             <div class="friend_image" style="background-image: url(/static/assets/${friend.profile_img}.png);"></div>
             <div class="friend_name">${friend.nickname}</div>
             <div class="friend_message">${friend.status_msg}</div>
-            <div tabindex="0" class="friend_button delete_button"><button class="#" data-user-id=${friend.id}>${words[registry.lang].friend_delete_button
-          }</button></div>
+            <div tabindex="0" class="friend_button"><button class="delete_button friendButton" data-user-id=${friend.id
+          }>${words[registry.lang].friend_delete_button}</button></div>
         `;
         friendDiv.innerHTML = friendHTML;
         friendResultBox.appendChild(friendDiv);
       });
+
+      const deleteButtonsTab = Array.from(document.getElementsByClassName('friend_button'));
+      deleteButtonsTab.forEach((deleteButtons) => {
+        deleteButtons.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            const button = e.target.querySelector('button');
+            if (button) {
+              const userId = button.getAttribute('data-user-id');
+              deleteFriend(userId).then(() => {
+                button.classList.add('disabled_button');
+                button.disabled = true;
+                const parent = button.parentElement;
+                parent.classList.add('disabled_button');
+                button.disabled = true;
+              });
+            }
+          }
+        });
+      });
+
       const deleteButtons = Array.from(document.getElementsByClassName('delete_button'));
       deleteButtons.forEach((button) => {
-        button.addEventListener('click', this.handleDelete);
-        button.addEventListener('keydown', this.handleDelete);
+        button.addEventListener('click', function (e) {
+          const userId = e.target.getAttribute('data-user-id');
+          deleteFriend(userId).then(() => {
+            e.target.classList.add('disabled_button');
+            e.target.disabled = true;
+            const parent = e.target.parentElement;
+            parent.classList.add('disabled_button');
+            e.target.disabled = true;
+          });
+        });
+        button.addEventListener('keypress', function (e) {
+          if (e.key === 'Enter') {
+            const userId = e.target.getAttribute('data-user-id');
+            deleteFriend(userId).then(() => {
+              e.target.classList.add('disabled_button');
+              e.target.disabled = true;
+              const parent = e.target.parentElement;
+              parent.classList.add('disabled_button');
+              e.target.disabled = true;
+            });
+          }
+        });
       });
     }
   }
@@ -173,50 +230,71 @@ export default class extends AbstractView {
           <div class="friend_message">${user.status_msg}</div>
         `;
         if (user.is_friend) {
-          resultHTML += `<div class="disabled_friend_button friend_add_button"><button class="add_button disabled_button" disabled data-user-id="${user.id
-            }">${words[registry.lang].friend_add_button}</button></div>`;
-          resultHTML += `<div class="disabled_friend_button friend_add_button"><button class="add_button disabled_button" disabled data-user-id="${user.id
+          resultHTML += `<div class="disabled_friend_button friend_add_button"><button class="add_button friendButton disabled_button" disabled data-user-id="${user.id
             }">${words[registry.lang].friend_add_button}</button></div>`;
         } else {
-          resultHTML += `<div tabindex="0" class="friend_button friend_add_button"><button class="add_button" data-user-id="${user.id
+          resultHTML += `<div tabindex="0" class="friend_add_button"><button tabindex="0" class="add_button friendButton" data-user-id="${user.id
             }">${words[registry.lang].friend_add_button}</button></div>`;
         }
         friendElement.innerHTML = resultHTML;
         searchResultBox.appendChild(friendElement);
       });
 
-      function handleFriendAction(e) {
-        let target;
-        if (e.type === 'click') {
-          target = e.target;
-        } else if (e.type === 'keydown') {
+      const addButtonsTab = Array.from(document.getElementsByClassName('friend_add_button'));
+      addButtonsTab.forEach((buttonTab) => {
+        buttonTab.addEventListener('keydown', (e) => {
           if (e.key === 'Enter') {
-            target = e.target.querySelector('button');
-            e.preventDefault();
-          } else {
-            return;
+            const button = e.target.querySelector('button');
+            if (button) {
+              const userId = button.getAttribute('data-user-id');
+              const user = matchFriends.users.find((u) => u.id === parseInt(userId));
+              if (user && user.is_friend === false) {
+                postAddFriend(userId).then(() => {
+                  friendModal.classList.remove('hidden');
+                  friendModal.querySelector('span').textContent = `${words[registry.lang].friend_message_success}`;
+                  button.style.cursor = 'not-allowed';
+                  button.style.backgroundColor = 'grey';
+                  button.disabled = true;
+                  button.parentNode.classList.add('disabled_friend_button');
+                });
+              }
+            }
           }
-        }
-        if (target) {
-          const userId = target.getAttribute('data-user-id');
+        });
+      });
+
+      const buttons = Array.from(document.getElementsByClassName('add_button'));
+      buttons.forEach((button) => {
+        button.addEventListener('click', (e) => {
+          const userId = e.target.getAttribute('data-user-id');
           const user = matchFriends.users.find((u) => u.id === parseInt(userId));
           if (user && user.is_friend === false) {
             postAddFriend(userId).then(() => {
               friendModal.classList.remove('hidden');
               friendModal.querySelector('span').textContent = `${words[registry.lang].friend_message_success}`;
-              target.style.cursor = 'not-allowed';
-              target.style.backgroundColor = 'grey';
-              target.disabled = true;
-              target.parentNode.classList.add('disabled_friend_button');
+              e.target.style.cursor = 'not-allowed';
+              e.target.style.backgroundColor = 'grey';
+              e.target.disabled = true;
+              e.target.parentNode.classList.add('disabled_friend_button');
             });
           }
-        }
-      };
-
-      const buttons = Array.from(document.getElementsByClassName('friend_add_button'));
-      buttons.forEach((button) => {
-        button.addEventListener('click', handleFriendAction);
-        button.addEventListener('keydown', handleFriendAction);
+        });
+        button.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            const userId = e.target.getAttribute('data-user-id');
+            const user = matchFriends.users.find((u) => u.id === parseInt(userId));
+            if (user && user.is_friend === false) {
+              postAddFriend(userId).then(() => {
+                friendModal.classList.remove('hidden');
+                friendModal.querySelector('span').textContent = `${words[registry.lang].friend_message_success}`;
+                e.target.style.cursor = 'not-allowed';
+                e.target.style.backgroundColor = 'grey';
+                e.target.disabled = true;
+                e.target.parentNode.classList.add('disabled_friend_button');
+              });
+            }
+          }
+        });
       });
     };
 
@@ -282,8 +360,10 @@ export default class extends AbstractView {
                 <div tabindex="0" class="profile_img_select" data-img-id="4" style="background-image: url(/static/assets/4.png);"></div>
               </div>
               <div class="profile_img_buttons">
-                <div class="img_save_button" tabindex="0"><button class="save_button">${words[registry.lang].avatar_save_button}</button></div>
-                <div class="img_close_button" tabindex="0"><button class="close_button">${words[registry.lang].avatar_close_button}</button></div>
+                <div class="img_save_button" tabindex="0"><button class="save_button">${words[registry.lang].avatar_save_button
+          }</button></div>
+                <div class="img_close_button" tabindex="0"><button class="close_button">${words[registry.lang].avatar_close_button
+          }</button></div>
               </div>
             </div>
           </section>
@@ -375,7 +455,7 @@ export default class extends AbstractView {
                 img.style.border = '4px solid var(--profile-background)';
                 imgId = img.getAttribute('data-img-id');
               }
-            })
+            });
             img.addEventListener('mouseenter', () => {
               img.style.transform = 'scale(1.1)';
             });
@@ -407,18 +487,12 @@ export default class extends AbstractView {
               saveButton.querySelector('button').style.cursor = 'not-allowed';
               saveButton.querySelector('button').style.color = 'var(--disabled-button-background-color)';
               saveButton.querySelector('button').disabled = true;
-              console.log('button disable');
             } else {
               input.style.borderBottomColor = 'var(--profile-background)';
               saveButton.querySelector('button').style.cursor = 'pointer';
               saveButton.querySelector('button').style.color = 'var(--profile-background)';
               saveButton.querySelector('button').disabled = false;
             }
-            // if (input.value.length > 20) {
-            //   input.disabled = true;
-            // } else {
-            //   input.disabled = false;
-            // }
           });
         });
 
@@ -438,24 +512,17 @@ export default class extends AbstractView {
                 saveButton.querySelector('button').style.cursor = 'not-allowed';
                 saveButton.querySelector('button').style.color = 'var(--disabled-button-background-color)';
                 saveButton.querySelector('button').disabled = true;
-                console.log('button disable');
               } else {
                 input.style.borderBottomColor = 'var(--profile-background)';
                 saveButton.querySelector('button').style.cursor = 'pointer';
                 saveButton.querySelector('button').style.color = 'var(--profile-background)';
                 saveButton.querySelector('button').disabled = false;
               }
-              // if (input.value.length > 20) {
-              //   input.disabled = true;
-              // } else {
-              //   input.disabled = false;
-              // }
             });
           }
         });
 
         saveButton.addEventListener('click', async () => {
-          console.log("save button with CLICK");
           if (input.value !== message.textContent) {
             const data = await patchStatusMessage(input.value);
           }
@@ -468,7 +535,6 @@ export default class extends AbstractView {
         });
         saveButton.addEventListener('keydown', async (e) => {
           if (e.key === 'Enter') {
-            console.log("save button with ENTER");
             if (input.value !== message.textContent) {
               const data = await patchStatusMessage(input.value);
             }
@@ -479,13 +545,17 @@ export default class extends AbstractView {
             message.classList.toggle('hidden');
             lengthContainer.classList.toggle('hidden');
           }
-        })
-
+        });
       }
     } else if (tabText === words[registry.lang].history) {
       const container = document.createElement('div');
       container.classList.add('history_container');
       const historyHTML = `
+        <div class="text_size_buttons">
+          <div tabindex="0" id="reduceTextSize"><button class="text_size_button reduce"><i class="fa-solid fa-minus"></i></button></div>
+          <button class="text_size">100%</button>
+          <div tabindex="0" id="plusTextSize"><button class="text_size_button plus"><i class="fa-solid fa-plus"></i></button></div>
+        </div>
         <div class="table_box">
           <table class="table_container">
             <thead>
@@ -542,6 +612,8 @@ export default class extends AbstractView {
       `;
       container.innerHTML = searchHTML;
       profileContent.replaceChildren(container);
+      const inputBox = document.getElementById('search_input');
+      inputBox.focus();
       this.showSearchResult();
     }
   }

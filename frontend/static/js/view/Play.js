@@ -5,6 +5,8 @@ import { localGame } from '../game/localGame.js';
 import { remoteGame } from '../game/remoteGame.js';
 import { getRoomName, getProfileData } from '../api/getAPI.js';
 import WebSocketManager from '../state/WebSocketManager.js';
+import { env } from '../utility/env.js';
+
 export default class extends AbstractView {
   constructor(params) {
     super(params);
@@ -25,10 +27,12 @@ export default class extends AbstractView {
       </div>
       <nav class="play_nav">
         <a tabindex="0" class="nav__link" id="local_link">${words[registry.lang].local}</a>
-        <a tabindex="0" class="nav__link" id="remote_link" style="${isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
-      }">${words[registry.lang].remote}</a>
-        <a tabindex="0" class="nav__link" id="tournament_link" style="${isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
-      }">${words[registry.lang].tournament}</a>
+        <a tabindex="0" class="nav__link" id="remote_link" style="${
+          isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
+        }">${words[registry.lang].remote}</a>
+        <a tabindex="0" class="nav__link" id="tournament_link" style="${
+          isLogin ? '' : 'pointer-events: none; color: grey; text-decoration: none;'
+        }">${words[registry.lang].tournament}</a>
       </nav>
     `;
   }
@@ -122,9 +126,7 @@ export default class extends AbstractView {
       const data = await getProfileData();
       this.realname = data.nickname;
       const token = localStorage.getItem('2FA');
-      WebSocketManager.connectGameSocket(
-        `ws://localhost:8000/ws/play/${mode}/${roomName}/${this.realname}/?token=${token}`,
-      );
+      WebSocketManager.connectGameSocket(`${env.WS}/play/${mode}/${roomName}/${this.realname}/?token=${token}`);
       let socket = WebSocketManager.returnGameSocket();
       const loadingSpinner = document.getElementById('loading_spinner');
       socket.onopen = (event) => {
@@ -136,14 +138,15 @@ export default class extends AbstractView {
         }
       };
       socket.onclose = (event) => {
-        console.log('Game socket closed');
+        if (!WebSocketManager.isGameSocketConnecting) {
+          WebSocketManager.connectGameSocket(`${env.WS}/play/${mode}/${roomName}/${this.nickname}/?token=${token}`);
+          socket = WebSocketManager.returnGameSocket();
+        }
       };
       socket.onerror = (event) => {
         console.error('Game socket error:', event);
         if (!WebSocketManager.isGameSocketConnecting) {
-          WebSocketManager.connectGameSocket(
-            `ws://localhost:8000/ws/play/${mode}/${roomName}/${this.nickname}/?token=${token}`,
-          );
+          WebSocketManager.connectGameSocket(`${env.WS}/play/${mode}/${roomName}/${this.nickname}/?token=${token}`);
           socket = WebSocketManager.returnGameSocket();
         }
       };
@@ -182,11 +185,14 @@ export default class extends AbstractView {
     await setupWebSocket(roomName, mode);
   }
   async tournamentNickNameModal(realName, roomName, socket) {
+    socket.onmessage = null;
+
     const modalHtml = `
       <div class="tournament_container_flex">
         <div>
-          <input tabindex="0" type="text" class="input_box" placeholder="${words[registry.lang].tournament_nickname_placeholder
-      }" maxlength="10"/>
+          <input tabindex="0" type="text" class="input_box" placeholder="${
+            words[registry.lang].tournament_nickname_placeholder
+          }" maxlength="10"/>
         </div>
         <div class="div_check_button" tabindex="0"><button class="close_button check_button">CHECK</button></div>
       </div>
@@ -214,6 +220,7 @@ export default class extends AbstractView {
     container.classList.remove('hidden');
     checkButton.disabled = true;
     checkButton.classList.add('disabled_button');
+    inputBox.focus();
     inputBox.addEventListener('input', () => {
       if (inputBox.value.length < 2 || inputBox.value.length > 10) {
         checkButton.disabled = true;
@@ -299,7 +306,7 @@ export default class extends AbstractView {
         </div>
       `;
 
-const self = this;
+    const self = this;
 
     const checkNickName = (nickname, realname, room_name, socket) => {
       const message = {
@@ -313,13 +320,13 @@ const self = this;
     const isValidPlayer = function (valid, players) {
       if (valid === true) {
         const container = document.querySelector('.tournament_container_flex');
-        while (container.childNodes.length > 0) {
+        while (container && container.childNodes.length > 0) {
           container.removeChild(container.firstChild);
         }
         const newDiv = document.createElement('div');
         newDiv.classList.add('tournament_list');
         newDiv.innerHTML = tableHTML;
-        container.replaceChildren(newDiv);
+        if (container) container.replaceChildren(newDiv);
         const tournamentSemiPlayers = Array.from(document.getElementsByClassName('tournament_semi'));
         tournamentSemiPlayers.forEach((parentDiv, index) => {
           const children = parentDiv.children;
@@ -331,7 +338,8 @@ const self = this;
             nicknameDiv.textContent = players[index].nickname;
             nicknameDiv.setAttribute(
               'tooltip-title',
-              `${players[index].win_cnt} ${words[registry.lang].win} ${players[index].lose_cnt} ${words[registry.lang].lose
+              `${players[index].win_cnt} ${words[registry.lang].win} ${players[index].lose_cnt} ${
+                words[registry.lang].lose
               }`,
             );
             nicknameDiv.addEventListener('keydown', (e) => {
@@ -359,86 +367,67 @@ const self = this;
         });
       }
     };
+    const handleSocketMessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.valid !== undefined || data.valid === false) {
+        isValidPlayer(false, null);
+      } else if (data.type === 'nickname_valid') {
+        isValidPlayer(true, data.data.nicknames);
+      } else if (data.type === 'start_game') {
+        const loadingSpinner = document.getElementById('loading_spinner');
+        loadingSpinner.style.display = 'none';
+        const countdownContainer = document.querySelector('#countdown_container');
+        countdownContainer.style.display = 'flex';
+        const $app = document.getElementById('app');
+        let responseMessage = {
+          type: 'set_board',
+          width: $app.offsetWidth / 2,
+          height: $app.offsetHeight / 1.2,
+        };
+        socket.send(JSON.stringify(responseMessage));
+        let countdown = 3;
+        countdownContainer.innerText = countdown;
+        const countdownInterval = setInterval(() => {
+          countdown--;
+          if (countdown > 0) {
+            countdownContainer.innerText = countdown;
+          } else {
+            clearInterval(countdownInterval);
+            countdownContainer.innerText = 'Go!';
+            setTimeout(() => {
+              countdownContainer.style.display = 'none';
+              remoteGame.init(socket, self.nickname, 'TOURNAMENT');
+            }, 1000);
+          }
+        }, 1000);
+      }
+    };
+
+    socket.addEventListener('message', handleSocketMessage);
+
     checkButton.addEventListener('click', () => {
       self.nickname = inputBox.value;
       checkNickName(self.nickname, realName, roomName, socket);
-      socket.onmessage = function (event) {
-        const data = JSON.parse(event.data);
-        if (data.valid !== undefined && data.valid === false) {
-          isValidPlayer(false, null);
-        } else if (data.type === 'nickname_valid') {
-          isValidPlayer(true, data.data.nicknames);
-        }
-        if (data.type === 'start_game') {
-          const loadingSpinner = document.getElementById('loading_spinner');
-          loadingSpinner.style.display = 'none';
-          const countdownContainer = document.querySelector('#countdown_container');
-          countdownContainer.style.display = 'flex';
-          const $app = document.getElementById('app');
-          let responseMessage = {
-            type: 'set_board',
-            width: $app.offsetWidth / 2,
-            height: $app.offsetHeight / 1.2,
-          };
-          socket.send(JSON.stringify(responseMessage));
-          let countdown = 3;
-          countdownContainer.innerText = countdown;
-          const countdownInterval = setInterval(() => {
-            countdown--;
-            if (countdown > 0) {
-              countdownContainer.innerText = countdown;
-            } else {
-              clearInterval(countdownInterval);
-              countdownContainer.innerText = 'Go!';
-              setTimeout(() => {
-                countdownContainer.style.display = 'none';
-                remoteGame.init(socket, self.nickname, 'TOURNAMENT');
-              }, 1000);
-            }
-          }, 1000);
-        }
-      };
     });
+
     divCheckButton.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
-        this.nickName = inputBox.value;
-        checkNickName(this.nickName, realName, roomName, socket);
-        socket.onmessage = function (event) {
-          const data = JSON.parse(event.data);
-          if (data.valid !== undefined && data.valid === false) {
-            isValidPlayer(false, null);
-          } else if (data.type === 'nickname_valid') {
-            isValidPlayer(true, data.data.nicknames);
-          }
-          if (data.type === 'start_game') {
-            const loadingSpinner = document.getElementById('loading_spinner');
-            loadingSpinner.style.display = 'none';
-            const countdownContainer = document.querySelector('#countdown_container');
-            countdownContainer.style.display = 'flex';
-            const $app = document.getElementById('app');
-            let responseMessage = {
-              type: 'set_board',
-              width: $app.offsetWidth / 2,
-              height: $app.offsetHeight / 1.2,
-            };
-            socket.send(JSON.stringify(responseMessage));
-            let countdown = 3;
-            countdownContainer.innerText = countdown;
-            const countdownInterval = setInterval(() => {
-              countdown--;
-              if (countdown > 0) {
-                countdownContainer.innerText = countdown;
-              } else {
-                clearInterval(countdownInterval);
-                countdownContainer.innerText = 'Go!';
-                setTimeout(() => {
-                  countdownContainer.style.display = 'none';
-                  remoteGame.init(socket, this.nickname, 'TOURNAMENT');
-                }, 1000);
-              }
-            }, 1000);
-          }
-        };
+        e.preventDefault();
+        self.nickname = inputBox.value;
+        checkNickName(self.nickname, realName, roomName, socket);
+      }
+    });
+
+    inputBox.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        checkButton.click();
+      }
+    });
+
+    divCheckButton.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.stopPropagation();
       }
     });
   }
