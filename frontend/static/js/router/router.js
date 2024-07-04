@@ -14,6 +14,7 @@ import { removeBlurBackground } from '../utility/blurBackGround.js';
 import { checkLogin } from '../utility/checkLogin.js';
 import { check2FAStatus } from '../utility/check2FA.js';
 import WebSocketManager from '../state/WebSocketManager.js';
+import { env } from '../utility/env.js';
 
 export class Router {
   constructor() {
@@ -136,7 +137,7 @@ export class Router {
         return;
       }
       const token = localStorage.getItem('2FA');
-      WebSocketManager.connectFriendSocket(`${import.meta.env.VITE_WS}/member/login_room/?token=${token}`);
+      WebSocketManager.connectFriendSocket(`${env.WS}/member/login_room/?token=${token}`);
     } else {
       WebSocketManager.closeFriendSocket();
     }
@@ -151,7 +152,7 @@ export class Router {
     if (localStorage.getItem('token') !== null) {
       window.location.href = '/';
     } else if (!localStorage.getItem('token')) {
-      window.location.href = import.meta.env.VITE_LOGIN_REDIRECT_URL;
+      window.location.href = env.LOGIN_REDIRECT_URL;
     }
   }
 

@@ -1,4 +1,6 @@
-const API = import.meta.env.VITE_API_URL;
+import { env } from '../utility/env';
+
+const API = env.API_URL;
 const getToken = (key) => encodeURIComponent(localStorage.getItem(key));
 
 export const patchStatusMessage = async (message) => {

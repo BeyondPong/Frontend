@@ -1,4 +1,6 @@
-const API = import.meta.env.VITE_API_URL;
+import { env } from '../utility/env';
+
+const API = env.API_URL;
 
 export const deleteAccount = async () => {
   try {

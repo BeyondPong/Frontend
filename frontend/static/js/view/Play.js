@@ -5,6 +5,8 @@ import { localGame } from '../game/localGame.js';
 import { remoteGame } from '../game/remoteGame.js';
 import { getRoomName, getProfileData } from '../api/getAPI.js';
 import WebSocketManager from '../state/WebSocketManager.js';
+import { env } from '../utility/env.js';
+
 export default class extends AbstractView {
   constructor(params) {
     super(params);
@@ -124,9 +126,7 @@ export default class extends AbstractView {
       const data = await getProfileData();
       this.realname = data.nickname;
       const token = localStorage.getItem('2FA');
-      WebSocketManager.connectGameSocket(
-        `${import.meta.env.VITE_WS}/play/${mode}/${roomName}/${this.realname}/?token=${token}`,
-      );
+      WebSocketManager.connectGameSocket(`${env.WS}/play/${mode}/${roomName}/${this.realname}/?token=${token}`);
       let socket = WebSocketManager.returnGameSocket();
       const loadingSpinner = document.getElementById('loading_spinner');
       socket.onopen = (event) => {
@@ -139,18 +139,14 @@ export default class extends AbstractView {
       };
       socket.onclose = (event) => {
         if (!WebSocketManager.isGameSocketConnecting) {
-          WebSocketManager.connectGameSocket(
-            `${import.meta.env.VITE_WS}/play/${mode}/${roomName}/${this.nickname}/?token=${token}`,
-          );
+          WebSocketManager.connectGameSocket(`${env.WS}/play/${mode}/${roomName}/${this.nickname}/?token=${token}`);
           socket = WebSocketManager.returnGameSocket();
         }
       };
       socket.onerror = (event) => {
         console.error('Game socket error:', event);
         if (!WebSocketManager.isGameSocketConnecting) {
-          WebSocketManager.connectGameSocket(
-            `${import.meta.env.VITE_WS}/play/${mode}/${roomName}/${this.nickname}/?token=${token}`,
-          );
+          WebSocketManager.connectGameSocket(`${env.WS}/play/${mode}/${roomName}/${this.nickname}/?token=${token}`);
           socket = WebSocketManager.returnGameSocket();
         }
       };
