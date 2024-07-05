@@ -9,9 +9,6 @@ export const getLoginURI = async () => {
       method: 'GET',
     });
     const data = await response.json();
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
     return data;
   } catch (error) {
     console.log('Failed to get login URI: ', error);
@@ -20,9 +17,10 @@ export const getLoginURI = async () => {
 
 export const getMultipleLogin = async () => {
   try {
-    const response = await fetch(`${API}/login/multiple`, {
+    const response = await fetch(`${API}/login/multiple/`, {
       method: 'GET',
       headers: {
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${getToken('token')}`,
       },
     });
