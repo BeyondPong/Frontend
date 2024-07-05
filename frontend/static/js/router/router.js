@@ -15,6 +15,7 @@ import { checkLogin } from '../utility/checkLogin.js';
 import { check2FAStatus } from '../utility/check2FA.js';
 import WebSocketManager from '../state/WebSocketManager.js';
 import { env } from '../utility/env.js';
+import { checkMultipleLogin } from '../utility/checkMultipleLogin.js';
 
 export class Router {
   constructor() {
@@ -104,6 +105,12 @@ export class Router {
     }
     if (checkLogin() === false) {
       window.location.href = '/notlogin';
+      return;
+    }
+    if (checkMultipleLogin() === false) {
+      localStorage.clear();
+      alert('You are already logged in another device');
+      window.location.href = '/';
       return;
     }
     updateBackground('normal');

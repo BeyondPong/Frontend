@@ -3,6 +3,21 @@ import { env } from '../utility/env';
 const API = env.API_URL;
 const getToken = (key) => encodeURIComponent(localStorage.getItem(key));
 
+export const getMultipleLogin = async () => {
+  try {
+    const response = await fetch(`${API}/login/multiple`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${getToken('token')}`,
+      },
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.log('Failed to get multiple login: ', error);
+  }
+};
+
 export const getRegistration = async () => {
   try {
     const response = await fetch(`${API}/login/registration/`, {
