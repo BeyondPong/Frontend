@@ -159,7 +159,8 @@ export class Router {
     if (localStorage.getItem('token') !== null) {
       window.location.href = '/';
     } else if (!localStorage.getItem('token')) {
-      window.location.href = env.LOGIN_REDIRECT_URL;
+      const loginURL = await getLoginURI();
+      window.location.href = loginURL;
     }
   }
 
