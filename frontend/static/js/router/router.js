@@ -9,11 +9,13 @@ import pathToRegex from '../utility/pathToRegex.js';
 import getParams from '../utility/getParams.js';
 import navigateTo from '../utility/navigateTo.js';
 import updateBackground from '../utility/updateBackground.js';
+import WebSocketManager from '../state/WebSocketManager.js';
+import { getLoginURI } from '../api/getAPI.js';
 import { postLoginCode } from '../api/postAPI.js';
 import { removeBlurBackground } from '../utility/blurBackGround.js';
 import { checkLogin } from '../utility/checkLogin.js';
 import { check2FAStatus } from '../utility/check2FA.js';
-import WebSocketManager from '../state/WebSocketManager.js';
+import { checkMultipleLogin } from '../utility/checkMultipleLogin.js';
 import { env } from '../utility/env.js';
 
 export class Router {
@@ -106,6 +108,12 @@ export class Router {
       window.location.href = '/notlogin';
       return;
     }
+    if (checkMultipleLogin() === true) {
+      localStorage.clear();
+      alert('You are already logged in another device');
+      window.location.href = '/';
+      return;
+    }
     updateBackground('normal');
     removeBlurBackground();
     await this.render(match);
@@ -132,6 +140,12 @@ export class Router {
 
   async handleMainRoute(match) {
     if (checkLogin() === true) {
+      if (checkMultipleLogin() === true) {
+        localStorage.clear();
+        alert('You are already logged in another device');
+        window.location.href = '/';
+        return;
+      }
       if (check2FAStatus() === false) {
         window.location.href = '/2fa';
         return;
@@ -152,7 +166,8 @@ export class Router {
     if (localStorage.getItem('token') !== null) {
       window.location.href = '/';
     } else if (!localStorage.getItem('token')) {
-      window.location.href = env.LOGIN_REDIRECT_URL;
+      const loginURL = await getLoginURI();
+      window.location.href = loginURL.redirect_url;
     }
   }
 
