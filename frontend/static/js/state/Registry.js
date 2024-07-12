@@ -72,7 +72,7 @@ export const words = {
     button: 'Agree',
     twofactor_title: 'Two-Factor Authentication',
     twofactor_subtitle: 'Send 6-digit login code to your email address by pressing send button.',
-    twofactor_subtitle2: 'Can\'t find the e-mail? Please check your spam folder as well.',
+    twofactor_subtitle2: "Can't find the e-mail? Please check your spam folder as well.",
     your_email: 'Your email:',
     email_send_button: 'SEND',
     email_resend_button: 'RESEND',
@@ -81,6 +81,8 @@ export const words = {
     twofactor_error_code: 'The code you entered is incorrect. Please try again.',
     remain_time: 'Time Remaining',
     remain_time_over: 'The login code expired. Please press resend button.',
+    isUnregister: 'Are you sure you want to unregister?',
+    cancel: 'Cancel',
   },
   ko: {
     play: '플레이',
@@ -133,7 +135,8 @@ export const words = {
     agreement: '위 내용을 충분히 읽고 이해하였으며, 이에 동의합니다.',
     button: '동의함',
     twofactor_title: '2단계 인증',
-    twofactor_subtitle: '안전한 로그인을 위해 2단계 인증을 진행합니다.<br> [전송] 버튼을 눌러 이메일로 인증코드를 받으세요.',
+    twofactor_subtitle:
+      '안전한 로그인을 위해 2단계 인증을 진행합니다.<br> [전송] 버튼을 눌러 이메일로 인증코드를 받으세요.',
     twofactor_subtitle2: '메일이 도착하지 않았다면 스팸함을 확인해주세요',
     your_email: '이메일:',
     email_send_button: '전송',
@@ -143,6 +146,8 @@ export const words = {
     twofactor_error_code: '잘못된 코드입니다. 다시 시도해 주세요.',
     remain_time: '남은 시간',
     remain_time_over: '인증코드가 만료되었습니다. 재전송 버튼을 눌러주세요.',
+    isUnregister: '정말로 탈퇴하시겠습니까?',
+    cancel: '취소',
   },
   jp: {
     play: 'プレー',
@@ -206,6 +211,8 @@ export const words = {
     twofactor_error_code: '入力されたコードが正しくありません。もう一度お試しください。',
     remain_time: '残り時間',
     remain_time_over: 'ログインコードの有効期限が切れました。再送信ボタンを押してください。',
+    isUnregister: '本当に退会しますか？',
+    cancel: 'キャンセル',
   },
 };
 
