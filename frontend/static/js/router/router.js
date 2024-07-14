@@ -10,6 +10,7 @@ import getParams from '../utility/getParams.js';
 import navigateTo from '../utility/navigateTo.js';
 import updateBackground from '../utility/updateBackground.js';
 import WebSocketManager from '../state/WebSocketManager.js';
+import beforeUnload from '../utility/beforeUnload.js';
 import { getLoginURI } from '../api/getAPI.js';
 import { postLoginCode } from '../api/postAPI.js';
 import { removeBlurBackground } from '../utility/blurBackGround.js';
@@ -34,6 +35,7 @@ export class Router {
   }
 
   async route() {
+    window.removeEventListener('beforeunload', beforeUnload);
     WebSocketManager.closeGameSocket();
     let match = this.findMatch();
     if (!match || location.pathname === '/notfound') {
@@ -99,6 +101,13 @@ export class Router {
     };
   }
 
+  clearAllCaches = async () => {
+    localStorage.clear();
+    sessionStorage.clear();
+    window.location.reload(true);
+    alert('You are already logged in another device');
+  };
+
   async handle2FA(match) {
     if (check2FAStatus() === true) {
       window.location.href = '/';
@@ -108,10 +117,9 @@ export class Router {
       window.location.href = '/notlogin';
       return;
     }
-    if (checkMultipleLogin() === true) {
-      localStorage.clear();
-      alert('You are already logged in another device');
-      window.location.href = '/';
+    let multipleLogin = await checkMultipleLogin();
+    if (multipleLogin === true) {
+      await this.clearAllCaches();
       return;
     }
     updateBackground('normal');
@@ -140,12 +148,6 @@ export class Router {
 
   async handleMainRoute(match) {
     if (checkLogin() === true) {
-      if (checkMultipleLogin() === true) {
-        localStorage.clear();
-        alert('You are already logged in another device');
-        window.location.href = '/';
-        return;
-      }
       if (check2FAStatus() === false) {
         window.location.href = '/2fa';
         return;
@@ -172,33 +174,34 @@ export class Router {
   }
 
   async handleProfileRoute(match) {
-    if (checkLogin() === false) {
+    if (!checkLogin()) {
       match = this.handleNotLogin();
       await this.render(match);
-    } else {
-      if (check2FAStatus() === false) {
-        window.location.href = '/2fa';
-        return;
-      }
-      await this.render(match);
-      const viewInstance = new match.route.view(getParams(match));
-      const navItems = Array.from(document.getElementsByClassName('profile_nav_item'));
-      viewInstance.defaultTabs();
-      viewInstance.addEvent();
-      navItems.forEach((item, index) => {
-        item.addEventListener('click', (e) => {
-          e.preventDefault();
-          navItems.forEach((nav) => nav.querySelector('a').classList.remove('active_tab'));
-          if (e.target.closest('a') !== null) {
-            e.target.closest('a').classList.add('active_tab');
-            const tabText = e.target.closest('a').textContent.trim();
-            viewInstance.moveTabs(tabText);
-          }
-        });
-      });
-      updateBackground('normal');
-      removeBlurBackground();
+      return;
     }
+    if (!check2FAStatus()) {
+      window.location.href = '/2fa';
+      return;
+    }
+    await this.render(match);
+    const viewInstance = new match.route.view(getParams(match));
+    const navItems = Array.from(document.getElementsByClassName('profile_nav_item'));
+    viewInstance.defaultTabs();
+    viewInstance.addEvent();
+    const handleNavItemClick = (e) => {
+      e.preventDefault();
+      navItems.forEach((nav) => nav.querySelector('a').classList.remove('active_tab'));
+      const link = e.target.closest('a');
+      if (link) {
+        link.classList.add('active_tab');
+        viewInstance.moveTabs(link.textContent.trim());
+      }
+    };
+    navItems.forEach((item) => {
+      item.addEventListener('click', handleNavItemClick);
+    });
+    updateBackground('normal');
+    removeBlurBackground();
   }
 
   async handlePlayRoute(match) {
@@ -210,33 +213,18 @@ export class Router {
     }
     await this.render(match);
     const viewInstance = new match.route.view(getParams(match));
-    const localLink = document.getElementById('local_link');
-    const remoteLink = document.getElementById('remote_link');
-    const tournamentLink = document.getElementById('tournament_link');
-    localLink.addEventListener('click', () => {
-      viewInstance.localModal();
-    });
-    localLink.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        viewInstance.localModal();
-      }
-    });
-    remoteLink.addEventListener('click', () => {
-      viewInstance.remoteModal();
-    });
-    remoteLink.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        viewInstance.remoteModal();
-      }
-    });
-    tournamentLink.addEventListener('click', () => {
-      viewInstance.tournamentModal();
-    });
-    tournamentLink.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        viewInstance.tournamentModal();
-      }
-    });
+    const addModalEventListeners = (elementId, modalFunction) => {
+      const element = document.getElementById(elementId);
+      element.addEventListener('click', modalFunction);
+      element.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          modalFunction();
+        }
+      });
+    };
+    addModalEventListeners('local_link', () => viewInstance.localModal());
+    addModalEventListeners('remote_link', () => viewInstance.remoteModal());
+    addModalEventListeners('tournament_link', () => viewInstance.tournamentModal());
     updateBackground('normal');
   }
 

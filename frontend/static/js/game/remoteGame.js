@@ -1,9 +1,9 @@
 import { postGameResult } from '../api/postAPI.js';
 import { addBlurBackground } from '../utility/blurBackGround.js';
+import beforeUnload from '../utility/beforeUnload.js';
 
 export const remoteGame = {
   async init(socket, nickname, gameMode) {
-    console.log(socket, nickname, gameMode);
     addBlurBackground();
     let root = document.getElementById('app');
     const $canvas = document.createElement('canvas');
@@ -315,7 +315,9 @@ export const remoteGame = {
       $wait.style.transform = 'translate(-50%, -50%)';
     }
 
-    function renderFinal() {
+    function renderFinal(data) {
+      const player1 = data.final_players[0];
+      const player2 = data.final_players[1];
       const $finalRoundContainer = document.createElement('div');
       $finalRoundContainer.id = 'finalRoundContainer';
 
@@ -327,8 +329,18 @@ export const remoteGame = {
       $finalRoundBottom.id = 'finalRoundBottom';
       $finalRoundBottom.innerText = 'Final Round';
 
+      const $player1Name = document.createElement('div');
+      $player1Name.id = 'player1Name';
+      $player1Name.innerText = player1;
+
+      const $player2Name = document.createElement('div');
+      $player2Name.id = 'player2Name';
+      $player2Name.innerText = player2;
+
       $finalRoundContainer.appendChild($finalRoundTop);
       $finalRoundContainer.appendChild($finalRoundBottom);
+      $finalRoundContainer.appendChild($player1Name);
+      $finalRoundContainer.appendChild($player2Name);
       root.appendChild($finalRoundContainer);
 
       setTimeout(() => {
@@ -337,7 +349,7 @@ export const remoteGame = {
         gameStart();
         running = true;
         animate();
-      }, 4000);
+      }, 6000);
     }
 
     async function setSocket() {
@@ -366,7 +378,7 @@ export const remoteGame = {
             handlePaddlePosition(data.data);
             break;
           case 'final_round':
-            renderFinal();
+            renderFinal(data.data);
             break;
         }
       };
@@ -490,6 +502,7 @@ export const remoteGame = {
       }
     }
 
+    window.addEventListener('beforeunload', beforeUnload);
     setSocket();
     gameStart();
   },
