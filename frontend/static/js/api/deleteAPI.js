@@ -1,4 +1,4 @@
-import { env } from '../utility/env';
+import { env } from '../utility/env.js';
 
 const API = env.API_URL;
 
