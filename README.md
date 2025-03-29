@@ -2,6 +2,13 @@
 
 42서울 트랜샌더스 프론트엔드 레포
 
+실행방법
+```
+cd frontend
+npm install
+npm run dev
+```
+
 <br/>
 
 # 컨벤션규칙
